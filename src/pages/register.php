@@ -18,6 +18,7 @@ if (isset($_SESSION['login'])) {
 <body>
     <main>
         <form action='../actions/register_action.php' method='POST'>
+            <input type='text' name="login" placeholder='Login'/>
             <input type='email' name="email" placeholder='Email'/>
             <input type='password' name="password" placeholder='Password'/>
             <input type='text' name="first_name" placeholder='First name'/>

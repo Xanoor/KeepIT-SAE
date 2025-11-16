@@ -18,7 +18,7 @@ if (isset($_SESSION['login'])) {
 <body>
     <main>
         <form action='../actions/login_action.php' method='POST'>
-            <input type='text' name="uid_email" placeholder='Email or uid'/>
+            <input type='text' name="login_email" placeholder='Email or login'/>
             <input type='password' name="password" placeholder='Password'/>
             <input type='submit' name="submit" value="Login"/>
         </form>
