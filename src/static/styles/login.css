@@ -1,0 +1,136 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 45%;
+    padding: 20px;
+}
+
+#login-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+#login-header img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+#login-header h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: white;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    background: var(--secondary-color);
+    border: 2px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    box-shadow: 0px 0px 30px var(--login-shadow);
+    gap: 20px;
+    overflow: hidden;
+}
+
+form > div {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form p {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    margin: 0 0 10px 0;
+    opacity: 0.9;
+}
+
+/* Inputs */
+label {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: -12px;
+    margin-left: 5px;
+    z-index: 1;
+}
+
+input[type="text"],
+input[type="password"] {
+    background: var(--login-input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    padding: 10px 0px;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    text-indent: 10px;
+}
+
+/* Submit Button */
+input[type="submit"] {
+    background: var(--login-input-bg);
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    color: white;
+    padding: 10px 40px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    letter-spacing: 1px;
+}
+
+input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(63, 81, 181, 0.5);
+    filter: brightness(1.025);
+}
+
+/* Video Link Button */
+#video-link {
+    background: var(--login-input-bg);
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    color: white;
+    font-weight: bold;
+    width: 40%;
+    padding: 12px 24px;
+    border-radius: 50px;
+    margin-top: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+#video-link:hover {
+    transform: translateY(-2px);
+}
