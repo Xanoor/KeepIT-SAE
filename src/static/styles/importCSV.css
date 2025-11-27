@@ -1,0 +1,107 @@
+/* File input style (custom -> use label as input to custom it) */
+.file-upload-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    border: 0.125rem dashed var(--border-color, #ccc);
+    border-radius: 0.75rem;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #2c2c3f;
+    border-color: white;
+}
+
+.file-upload-design {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-upload-icon {
+    width: 45%;
+    aspect-ratio: 1/1;
+}
+
+.file-upload-text {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin-bottom: 1rem;
+}
+
+.form-header input,
+.form-header select {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.35rem 1rem;
+    background: var(--secondary-color);
+    cursor: pointer;
+    height: 2rem;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.form-header input[type="submit"] {
+    padding: 0.35rem 2rem;
+}
+
+.form-header input[type="submit"]:disabled {
+    cursor: not-allowed;
+    background: var(--submit-disabled);
+    border-color: var(--submit-disabled-border);
+}
+
+.form-header div {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.form-content {
+    position: relative;
+    width: 90%;
+    height: 70vh;
+}
+
+.form-content .table-preview {
+    display: none; /*display set to none by default */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

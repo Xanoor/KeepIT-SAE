@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Se connecter</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="./styles/global.css" />
+        <link rel="stylesheet" type="text/css" href="./styles/importCSV.css" />
+    </head>
+    <body>
+        <header>
+            <div class="nav-left-container">
+                <div class="app-name-container">
+                    <p>NOMCORP</p>
+                </div>
+                <div class="nav-buttons-container">
+                    <a href="#">Dashboard</a>
+                    <a href="#" class="nav-buttons-current">Inventaire</a>
+                    <a href="#">Techniciens</a>
+                    <a href="#">Informations</a>
+                </div>
+            </div>
+            <div class="nav-right-container">
+                <a href="#">Profil</a>
+                <a href="#"><img src="" /></a>
+            </div>
+        </header>
+        <main>
+            <div class="app-name">
+                <img src="assets/logo.png" />
+                <h1>NOMCORP</h1>
+            </div>
+            <section>
+                <form action="" method="POST">
+                    <div class="form-header">
+                        <div>
+                            <input type="button" value="Retour" name="back" />
+                            <select>
+                                <option disabled selected hidden>
+                                    Choisir appareil
+                                </option>
+                                <option>Unité centrale</option>
+                                <option>Écran</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input
+                                type="submit"
+                                value="Enregistrer"
+                                name="save"
+                                disabled
+                            />
+                        </div>
+                    </div>
+                    <div class="form-content">
+                        <div class="table-preview"></div>
+                        <div class="file-upload-wrapper">
+                            <input
+                                type="file"
+                                name="file"
+                                id="file-upload"
+                                class="file-upload-input"
+                            />
+                            <label for="file-upload" class="file-upload-label">
+                                <div class="file-upload-design">
+                                    <img
+                                        src="assets/upload.png"
+                                        class="file-upload-icon"
+                                    />
+                                    <span class="file-upload-text"
+                                        >Cliquez et choisissez votre fichier
+                                        CSV</span
+                                    >
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </body>
+</html>
