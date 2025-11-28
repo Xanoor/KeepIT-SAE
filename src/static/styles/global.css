@@ -8,8 +8,8 @@
     --login-input-bg: #252538;
     --login-shadow: #3f51b5;
 
-    --submit-disabled: #2B2B33;
-    --submit-disabled-border: #787C8E;
+    --submit-disabled: #2b2b33;
+    --submit-disabled-border: #787c8e;
 }
 
 /* Body */
@@ -26,49 +26,88 @@ body {
 header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     padding: 5px;
     background: var(--header-bg);
+
     height: 5.5vh;
     max-height: 400px;
+
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 header a {
     text-decoration: none;
     color: white;
+    font-size: clamp(0.7rem, 1.75vw, 1.1rem);
+    white-space: nowrap;
+}
+
+header .nav-left-container,
+header .nav-buttons-container,
+header .nav-right-container {
+    gap: clamp(0.3rem, 2vw, 2rem);
 }
 
 header .nav-left-container {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
     align-items: center;
+    flex: 1 1 auto;
+}
 
-    width: 100%;
-    height: 100%;
+header .nav-buttons-container {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+}
+
+header .nav-right-container {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.3rem, 1.5vw, 1rem);
+    margin-right: 5px;
 }
 
 header .app-name-container {
     display: flex;
     align-items: center;
-    height: 100%;
-    font-size: 3vh; 
+
+    font-size: clamp(1rem, 1.4vw, 1.7rem);
     font-weight: bold;
-    margin-right: 5%;
-    padding-left: 1.5%;
+
+    padding-right: clamp(0.25rem, 1vw, 5%);
+    padding-left: clamp(0.25rem, 0.5vw, 1.5%);
+
+    border-right: 2px solid white;
 }
 
 header .app-name-container p {
     margin: 0;
 }
 
-header .app-right-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    
-    width: 100%;
+header .profile-btn {
+    padding: 2.5px clamp(4px, 1.5vw, 40px);
+    background: white;
+    color: black;
+    border-radius: 7.5px;
+}
+
+header .nav-right-container .log-out {
+    background: url("../assets/log-out.png") no-repeat center / contain;
+
+    width: clamp(16px, 2.5vw, 25px);
+    height: clamp(16px, 2.5vw, 25px);
+
+    flex-shrink: 0; /*img cannot disappear*/
+}
+
+header .nav-buttons-current {
+    background: #283593;
+    border-radius: 7.5px;
+    padding: 2.5px clamp(4px, 1.5vw, 25px);
 }
 
 .app-name {
@@ -80,7 +119,6 @@ header .app-right-container {
     font-size: clamp(10px, 1em, 20px);
     font-weight: bold;
 }
-
 
 .app-name img {
     width: 46px;
