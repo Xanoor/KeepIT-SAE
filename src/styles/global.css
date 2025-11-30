@@ -46,6 +46,11 @@ header a {
     color: white;
     font-size: clamp(0.7rem, 1.75vw, 1.1rem);
     white-space: nowrap;
+    transition: all 0.2s ease-in-out;
+}
+
+header a:hover {
+    transform: scale(1.1);
 }
 
 header .nav-left-container,
@@ -112,17 +117,19 @@ header .nav-buttons-current {
     padding: 2.5px clamp(4px, 1.5vw, 25px);
 }
 
-.app-name {
+.page-name {
     display: flex;
     flex-direction: row;
     align-items: center;
     color: white;
 
+    margin-left: 40px;
+
     font-size: clamp(10px, 1em, 20px);
     font-weight: bold;
 }
 
-.app-name img {
+.page-name img {
     width: 46px;
     height: auto;
     aspect-ratio: 1/1;

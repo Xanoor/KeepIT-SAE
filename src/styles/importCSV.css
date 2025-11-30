@@ -111,7 +111,8 @@
 
 .form-content .table-preview table thead {
     height: 50px;
-    background-color: var(--thead-color);
+    width: 100%;
+    background: var(--thead-color);
     text-align: left;
     color: rgb(173, 173, 173);
 }

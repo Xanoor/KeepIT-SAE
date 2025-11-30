@@ -11,11 +11,11 @@ function importTableBuilder($file, $limit = 100) {
     $result = fgetcsv($file);
 
     // Header
-    $html = "<table><tr>";
+    $html = "<table><thead><tr>";
     foreach ($result as $value) {
         $html .= "<th>" . htmlspecialchars($value) . "</th>";
     }
-    $html .= "</tr>";
+    $html .= "</tr></thead><tbody>";
 
     $counter = 0;
     // Body
@@ -27,7 +27,7 @@ function importTableBuilder($file, $limit = 100) {
         }
         $html .= "</tr>";
     }
-    $html .= "</table>";
+    $html .= "</tbody></table>";
 
     return $html;
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <title>Se connecter</title>
         <meta charset="UTF-8" />
@@ -14,7 +14,9 @@
                 </div>
                 <nav class="nav-buttons-container">
                     <a href="#">Dashboard</a>
-                    <a href="#" class="nav-buttons-current">Inventaire</a>
+                    <a href="./inventory.html" class="nav-buttons-current"
+                        >Inventaire</a
+                    >
                     <a href="#">Techniciens</a>
                     <a href="#">Informations</a>
                 </nav>
@@ -25,21 +27,23 @@
             </nav>
         </header>
         <main>
-            <div class="app-name">
+            <div class="page-name">
                 <img src="../assets/logo.png" />
-                <h1>NOMCORP</h1>
+                <h1>Inventaire</h1>
             </div>
             <section>
                 <form action="" method="POST" enctype="multipart/form-data">
                     <div class="form-header">
                         <div>
                             <input type="button" value="Retour" name="back" />
-                            <select>
+                            <select name="device_type">
                                 <option disabled selected hidden>
                                     Choisir appareil
                                 </option>
-                                <option>Unité centrale</option>
-                                <option>Écran</option>
+                                <option value="CENTRAL_UNIT">
+                                    Unité centrale
+                                </option>
+                                <option value="SCREEN">Écran</option>
                             </select>
                         </div>
                         <div>
