@@ -2,7 +2,7 @@
 
 ## Introduction
 
-### Information générales du document
+### Informations générales du document
 
 Le présent cahier des charges constitue le document de référence pour le projet de développement d’une plateforme WEB de gestion de parc informatique. Il définie l’ensemble des spécifications techniques et fonctionnelles auxquelles devra répondre la solution développée. Ce document s’adresse aux différentes parties prenantes du projet (enseignants et élèves).
 
@@ -45,18 +45,18 @@ Quatre profils utilisateurs sont définis :
 
 Parmi eux, celui qui n'a pas besoin de se connecter :
 
-- Le visiteur qui peut consulter une partie restreinte de l'inventaire.
+- Le visiteur qui peut consulter une partie restreinte de l'inventaire et à la page d'accueil du site web. 
 
 Les autres utilisateurs se connectent via la fonctionnalité de connexion avec identifiant, mot de passe pour effectuer leurs actions.
 
-- L'administrateur système s'occupe uniquement de la gestion du système et des logs. Il consulte les journaux d'activité sans se pencher sur l'activité web gestion du parc.
-- L'administrateur web de la plateforme, il est unique. Il créer et supprime un technicien, créer des informations sur les machines. (ex: rajouter un type de système d'exploitation sélectionnable par le technicien), consulter les liste des machines et bloquer la liste du *rebut*  (désactiver temporairement le déplacement depuis/vers cette liste)
+- L'administrateur système s'occupe uniquement de la gestion du système et des logs. Il consulte les journaux d'activité sans se pencher sur l'activité web, la gestion du parc.
+- L'administrateur web de la plateforme, il est unique. Il peut créer et supprimer un technicien, créer des nouvelles caractéristiques les machines. (ex: rajouter un type de système d'exploitation sélectionnable par le technicien), consulter les liste des machines et bloquer la liste du *rebut*  (désactiver temporairement le déplacement depuis/vers cette liste)
 - Le technicien peut consulter les listes des machines (moniteurs, unités centrales et rebut), ajouter des machines, supprimer des machines (c'est à dire la déplacer vers la liste du rebut). Exporter les listes. Modifier les information d'une machine à partir des caractéristiques disponibles.
 
 #### Connexion
 
 Le serveur devra être accessible via les postes informatiques par accès SSH.
-Le serveur est de type RPI4.
+Le serveur est de type RPi4.
 
 Les identifiants de connexion sont :
 
@@ -84,9 +84,42 @@ Des identifiants et mots de passe sont définie et inchangeable pour certains ut
   
   - Mot de passe : $*$tech1$*$
 
-Les identifiants des techniciens créé par l'administrateur web sont définie à la création de leur compte par l'administrateur web lui-même. 
+Les identifiants des techniciens (hors le premier) créé par l'administrateur web sont définie à la création de leur compte par l'administrateur web lui-même. 
 
 ### Structures des données à respecter
+
+Les unités centrales (UC) sont définies par les caractéristiques suivantes :
+
+| Attribut      | Description                                 |
+| ------------- | ------------------------------------------- |
+| NAME          | Le nom de l'UC.                             |
+| SERIAL        | Le numéro de série de l'UC.                 |
+| MANUFACTURER  | Le constructeur de l'UC.                    |
+| MODEL         | Le modèle de l'UC.                          |
+| TYPE          | Le type d'UC. (Laptop, Desktop, ...)        |
+| CPU           | Le processeur présent dans l'UC.            |
+| RAM_MB        | La taille de la mémoire vive.               |
+| DISK_GB       | La taille du stockage.                      |
+| OS            | Le système d'exploitation présent sur l'UC. |
+| DOMAIN        | Le domaine auquel appartient l'UC.          |
+| LOCATION      | L'emplacement / adresse où se situe l'UC.   |
+| BUILDING      | Le bâtiment où se situe l'UC                |
+| ROOM          | La salle ou se situe l'UC.                  |
+| MACADDR       | L'adresse mac de la carte réseau de l'UC.   |
+| PURCHASE_DATE | La date d'achat de l'UC.                    |
+| WARRANTTY_END | La date de fin de garantie de l'UC.         |
+
+Les écrans (moniteurs) sont quant à eux définis par :
+
+| Attribut     | Description                       |
+| ------------ | --------------------------------- |
+| SERIAL       | Le numéro de série de l'écran.    |
+| MANUFACTURER | Le constructeur de l'écran.       |
+| MODEL        | Le modèle de l'écran.             |
+| SIZE_INCH    | La taille de l'écran.             |
+| RESOLUTION   | La résolution l'écran.            |
+| CONNECTOR    | Le type de connecteur de l'écran  |
+| ATTACHED_TO  | A quelle UC l'écran est rattaché. |
 
 ### Outils de pilotage
 
@@ -96,7 +129,7 @@ Les outils principaux seront :
 
 - Un tableau de bord général.
 
-- Des tableau de visualisation des listes du matériel (moniteurs, unité central, rebut) avec filtre sur certain attributs.
+- Des tableaux de visualisation des listes du matériel (moniteurs, unité central, rebut) avec filtre sur certain attributs.
 
 - Une interface de consultation des logs pour l'administrateur système.
 
@@ -106,13 +139,15 @@ Les outils principaux seront :
 
 #### Objectifs Techniques
 
-Les objectifs techniques couvrent la reprise de données existante au format cdv des machines. La mise en place d'une base de données pour accueillir ces données.
+Les objectifs techniques couvrent la reprise de données existante au format `csv` des machines. La mise en place d'une base de données pour accueillir ces données.
 
-Un serveur Web (apache) pour mettre à disposition le site et un accès SSH. Mettre en ouvre une architecture et des méthodes de sécurisation.
+Un serveur Web (apache) pour mettre à disposition le site et un accès SSH.
+
+Mettre en ouvre une architecture et des méthodes de sécurisation.
 
 #### Objectifs Fonctionnelles
 
-Apporter de la fiabilité aux processus métier via la mise en place de ce système. C'est à dire par la traçabilité complète du matériel
+Apporter de la fiabilité aux processus métier via la mise en place de ce système. C'est à dire par la traçabilité complète du matériel.
 
 La consultation de l'inventaire et la gestion du matériel via l'interface web.
 
@@ -124,7 +159,7 @@ La consultation de l'inventaire et la gestion du matériel via l'interface web.
 
 - Suivre la statut
 
-Améliorer la gestion du parc en regroupant les informations pour, en apportant des indicateurs (graphiques, statistiques, ...)
+Améliorer la gestion du parc en regroupant les informations en apportant des indicateurs (graphiques, statistiques, ...)
 
 ## Pré-requis
 
@@ -158,6 +193,8 @@ Les pré-requis pour le projet sont l'ensemble des ressources dispensées durant
 
 - Communication professionnelle
 
+Ces dernière sont indispensable à la bonne réalisation du projet.
+
 ### Logiciels
 
 Les environnement de développement tel que 
@@ -166,17 +203,17 @@ Les environnement de développement tel que
 
 - VSCode
 
-La maitrise des logiciel annexes comme les suites bureautiques, la connaissance de `markdown` et de GitHub.
+La maitrise des logiciels annexes comme les suites bureautiques, la connaissance de `markdown` et de GitHub.
 
 ## Priorités
 
-La liste ci-dessous des travaux à effectuer et son ordre peut être amener à être modifier.
+La liste ci-dessous des travaux à effectuer et son ordre peut être amener à être modifié.
 
-1. La charte graphique du site à rendre pour la dernière semaine de décembre 2025
+1. La charte graphique du site à rendre pour la dernière semaine de décembre 2025.
 
-2. Une maquette de la plateforme web en `html` et `css`
+2. Une maquette de la plateforme web en `html` et `css`.
 
-3. Une présentation en anglais du projet
+3. Une présentation en anglais du projet.
 
 ---
 
