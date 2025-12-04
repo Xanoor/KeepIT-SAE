@@ -50,7 +50,9 @@ header a {
 }
 
 header a:hover {
-    transform: scale(1.1);
+    border-bottom: 3px solid white;
+    padding-bottom: 2px;
+    color: white;
 }
 
 header .nav-left-container,
@@ -100,6 +102,12 @@ header .profile-btn {
     background: white;
     color: black;
     border-radius: 7.5px;
+}
+
+header .profile-btn:hover {
+    background: #283593;
+    color: white;
+    cursor: pointer;
 }
 
 header .nav-right-container .log-out {
