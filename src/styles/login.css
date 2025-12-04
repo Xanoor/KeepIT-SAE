@@ -106,6 +106,7 @@ input[type="submit"] {
     transition: all 0.3s ease;
     margin-top: 15px;
     letter-spacing: 1px;
+    word-wrap: break-word;
 }
 
 input[type="submit"]:hover {
@@ -121,7 +122,6 @@ input[type="submit"]:hover {
     border-bottom: 2px solid var(--border-color);
     color: white;
     font-weight: bold;
-    width: 40%;
     padding: 12px 24px;
     border-radius: 50px;
     margin-top: 50px;
@@ -133,4 +133,43 @@ input[type="submit"]:hover {
 
 #video-link:hover {
     transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    main {
+        max-width: 75%;
+        padding: 12px;
+    }
+
+    form > div {
+        width: 100%;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"],
+    #video-link {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        padding: 10px 12px;
+    }
+
+    input[type="submit"],
+    #video-link {
+        padding: 12px 16px;
+        margin-top: 20px;
+    }
+
+    label {
+        margin-left: 0;
+        margin-bottom: 6px;
+    }
+
+    #login-header h1 {
+        font-size: 1.8rem;
+    }
 }
