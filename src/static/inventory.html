@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
-        <title>Se connecter</title>
+        <title>Inventaire</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
-        <!-- <link rel="stylesheet" type="text/css" href="../styles/importCSV.css" /> -->
     </head>
     <body>
         <header>
@@ -38,12 +37,30 @@
                                 placeholder="Rechercher"
                                 name="search-item"
                             />
+                            <div class="select-checkbox">
+                                <input type="button" id="select-checkbox-button" value="Choisir appareil"/>
+                                <div id="select-checkbox-list" style="display: none;">
+                                    <div>
+                                        <label for="select-checkbox-all">Tout selectionner</label>
+                                        <input type="checkbox" class="select-checkbox-checkbox" id="select-checkbox-all" value="Tout selectionner" checked=checked/>
+                                    </div>
+                                    <div>
+                                        <label for="select-checkbox-monitors">Écrans</label>
+                                        <input type="checkbox" class="select-checkbox-checkbox" id="select-checkbox-monitors" value="Ecrans" checked=checked/>
+                                    </div>
+                                    <div>
+                                        <label for="select-checkbox-cu">Unités centrales</label>
+                                        <input type="checkbox" class="select-checkbox-checkbox" id="select-checkbox-cu" value="Unités centrales" checked=checked/>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" name="inventory_search"><img src="../assets/search.png" alt="Rechercher"/></button>
                         </div>
                         <div>
-                            <select name="inventory-action">
+                            <select name="inventory-action" onchange="location = this.value;">
                                 <option disabled selected hidden>Action</option>
                                 <option value="Add-item">Ajouter</option>
-                                <option value="Import-items">Importer</option>
+                                <option value="./importCSV.html">Importer</option>
                                 <option value="Export_items">Exporter</option>
                             </select>
                         </div>
@@ -179,4 +196,5 @@
             </section>
         </main>
     </body>
+    <script src="../scripts/inventory.js"></script>
 </html>

@@ -1,0 +1,58 @@
+const selectCheckboxBtn = document.getElementById("select-checkbox-button");
+const selectCheckboxList = document.getElementById("select-checkbox-list");
+const selectCheckboxes = Array.from(
+    document.querySelectorAll('#select-checkbox-list input[type="checkbox"]')
+);
+
+function selectCheckboxBtn_clicked(e) {
+    if (
+        selectCheckboxList &&
+        selectCheckboxBtn.parentElement == selectCheckboxList.parentElement
+    ) {
+        if (selectCheckboxList.style.display == "none") {
+            selectCheckboxList.style.display = "flex";
+            selectCheckboxList.parentElement.classList.add(
+                "select-checkbox-active"
+            );
+        } else {
+            selectCheckboxList.style.display = "none";
+            selectCheckboxList.parentElement.classList.remove(
+                "select-checkbox-active"
+            );
+        }
+    }
+}
+
+function selectCheckbox_changed(e) {
+    e = e.target;
+
+    switch (e.id) {
+        case "select-checkbox-all":
+            selectCheckboxes.forEach((elem) => (elem.checked = e.checked));
+            break;
+
+        default:
+            const all = document.getElementById("select-checkbox-all");
+            if (all) {
+                if (!e.checked) all.checked = false;
+                else {
+                    let i = 0;
+                    selectCheckboxes.forEach((e) => {
+                        if (e.checked) i += 1;
+                    });
+                    all.checked = selectCheckboxes.length - 1 == i; //Without all btn
+                }
+            }
+            break;
+    }
+}
+
+selectCheckboxes.forEach((el) =>
+    el.addEventListener("change", (e) => selectCheckbox_changed(e))
+);
+
+if (selectCheckboxBtn) {
+    selectCheckboxBtn.addEventListener("click", (e) =>
+        selectCheckboxBtn_clicked(e)
+    );
+}
