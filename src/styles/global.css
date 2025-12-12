@@ -204,6 +204,37 @@ form,
     height: 70vh;
 }
 
+.page-content .nav-buttons {
+    display: flex;
+    justify-content: end;
+    margin: 5px;
+    width: 90%;
+}
+
+.page-content .nav-buttons form {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.page-content .nav-buttons form button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    aspect-ratio: 1/1;
+    margin: 5px;
+    width: 7.5%;
+    cursor: pointer;
+}
+
+.page-content .nav-buttons form button img {
+    width: 75%;
+    aspect-ratio: 1/1;
+}
+
 .table-preview {
     position: absolute;
     width: 100%;
