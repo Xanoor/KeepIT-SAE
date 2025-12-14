@@ -34,10 +34,104 @@ function importTableBuilder($file, $limit = 100) {
     return $html;
 }
 
-function addMonitor($attr, $line = "?") {
-
+/**
+ * Check if specific keys are present in the attributes array.
+ */
+function verifyRequiredKeys($attr, $required_keys, $line) {
+    $required_keys_model = array_flip($required_keys);
+    $missing_keys = array_diff_key($required_keys_model, $attr);
+    if (!empty($missing_keys)) { 
+        return ["state" => false, "message" => "Line $line: Missing keys."];
+    }
+    return ["state" => true];
 }
 
+/**
+ * Check if a value exists in a specific table and column.
+ */
+function checkDatabaseExistence($connect, $table, $column, $value) {
+    if (empty($value)) return false; // Handle null/empty
+
+    $request = "SELECT $column FROM $table WHERE $column = ?";
+    $stmt = mysqli_prepare($connect, $request);
+    mysqli_stmt_bind_param($stmt, "s", $value);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $rows = mysqli_stmt_num_rows($stmt);
+    mysqli_stmt_close($stmt);
+    return $rows > 0;
+}
+
+/**
+ * Add a monitor to the database.
+ * 
+ * @param array $attr Associative array containing monitor attributes.
+ * @param int|string $line Line number in the CSV file (for error reporting).
+ * @return array "state" (bool) and "message" (string) on error.
+ */
+function addMonitor($attr, $line = "?") {
+    global $connect;
+    $required_keys = ["SERIAL","MANUFACTURER","MODEL","SIZE_INCH","RESOLUTION","CONNECTOR","ATTACHED_TO"];
+    
+    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
+    if (!$checkKeys["state"]) return $checkKeys;
+
+    // Verify if already in DB
+    if (checkDatabaseExistence($connect, 'monitor', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => "Line $line: The monitor with serial ".$attr["SERIAL"]." is already in the database"];
+    }
+
+    // Verify Manufacturer
+    if (!checkDatabaseExistence($connect, 'manufacturer', 'name', $attr["MANUFACTURER"])) {
+        return ["state" => false, "message" => "Line $line: The Manufacturer ".$attr["MANUFACTURER"]." isn't registered"];
+    }
+
+    // Verify Connector
+    if (!checkDatabaseExistence($connect, 'connector', 'name', $attr["CONNECTOR"])) {
+        return ["state" => false, "message" => "Line $line: The Connector ".$attr["CONNECTOR"]." isn't registered"];
+    }
+
+     // Verify attached to computer
+     if (!empty($attr["ATTACHED_TO"])) {
+        if (!checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["ATTACHED_TO"])) {
+            return ["state" => false, "message" => "Line $line: The computer ".$attr["ATTACHED_TO"]." isn't registered"];
+        }
+     } else {
+         $attr["ATTACHED_TO"] = null; // set to null
+     }
+
+
+    $request_add_monitor = "INSERT INTO monitor (serial_number, model, size_inch, resolution, manufacturer_name, connector_name, attached_to_serial) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt_add_monitor = mysqli_prepare($connect, $request_add_monitor);
+
+    mysqli_stmt_bind_param($stmt_add_monitor, "sssssss", 
+        $attr["SERIAL"], 
+        $attr["MODEL"], 
+        $attr["SIZE_INCH"], 
+        $attr["RESOLUTION"], 
+        $attr["MANUFACTURER"], 
+        $attr["CONNECTOR"], 
+        $attr["ATTACHED_TO"]
+    );
+
+    try {
+        if (mysqli_stmt_execute($stmt_add_monitor)) {
+            return ["state" => true];
+        } else {
+            return ["state" => false, "message" => "Line $line: Database error: " . mysqli_stmt_error($stmt_add_monitor)];
+        }
+    } catch (Exception $e) {
+        return ["state" => false, "message" => "Line $line: Database error."];
+    }
+}
+
+/**
+ * Add a computer to the database.
+ * 
+ * @param array $attr Associative array containing computer attributes.
+ * @param int|string $line Line number in the CSV file (for error reporting).
+ * @return array "state" (bool) and "message" (string) on error.
+ */
 function addComputer($attr, $line = "?") {    
     global $connect;
     // Verify if all attributs are in the dict
@@ -46,55 +140,54 @@ function addComputer($attr, $line = "?") {
         'RAM_MB', 'DISK_GB', 'OS', 'DOMAIN', 'LOCATION', 'BUILDING', 
         'ROOM', 'MACADDR', 'PURCHASE_DATE', 'WARRANTY_END'
     ];
-    $required_keys_model = array_flip($required_keys);
-    $missing_keys = array_diff_key($required_keys_model, $attr);
-    if (!empty($missing_keys)) { // A key is missing !
-        return ["state" => false, "message" => "Line $line: Missing keys."];
-    }
+    
+    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
+    if (!$checkKeys["state"]) return $checkKeys;
 
     $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
     $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
 
     // Verify if already in DB
-    $stmt_check_serial = mysqli_prepare($connect, "SELECT serial_number FROM computer WHERE serial_number = ?");
-    mysqli_stmt_bind_param($stmt_check_serial, "s", $attr["SERIAL"]);
-    mysqli_stmt_execute($stmt_check_serial);
-    $res_check_serial = mysqli_stmt_get_result($stmt_check_serial);
-    if (mysqli_num_rows($res_check_serial) > 0) {
+    if (checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["SERIAL"])) {
         return ["state" => false, "message" => "Line $line: The computer with serial ".$attr["SERIAL"]." is already in the database"];
     }
 
     //  --------------- Verify Manufacturer ---------------
-    $stmt_check_manu = mysqli_prepare($connect, "SELECT name FROM manufacturer WHERE name = ?");
-    mysqli_stmt_bind_param($stmt_check_manu, "s", $attr["MANUFACTURER"]);
-    mysqli_stmt_execute($stmt_check_manu);
-    mysqli_stmt_store_result($stmt_check_manu);
-    if (mysqli_stmt_num_rows($stmt_check_manu) == 0) {
+    if (!checkDatabaseExistence($connect, 'manufacturer', 'name', $attr["MANUFACTURER"])) {
         return ["state" => false, "message" => "Line $line: The Manufacturer ".$attr["MANUFACTURER"]." isn't registered"];
     }
 
     //   --------------- Verify OS ---------------
-    $stmt_check_os = mysqli_prepare($connect, "SELECT name FROM operating_system WHERE name = ?");
-    mysqli_stmt_bind_param($stmt_check_os, "s", $attr["OS"]);
-    mysqli_stmt_execute($stmt_check_os);
-    mysqli_stmt_store_result($stmt_check_os);
-    if (mysqli_stmt_num_rows($stmt_check_os) == 0) {
+    if (!checkDatabaseExistence($connect, 'operating_system', 'name', $attr["OS"])) {
         return ["state" => false, "message" => "Line $line: The OS ".$attr["OS"]." isn't registered"];
     }
 
     //  --------------- Verify Type ---------------
-    $stmt_check_type = mysqli_prepare($connect, "SELECT name FROM computer_type WHERE name = ?");
-    mysqli_stmt_bind_param($stmt_check_type, "s", $attr["TYPE"]);
-    mysqli_stmt_execute($stmt_check_type);
-    mysqli_stmt_store_result($stmt_check_type);
-    if (mysqli_stmt_num_rows($stmt_check_type) == 0) {
+    if (!checkDatabaseExistence($connect, 'computer_type', 'name', $attr["TYPE"])) {
         return ["state" => false, "message" => "Line $line: The computer type ".$attr["TYPE"]." isn't registered"];
     }
 
     // SQL INSERT REQUEST
     $request_add_computer = "INSERT INTO computer (serial_number, name, model, cpu, ram_mb, disk_gb, domain, location, building, room, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_add_computer = mysqli_prepare($connect, $request_add_computer);
-    mysqli_stmt_bind_param($stmt_add_computer, "ssssssssssssssss", $attr["SERIAL"], $attr["NAME"], $attr["MODEL"], $attr["CPU"], $attr["RAM_MB"], $attr["DISK_GB"], $attr["DOMAIN"], $attr["LOCATION"], $attr["BUILDING"], $attr["ROOM"], $attr["MACADDR"], $attr["PURCHASE_DATE"], $attr["WARRANTY_END"], $attr["MANUFACTURER"], $attr["OS"], $attr["TYPE"]);
+    mysqli_stmt_bind_param($stmt_add_computer, "ssssssssssssssss", 
+        $attr["SERIAL"], 
+        $attr["NAME"], 
+        $attr["MODEL"], 
+        $attr["CPU"], 
+        $attr["RAM_MB"], 
+        $attr["DISK_GB"], 
+        $attr["DOMAIN"], 
+        $attr["LOCATION"], 
+        $attr["BUILDING"], 
+        $attr["ROOM"], 
+        $attr["MACADDR"], 
+        $attr["PURCHASE_DATE"], 
+        $attr["WARRANTY_END"], 
+        $attr["MANUFACTURER"], 
+        $attr["OS"], 
+        $attr["TYPE"]
+    );
     
     try {
         if (mysqli_stmt_execute($stmt_add_computer)) {

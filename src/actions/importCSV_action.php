@@ -77,7 +77,18 @@ if (isset($_POST["device_type"], $_POST["file_path_csv"], $_POST["import_csv"]))
                     }
                 }
                 break;
-            // WIP 
+            case 'SCREEN':
+                $line = 1;
+                while ($row = fgetcsv($csv_file)) {
+                    $line++;
+                    if(count($row) == count($header_csv)){
+                       $result = addMonitor(array_combine($header_csv, $row), $line);
+                       if (!$result["state"]) {
+                           $errors[] = $result["message"];
+                       } else $totalImported++;
+                    }
+                }
+                break;
             default:
                 # code...
                 break;
@@ -86,7 +97,7 @@ if (isset($_POST["device_type"], $_POST["file_path_csv"], $_POST["import_csv"]))
         // If one or more element is not imported
         if (!empty($errors)) {
             $_SESSION['import_errors'] = $errors;
-            $_SESSION['notification'] = "Des erreurs sont survenues lors de l'importation. $totalImported ordinateurs importés.";
+            $_SESSION['notification'] = "Des erreurs sont survenues lors de l'importation. $totalImported éléments importés.";
             $_SESSION['notification_color'] = "red";
             header("location: ../pages/importCSV.php");
             exit();
