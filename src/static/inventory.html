@@ -9,7 +9,7 @@
         <header>
             <div class="nav-left-container">
                 <div class="app-name-container">
-                    <p>KEEPIT</p>
+                    <a href="index.html">KEEPIT</a>
                 </div>
                 <nav class="nav-buttons-container">
                     <a href="#">Dashboard</a>
@@ -20,7 +20,9 @@
             </div>
             <nav class="nav-right-container">
                 <a href="#" class="profile-btn">Profil</a>
-                <a href="#" class="log-out"></a>
+                <a href="#" class="log-out"
+                    ><img src="../assets/log-out.png" alt="Profil"
+                /></a>
             </nav>
         </header>
         <main>
@@ -35,6 +37,7 @@
                             <input
                                 type="search"
                                 placeholder="Rechercher"
+                                aria-label="Rechercher"
                                 name="search-item"
                             />
                             <div class="select-checkbox">
@@ -43,10 +46,14 @@
                                     id="select-checkbox-button"
                                     value="Choisir appareil"
                                 />
-                                <div
+                                <fieldset
                                     id="select-checkbox-list"
                                     style="display: none"
+                                    legend=""
                                 >
+                                    <legend class="sr-only">
+                                        Filtre de type d'appareil
+                                    </legend>
                                     <div>
                                         <label for="select-checkbox-all"
                                             >Tout selectionner</label
@@ -86,7 +93,7 @@
                                             checked="checked"
                                         />
                                     </div>
-                                </div>
+                                </fieldset>
                             </div>
                             <button type="submit" name="inventory_search">
                                 <img
@@ -96,16 +103,20 @@
                             </button>
                         </div>
                         <div>
+                            <label for="action_select" class="sr-only"
+                                >Action</label
+                            >
                             <select
                                 name="inventory-action"
-                                onchange="location = this.value;"
+                                aria-label="Action"
+                                id="action_select"
                             >
                                 <option disabled selected hidden>Action</option>
-                                <option value="Add-item">Ajouter</option>
+                                <option value="#">Ajouter</option>
                                 <option value="./importCSV.html">
                                     Importer
                                 </option>
-                                <option value="Export_items">Exporter</option>
+                                <option value="#">Exporter</option>
                             </select>
                         </div>
                     </div>

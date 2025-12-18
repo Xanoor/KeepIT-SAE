@@ -4,6 +4,8 @@ const selectCheckboxes = Array.from(
     document.querySelectorAll('#select-checkbox-list input[type="checkbox"]')
 );
 
+const action_select = document.getElementById("action_select");
+
 function selectCheckboxBtn_clicked(e) {
     if (
         selectCheckboxList &&
@@ -56,3 +58,17 @@ if (selectCheckboxBtn) {
         selectCheckboxBtn_clicked(e)
     );
 }
+
+// WCAG-compliant: navigation occurs only on explicit user action (click or Enter),
+// not on option change via keyboard navigation.
+action_select.addEventListener("change", (e) => {
+    if (e.isTrusted) {
+        window.location.href = e.target.value;
+    }
+});
+
+action_select.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        navigate(e.target.value);
+    }
+});

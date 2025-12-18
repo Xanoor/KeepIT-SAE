@@ -23,7 +23,9 @@
             </div>
             <nav class="nav-right-container">
                 <a href="#" class="profile-btn">Profil</a>
-                <a href="#" class="log-out"></a>
+                <a href="#" class="log-out"
+                    ><img src="../assets/log-out.png" alt="Profil"
+                /></a>
             </nav>
         </header>
         <main>
@@ -36,7 +38,10 @@
                     <div class="form-header">
                         <div>
                             <input type="button" value="Retour" name="back" />
-                            <select name="device_type">
+                            <select
+                                name="device_type"
+                                aria-label="Type d'appareil"
+                            >
                                 <option disabled selected hidden>
                                     Choisir appareil
                                 </option>
@@ -79,6 +84,7 @@
                                     <img
                                         src="../assets/upload.png"
                                         class="file-upload-icon"
+                                        alt="Logo télécharger/importer"
                                     />
                                     <span class="file-upload-text"
                                         >Cliquez et choisissez votre fichier
