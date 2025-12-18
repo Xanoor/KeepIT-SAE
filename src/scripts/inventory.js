@@ -61,14 +61,16 @@ if (selectCheckboxBtn) {
 
 // WCAG-compliant: navigation occurs only on explicit user action (click or Enter),
 // not on option change via keyboard navigation.
-action_select.addEventListener("change", (e) => {
-    if (e.isTrusted) {
-        window.location.href = e.target.value;
-    }
-});
+if (action_select) {
+    action_select.addEventListener("change", (e) => {
+        if (e.isTrusted) {
+            window.location.href = e.target.value;
+        }
+    });
 
-action_select.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        navigate(e.target.value);
-    }
-});
+    action_select.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            navigate(e.target.value);
+        }
+    });
+}
