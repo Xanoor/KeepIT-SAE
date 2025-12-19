@@ -70,7 +70,7 @@ if (action_select) {
 
     action_select.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-            navigate(e.target.value);
+            window.location.href = e.target.value;
         }
     });
 }
