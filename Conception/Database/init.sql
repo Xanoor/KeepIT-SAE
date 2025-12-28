@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS devices (
     location VARCHAR(50),
     building VARCHAR(50),
     room VARCHAR(25),
-    device_type VARCHAR(25),
+    device_type ENUM('Computer', 'Monitor'), 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     state VARCHAR(36) NULL DEFAULT 'En stock',
@@ -69,8 +69,7 @@ CREATE TABLE IF NOT EXISTS computer (
     PRIMARY KEY (serial_number),
     FOREIGN KEY (serial_number) REFERENCES devices(serial_number) ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the computer table.
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
-    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT,
-
+    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS monitor (
@@ -88,6 +87,6 @@ CREATE TABLE IF NOT EXISTS monitor (
     FOREIGN KEY (attached_to_serial) REFERENCES computer(serial_number) ON DELETE SET NULL
 );
 
-INSERT INTO `users` (login, password_hash, role) VALUES ('sysadmin', '$2y$10$H5DAxsFD0gSoVyYXPwLm3uXpRc.wLF5GIgtqjAQMnr0xFuDHasOmy', 'System Administrator');
-INSERT INTO `users` (login, password_hash, role) VALUES ('adminweb', '$2y$10$zsJ2yxGntxq9tBad09LDJeBpvVQVDF5BWtqXezXwOjOyysdfYU6Gq', 'Web Administrator');
-INSERT INTO `users` (login, password_hash, role) VALUES ('tech1', '$2y$10$3o1JyIoZLzxXDDL21O5FrObUzxSZB0wHX3P7MlZ3PLnjy0qUXdG.C', 'Technician');
+INSERT IGNORE INTO `users` (login, password_hash, role) VALUES ('sysadmin', '$2y$10$H5DAxsFD0gSoVyYXPwLm3uXpRc.wLF5GIgtqjAQMnr0xFuDHasOmy', 'System Administrator');
+INSERT IGNORE INTO `users` (login, password_hash, role) VALUES ('adminweb', '$2y$10$zsJ2yxGntxq9tBad09LDJeBpvVQVDF5BWtqXezXwOjOyysdfYU6Gq', 'Web Administrator');
+INSERT IGNORE INTO `users` (login, password_hash, role) VALUES ('tech1', '$2y$10$3o1JyIoZLzxXDDL21O5FrObUzxSZB0wHX3P7MlZ3PLnjy0qUXdG.C', 'Technician');
