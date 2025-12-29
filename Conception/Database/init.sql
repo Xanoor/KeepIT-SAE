@@ -13,10 +13,11 @@ CREATE TABLE IF NOT EXISTS `device_types` (
 );
 
 CREATE TABLE IF NOT EXISTS `device_states` (
-    state VARCHAR(36) NOT NULL PRIMARY KEY
+    state VARCHAR(36) NOT NULL PRIMARY KEY,
+    css_class VARCHAR(50) NOT NULL DEFAULT ""
 );
 
-INSERT IGNORE INTO `device_states` (state) VALUES ('Déployé'), ('En stock'), ('Fin de vie');
+INSERT IGNORE INTO `device_states` (state, css_class) VALUES ('Déployé', 'table-item-DEPLOYED'), ('En stock', 'table-item-IN_INVENTORY'), ('Fin de vie', 'table-item-END_OF_LIFE');
 
 CREATE TABLE IF NOT EXISTS `locations` (
     location VARCHAR(50) NOT NULL PRIMARY KEY
@@ -39,23 +40,22 @@ CREATE TABLE IF NOT EXISTS connector (
 
 CREATE TABLE IF NOT EXISTS devices (
     serial_number VARCHAR(25) NOT NULL,
-    name VARCHAR(25),
-    location VARCHAR(50),
-    building VARCHAR(50),
-    room VARCHAR(25),
     device_type ENUM('Computer', 'Monitor'), 
+    model VARCHAR(25),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     state VARCHAR(36) NULL DEFAULT 'En stock',
     PRIMARY KEY (serial_number),
     FOREIGN KEY (device_type) REFERENCES device_types(name) ON DELETE RESTRICT, 
-    FOREIGN KEY (state) REFERENCES device_states(state) ON DELETE RESTRICT,
-    FOREIGN KEY (location) REFERENCES locations(location) ON DELETE RESTRICT
+    FOREIGN KEY (state) REFERENCES device_states(state) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS computer (
     serial_number VARCHAR(25) NOT NULL,
-    model VARCHAR(25),
+    name VARCHAR(25),
+    location VARCHAR(50),
+    building VARCHAR(50),
+    room VARCHAR(25),
     cpu VARCHAR(25),
     ram_mb INT CHECK(ram_mb > 0),
     disk_gb INT CHECK(disk_gb > 0),
@@ -69,13 +69,13 @@ CREATE TABLE IF NOT EXISTS computer (
     PRIMARY KEY (serial_number),
     FOREIGN KEY (serial_number) REFERENCES devices(serial_number) ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the computer table.
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
-    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT
+    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT,
+    FOREIGN KEY (location) REFERENCES locations(location) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS monitor (
     serial_number VARCHAR(25) NOT NULL,
-    model VARCHAR(25),
-    size_inch VARCHAR(25),
+    size_inch INT CHECK(size_inch > 0),
     resolution VARCHAR(25),
     manufacturer_name VARCHAR(50),
     connector_name VARCHAR(25),

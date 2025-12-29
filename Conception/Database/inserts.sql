@@ -7,6 +7,6 @@ INSERT IGNORE INTO `locations` (location) VALUES ('Berlin'), ('Frankfurt');
 
 INSERT IGNORE INTO `device_types` (name) VALUES ('Computer'), ('Monitor');
 INSERT IGNORE INTO `device_states` (state) VALUES ('Déployé'), ('En stock'), ('Fin de vie');
-INSERT IGNORE INTO `manufacturer` (name) VALUES ('Acer'), ('Dell'), ('HP'), ('Lenovo'), ('Asus');
-INSERT IGNORE INTO `operating_system` (name) VALUES ('Windows 10'), ('Windows 11'), ('Ubuntu 22.04');
-INSERT IGNORE INTO `connector` (name) VALUES ('HDMI'), ('VGA'), ('DVI'), ('DisplayPort');
+INSERT IGNORE INTO `manufacturer` (name) VALUES ('Acer'), ('Dell'), ('HP'), ('Lenovo'), ('Asus'), ('Samsung'), ('LG'), ('BenQ'), ('AOC');
+INSERT IGNORE INTO `operating_system` (name) VALUES ('Windows 10'), ('Windows 11'), ('Ubuntu 22.04'), ('Debian 12');
+INSERT IGNORE INTO `connector` (name) VALUES ('HDMI'), ('VGA'), ('DVI'), ('DisplayPort'), ('USB-C');
