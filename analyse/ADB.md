@@ -87,7 +87,9 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 **Nom :** Enregistrer une machine par formulaire
 
-**Niveau :** Utilisateur
+**Niveau :** Objectif Utilisateur
+
+**Porté :** Boite noire
 
 **Description :** Le technicien entre une nouvelle machine dans le système en renseignant les informations dans une formulaire.
 
@@ -95,11 +97,11 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 #### Scénario Nominal
 
-1. Dans l'inventaire, choisir l'action "ajouté" pour arrivé à la page de formulaire.
+1. Dans l'inventaire, il choisi l'action "ajouté" pour arrivé à la page de formulaire.
 
-2. Saisir les différents champs du formulaires.
+2. Le technicien saisie les différents champs du formulaires.
 
-3. Cliquer sur le bouton validé.
+3. Il clique sur le bouton validé.
 
 4. Le système enregistre les informations.
 
@@ -107,13 +109,15 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 #### Extensions
 
+**Etape 4**
+
 - 4.1) Les informations sont incorrectes, exemple : numéro de série déjà existant (doublon dans la base)
 
 - 4.2) Le système affiche un message stipulant que les informations sont erronées
 
 - 4.3) L'utilisateur peut retenter : *Retour Etape 2*
 
-
+**Etape 4**
 
 - 4.1) Un champ est manquant (vide)
 
@@ -125,7 +129,9 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 **Nom :** Enregistrement de machines à partir d'un fichier CSV
 
-**Niveau :** Utilisateur
+**Niveau :** Objectif Utilisateur
+
+**Porté :** Boite noire
 
 **Description :** Le technicien importe un fichier CSV des informations de plusieurs machines pour les enregistrer
 
@@ -133,11 +139,11 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 #### Scénario Nominal
 
-1. Dans l'inventaire, choisir l'action "importé" pour arrivé à la page de formulaire.
+1. Dans l'inventaire, il choisi l'action "importé" pour arrivé à la page de formulaire.
 
-2. Cliquer sur le bouton central pour ouvrir l'explorateur de fichier.
+2. Le technicien clique sur le bouton central pour ouvrir l'explorateur de fichier.
 
-3. L'utilisateur sélectionne le fichier.
+3. Le technicien sélectionne le fichier.
 
 4. Le fichier est chargé dans le système.
 
@@ -145,13 +151,15 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 #### Extensions
 
+**Etape 3**
+
 - 3.1) Le fichier sélectionné est invalide, ce n'est pas un csv (fichier pdf par exemple).
 
 - 3.2) Affichage d'un message d'erreur adéquate.
 
 - 3.3) *Retour étape 2*
 
-
+**Etape 4**
 
 - 4.1) La structure du fichier est erroné.
 
@@ -159,7 +167,7 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 - 4.3) *Retour à 2*
 
-
+**Etape 4**
 
 - 4.1) Des informations sont erronées (doublons, vide).
 
@@ -173,6 +181,8 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 **Niveau :** Sous-fonction
 
+**Porté :** Boite noire
+
 **Description :** S'identifier pour ne plus être considérer comme simple visiteur et avoir accès à aux fonctionnalité de son profil
 
 **Acteur principal :** Technicien/Administrateur web/Administrateur système
@@ -181,21 +191,27 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 1. Accéder à la page de connexion par l'icone en haut à droite.
 
-2. Saisir le login et mot de passe.
+2. Le technicien saisie le login et mot de passe.
 
-3. Cliquer sur le bouton "Se connecter".
+3. Le technicien valide avec le bouton "Se connecter".
 
 4. Le système vérifie les informations.
 
-5. L'utilisateur est rediriger vers la page de son profil.
+5. Le technicien est rediriger vers la page de son profil.
+
+6. Le système enregistre l'opération dans le journal d'activités.
 
 #### Extensions
+
+**Etape 4**
 
 - 4.1) Les informations sont incorrectes.
 
 - 4.2) Le système affiche un message stipulant que les informations sont erronées.
 
 - 4.3) L'utilisateur peut retenter : *Retour Etape 2*
+
+**Etape 4**
 
 - 4.1) Connexion avec la base de données échoue.
 
@@ -207,7 +223,9 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 **Nom :** Modification d'une information matérielle
 
-**Niveau :** Utilisateur
+**Niveau :** Objectif Utilisateur
+
+**Porté :** Boite noire
 
 **Description :** Le technicien modifie une information de l'élément matériel
 
@@ -215,60 +233,108 @@ Ce document est une **Analyse Des Besoins** (ADB). Il a pour but de clarifier et
 
 #### Scénario Nominal
 
-- Le technicien clique dans la barre de navigation sur inventaire.
+1. Le technicien clique dans la barre de navigation sur inventaire.
 
-- Le technicien clique sur le bouton "action" le l'appareil choisi.
+2. Le technicien clique sur le bouton "action" le l'appareil choisi.
 
-- Il modifie une/plusieurs des informations sur la page de l'appareil.
+3. Il modifie une/plusieurs des informations sur la page de l'appareil.
 
-- Il clique sur le bouton "Enregistrer".
+4. Il clique sur le bouton "Enregistrer".
 
-- Le système enregistre la modification.
+5. Le système enregistre la modification.
 
-- L'utilisateur est redirigé vers la page de l'inventaire.
+6. L'utilisateur est redirigé vers la page de l'inventaire.
+
+7. Le système enregistre l'opération dans le journal d'activités.
 
 #### Extensions
 
 ### Exporter une liste (CSV)
 
-**Nom :**
+**Nom :** Exporter une liste au format CSV
 
-**Niveau :**
+**Niveau :** Objectif Utilisateur
 
-**Description :**
+**Porté :** Boite noire
 
-**Acteur principal :**
+**Description :** Le technicien exporte tout ou partie de l'inventaire du parc informatique au format CSV pour des traitements externes.
 
-#### Scénario Nominal
-
-#### Extensions
-
-### Gérer les techniciens
-
-**Nom :**
-
-**Niveau :**
-
-**Description :**
-
-**Acteur principal :**
+**Acteur principal :** Technicien
 
 #### Scénario Nominal
 
+1. Dans l'inventaire, il choisi l'action "exporté" pour arrivé à la page de formulaire.
+2. Le technicien choisit le type d'appareils à exporter (type d'appareils : UC, moniteurs ou tout)
+3. Le technicien applique les filtres  (par emplacement, par fabricant, par date d'achat, etc.)
+4. Le technicien valide l'exportation.
+5. Le système récupère les données correspondantes depuis la base de données et génère le fichier CSV.
+6. Le technicien télécharge le fichier CSV.
+7. Le système enregistre l'opération dans le journal d'activités.
+
 #### Extensions
 
-### Créer une information matérielle
+**Etape 3**
 
-**Nom :**
+- 3.1) Aucun appareil ne correspond aux critères.
+- 3.2) Le système affiche un message indiquant qu'aucune donnée ne correspond aux filtres.
+- 3.3) Le système propose de modifier les filtres.
+- 3.4) Le technicien fait un choix :
+  - Le technicien modifie les filtres (retour à l'étape 5)
+  - Le technicien annule l'exportation (retour page inventaire)
 
-**Niveau :**
+**Etape 6**
 
-**Description :**
+- 6.1) Le technicien ne télécharge pas le fichier.
+- 6.2) Le fichier CSV est supprimer du système.
+- 6.4) Le technicien est rediriger à l'inventaire.
 
-**Acteur principal :**
+### Créer les techniciens
+
+**Nom :** Créer les techniciens
+
+**Niveau :** Objectif Utilisateurs
+
+**Porté :** Boite noire
+
+**Description :** L'administrateur web a besoin de créer des comptes techniciens pour leur permettre d'accéder à la plateforme de gestion du parc informatique et d'effectuer leurs tâches quotidiennes.
+
+**Acteur principal :** Administrateur Web
 
 #### Scénario Nominal
 
+1. L'administrateur web sélectionne l'option "Créer un technicien".
+2. Le système affiche le formulaire de création avec les champs requis (login, mot de passe, nom, prénom)
+3. L'administrateur web remplit les informations du nouveau technicien.
+4. L'administrateur web valide le formulaire.
+5. Le système vérifie l'unicité du login et enregistre le nouveau technicien dans la base de données.
+6. Le système affiche un message de confirmation.
+7. Le système enregistre l'opération dans le journal d'activités.
+
 #### Extensions
+
+**Etape 5**
+
+- 5.1) Le login existe déjà dans la base de données
+- 5.2)Le système affiche un message d'erreur indiquant que le login est déjà utilisé
+- 5.3)Le système propose de modifier le login
+- 5.4)L'administrateur web modifie le login (retour à l'étape 4)
+
+**Etape 5**
+
+- 5.1) Le mot de passe ne respecte pas les critères de sécurité
+- 5.2) Le système affiche un message indiquant les critères requis
+- 5.3) L'administrateur web saisit un nouveau mot de passe (retour à l'étape 4)
+
+**Etape 4**
+
+- 4.1) Des champs obligatoires sont vides
+- 4.2) Le système affiche un message indiquant les champs manquants
+- 4.3) L'administrateur web complète les informations (refaire étape 4)
+
+#### Exception
+
+- a*.1) L'administrateur web annule la création
+- a*.2) Le système abandonne l'opération
+- a*.3) Retour à l'étape 1
 
 # 
