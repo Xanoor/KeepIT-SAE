@@ -74,3 +74,13 @@ if (action_select) {
         }
     });
 }
+
+const pageInput = document.querySelector(".page-num-input");
+if (pageInput) {
+    pageInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { //if the user press enter inside number input, submit the form
+            e.preventDefault();
+            this.form.submit();
+        }
+    });
+}

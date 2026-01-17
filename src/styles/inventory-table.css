@@ -38,6 +38,7 @@
 .table-preview table th {
     padding-left: 20px;
     padding-right: 20px;
+    vertical-align: middle;
 }
 
 .table-preview table td:first-child {
@@ -79,10 +80,11 @@
     place-items: center;
     font-size: 0.75em;
     font-weight: bold;
-    width: 75%;
+    width: 130px;
     height: 30px;
     border-radius: 35px;
     cursor: pointer;
+    margin: auto 0;
 }
 
 .table-preview table tbody tr td img {

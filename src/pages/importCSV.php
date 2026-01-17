@@ -1,6 +1,13 @@
 <?php 
-    include_once("../fragments/functions.php"); 
     session_start();
+
+    // if (!isset($_SESSION['login'])) {
+    //     header("Location: login.php");
+    //     exit();
+    // }
+
+    include_once("../fragments/functions.php"); 
+
     $notification = $_SESSION['notification'] ?? null;
     $notification_color = $_SESSION['notification_color'] ?? null;
     $import_errors = $_SESSION['import_errors'] ?? null;
@@ -16,6 +23,7 @@
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
         <link rel="stylesheet" type="text/css" href="../styles/importCSV.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/inventory-table.css" />
         <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
     </head>
     <body>
@@ -33,7 +41,9 @@
             </div>
             <nav class="nav-right-container">
                 <a href="#" class="profile-btn">Profil</a>
-                <a href="#" class="log-out"></a>
+                <a href="../actions/logout_action.php" class="log-out">
+                    <img src="../assets/log-out.png" alt="Déconnexion" />
+                </a>
             </nav>
         </header>
         <main>
@@ -41,11 +51,13 @@
                 <img src="../assets/logo.png" />
                 <h1>Inventaire</h1>
             </div>
-            <section>
+            <section class="importCSV-main-section">
                 <form action="" id="csvForm" method="POST" enctype="multipart/form-data">
                     <div class="form-header">
                         <div>
-                            <input type="button" value="Retour" name="back" />
+                            <a href="inventory.php">
+                                <input type="button" value="Retour" name="back" />
+                            </a>
                             <select name="device_type">
                                 <option disabled selected hidden>
                                     Choisir appareil
@@ -95,7 +107,7 @@
                                 }
 
                                 $file = fopen($filePath, "r");
-                                echo "<div class='table-preview'><input type='hidden' name='file_path_csv' value='".$filePath."'/>".importTableBuilder($file, 15)."</div></div><p>Ce tableau présente un <b>extrait</b> des données.</p>";
+                                echo "<div class='table-preview'><input type='hidden' name='file_path_csv' value='".$filePath."'/>".importCSVTableBuilder($file, 15)."</div></div><p>Ce tableau présente un <b>extrait</b> des données.</p>";
 
                             } else {
                                 echo "<div class='file-upload-wrapper'>

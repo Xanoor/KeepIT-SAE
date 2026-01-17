@@ -2,6 +2,120 @@
 
 require_once 'db.php';
 
+// Used to convert text to french (language used for this web site)
+function convertDataToFrench($data) {
+    $translations = [
+        "Monitor" => "Écrans",
+        "Computer" => "Unités centrales"
+    ];
+    return $translations[$data] ?? $data;
+}
+
+/**
+ * Returns a CSS class name based on the item state by fetching it from the database.
+ * 
+ * @param string $state The state value from database.
+ * @return string The CSS class from device_states table.
+ */
+function getStateClass($state) {
+    global $connect;
+    static $stateCache = null;
+
+    // Load all states once per request to avoid N+1 queries
+    if ($stateCache === null) {
+        $stateCache = [];
+        $query = "SHOW TABLES LIKE 'device_states'";
+        $exists = mysqli_query($connect, $query);
+        
+        if (mysqli_num_rows($exists) > 0) {
+            $res = mysqli_query($connect, "SELECT state, css_class FROM device_states");
+            while ($row = mysqli_fetch_assoc($res)) {
+                $stateCache[$row['state']] = $row['css_class'];
+            }
+        }
+    }
+    
+    return $stateCache[$state] ?? "table-item-UNKNOWN";
+}
+
+/**
+ * Generate HTML inputs for inventory filters based on distinct values in lookup tables.
+ * 
+ * @param array $tableList Associative array defining lookup rules.
+ *              Format: [ "tableName" => "columnToFetch" ] 
+ *              OR [ "tableName" => ["columnName" => "colToFetch", "devices_col" => "targetColInDevices"] ]
+ *              - "columnName": The column in the lookup table containing the filter values.
+ *              - "devices_col": (Optional) The database column name in the 'devices' table that this filter applies to.
+ *                               Defaults to 'columnName' if not provided.
+ * @return string HTML chunk of checkbox inputs.
+ */
+function generateInventoryFilters($tableList) {
+    global $connect;
+    // Get currently active filters from POST, default to "Tout selectionner" if empty
+    $activeFilters = $_POST['filters'] ?? ['Tout selectionner'];
+    $html = "";
+
+    foreach ($tableList as $table => $config) {
+        // Support both simple string (column name) or array configuration [columnName, devices_col]
+        $lookupColumn = is_array($config) ? ($config['columnName'] ?? $config[0]) : $config;
+        $devicesCol = is_array($config) ? ($config['devices_col'] ?? $config[1] ?? $lookupColumn) : $config;
+
+        // mysqli_real_escape_string is used to prevent SQL injection (it escapes special characters like quotes)
+        $safeTable = mysqli_real_escape_string($connect, $table);
+        $safeColumn = mysqli_real_escape_string($connect, $lookupColumn);
+        $query = "SELECT DISTINCT `$safeColumn` FROM `$safeTable` ORDER BY `$safeColumn` ASC";
+        $result = mysqli_query($connect, $query);
+
+        if ($result) {
+            while ($row = mysqli_fetch_array($result)) {
+                $val = $row[0]; // ex, "Monitor", "Computer", "En stock"...
+
+                if (is_null($val) || $val === "") continue;
+
+                $safeVal = htmlspecialchars($val);
+                $label = htmlspecialchars(convertDataToFrench($val)); // Translate DB value to French
+                $id = "select-checkbox-" . strtolower(preg_replace('/[^a-zA-Z0-9]/', '-', $val));
+                
+                // Determine if this specific checkbox should be checked
+                $isChecked = false;
+                
+                // If "Tout selectionner" is active, everything should be visually checked
+                if (in_array("Tout selectionner", $activeFilters)) {
+                    $isChecked = true;
+                } 
+                // Otherwise, check if this specific value was selected in its column group
+                else if (isset($activeFilters[$devicesCol]) && is_array($activeFilters[$devicesCol])) {
+                    if (in_array($val, $activeFilters[$devicesCol])) {
+                        $isChecked = true;
+                    }
+                }
+                
+                $checkedResult = $isChecked ? "checked" : "";
+
+                // Generate HTML for the filter item
+                $html .= "
+                <div>
+                    <label for=\"$id\">
+                        $label
+                    </label>
+                    <input
+                        name=\"filters[$devicesCol][]\"
+                        type=\"checkbox\"
+                        class=\"select-checkbox-checkbox\"
+                        id=\"$id\"
+                        value=\"$safeVal\"
+                        $checkedResult
+                    />
+                </div>\n";
+
+            }
+        }
+    }
+
+    return $html;
+}
+
+
 /**
  * Create an HTML table from a CSV file.
  *
@@ -9,7 +123,7 @@ require_once 'db.php';
  * @param int $limit Maximum number of rows to read (default 100).
  * @return string HTML table.
  */
-function importTableBuilder($file, $limit = 100) {
+function importCSVTableBuilder($file, $limit = 100) {
     $result = fgetcsv($file);
 
     // Header
@@ -27,6 +141,110 @@ function importTableBuilder($file, $limit = 100) {
         foreach ($result as $value) {
             $html .= "<td>" . htmlspecialchars($value) . "</td>";
         }
+        $html .= "</tr>";
+    }
+    $html .= "</tbody></table>";
+
+    return $html;
+}
+
+/**
+ * Create an HTML table from a SQL query with pagination.
+ *
+ * @param string $tableName The table to fetch from.
+ * @param array $filters Associative array of column => value for the WHERE clause.
+ * @param int $start The starting index (offset).
+ * @param int $end The ending index (limit = end - start).
+ * @return string HTML table.
+ */
+function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11) {
+    global $connect;
+
+    $step = 11;
+    
+    // Validation of start and end
+    if ($start < 0) $start = 0;
+    if ($end <= $start) $end = $start + $step; // Default range if invalid
+
+    
+    // mysqli_real_escape_string is used to prevent SQL injection (add backslashes before special characters)
+    $safeTable = mysqli_real_escape_string($connect, $tableName);
+    // Build Base Query and Filter Clause
+    // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
+    $whereClause = "";
+    if (!empty($filters)) {
+        $filterParts = [];
+        foreach ($filters as $column => $value) {
+            $safeColumn = mysqli_real_escape_string($connect, $column);
+            
+            if (is_array($value)) {
+                // Handle "IN" for multiple values
+                $escapedValues = array_map(function($v) use ($connect) {
+                    return "'" . mysqli_real_escape_string($connect, $v) . "'";
+                }, $value);
+                $filterParts[] = "`$safeColumn` IN (" . implode(", ", $escapedValues) . ")";
+            } else if (strpos((string)$value, '%') !== false) { //strpos = Find the position of the first occurrence of a substring in a string
+                // Handle LIKE for searches
+                $safeValue = mysqli_real_escape_string($connect, $value);
+                $filterParts[] = "`$safeColumn` LIKE '$safeValue'";
+            } else {
+                // Default 
+                $safeValue = mysqli_real_escape_string($connect, $value);
+                $filterParts[] = "`$safeColumn` = '$safeValue'";
+            }
+        }
+        $whereClause = " WHERE " . implode(" AND ", $filterParts); //implode = Join array elements with a string
+    }
+
+    // Check Total Count to prevent "too high" values
+    $countQuery = "SELECT COUNT(*) as total FROM `$safeTable`" . $whereClause;
+    $countResult = mysqli_query($connect, $countQuery);
+    $totalRows = mysqli_fetch_assoc($countResult)['total'];
+
+    if ($start >= $totalRows) {
+        return "<p>Aucune donnée trouvée (Index de départ trop élevé).</p>";
+    }
+
+    // Adjust end if it's too high
+    if ($end > $totalRows) {
+        $end = $totalRows;
+    }
+
+    $limit = $end - $start;
+
+    // Final Query with LIMIT
+    $query = "SELECT * FROM `$safeTable`" . $whereClause . " LIMIT $start, $limit";
+    $result = mysqli_query($connect, $query);
+
+    if (!$result) {
+        return "<p>Erreur : " . htmlspecialchars(mysqli_error($connect)) . "</p>";
+    }
+
+    // Header
+    $html = "<table><thead><tr>";
+    $fields = mysqli_fetch_fields($result);
+    
+    if (empty($fields)) {
+        return "<p>Aucune donnée trouvée.</p>";
+    }
+
+    foreach ($fields as $field) {
+        $html .= "<th>" . htmlspecialchars(str_replace('_', ' ', strtoupper($field->name))) . "</th>";
+    }
+    $html .= "<th>ACTION</th>";
+    $html .= "</tr></thead><tbody>";
+
+    // Body
+    while ($row = mysqli_fetch_assoc($result)) {
+        $html .= "<tr>";
+        foreach ($row as $colName => $value) {
+            $content = htmlspecialchars($value ?? '');
+            if ($colName === 'state') {
+                $content = "<span class=\"" . getStateClass($value) . "\">" . $content . "</span>";
+            }
+            $html .= "<td>" . $content . "</td>";
+        }
+        $html .= "<td>"; //Need to add a href to the table to go to item page
         $html .= "</tr>";
     }
     $html .= "</tbody></table>";
@@ -76,8 +294,13 @@ function addMonitor($attr, $line = "?") {
     $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
     if (!$checkKeys["state"]) return $checkKeys;
 
+    $attr['STATE'] ??= 'En stock';
+
     // Verify if already in DB
     if (checkDatabaseExistence($connect, 'monitor', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => "Line $line: The monitor with serial ".$attr["SERIAL"]." is already in the database"];
+    }
+    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
         return ["state" => false, "message" => "Line $line: The monitor with serial ".$attr["SERIAL"]." is already in the database"];
     }
 
@@ -91,6 +314,11 @@ function addMonitor($attr, $line = "?") {
         return ["state" => false, "message" => "Line $line: The Connector ".$attr["CONNECTOR"]." isn't registered"];
     }
 
+    // Verify Type
+    if (!checkDatabaseExistence($connect, 'device_types', 'name', "Monitor")) {
+        return ["state" => false, "message" => "Line $line: The monitor type ".$attr["TYPE"]." isn't registered"];
+    }
+
      // Verify attached to computer
      if (!empty($attr["ATTACHED_TO"])) {
         if (!checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["ATTACHED_TO"])) {
@@ -100,28 +328,36 @@ function addMonitor($attr, $line = "?") {
          $attr["ATTACHED_TO"] = null; // set to null
      }
 
-
-    $request_add_monitor = "INSERT INTO monitor (serial_number, model, size_inch, resolution, manufacturer_name, connector_name, attached_to_serial) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt_add_monitor = mysqli_prepare($connect, $request_add_monitor);
-
-    mysqli_stmt_bind_param($stmt_add_monitor, "sssssss", 
-        $attr["SERIAL"], 
-        $attr["MODEL"], 
-        $attr["SIZE_INCH"], 
-        $attr["RESOLUTION"], 
-        $attr["MANUFACTURER"], 
-        $attr["CONNECTOR"], 
-        $attr["ATTACHED_TO"]
-    );
-
+    // If the 2 inserts are not done, cancel ALL inserts otherwise continue
+    mysqli_begin_transaction($connect);
     try {
-        if (mysqli_stmt_execute($stmt_add_monitor)) {
-            return ["state" => true];
-        } else {
-            return ["state" => false, "message" => "Line $line: Database error: " . mysqli_stmt_error($stmt_add_monitor)];
+        // Insert into DEVICES first (Parent)
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Monitor', ?, ?)";
+        $stmt_dev = mysqli_prepare($connect, $req_devices);
+        mysqli_stmt_bind_param($stmt_dev, "sss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        );
+        
+        if (!mysqli_stmt_execute($stmt_dev)) {
+            throw new Exception("Error inserting into devices: " . mysqli_stmt_error($stmt_dev));
         }
+        // Insert into MONITOR (Child)
+        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_serial) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt_monitor = mysqli_prepare($connect, $req_monitor);
+        mysqli_stmt_bind_param($stmt_monitor, "ssssss", 
+            $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["MANUFACTURER"], 
+            $attr["CONNECTOR"], $attr["ATTACHED_TO"]
+        );
+        if (!mysqli_stmt_execute($stmt_monitor)) {
+            throw new Exception("Error inserting into monitor: " . mysqli_stmt_error($stmt_monitor));
+        }
+        // Everything worked
+        mysqli_commit($connect);
+        return ["state" => true];
     } catch (Exception $e) {
-        return ["state" => false, "message" => "Line $line: Database error."];
+        // Something failed -> Undo everything
+        mysqli_rollback($connect);
+        return ["state" => false, "message" => "Line $line: " . $e->getMessage()];
     }
 }
 
@@ -147,9 +383,14 @@ function addComputer($attr, $line = "?") {
     $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
     $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
 
+    $attr['STATE'] ??= 'En stock';
+
     // Verify if already in DB
     if (checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["SERIAL"])) {
         return ["state" => false, "message" => "Line $line: The computer with serial ".$attr["SERIAL"]." is already in the database"];
+    }
+    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => "Line $line: An item with serial ".$attr["SERIAL"]." is already in the database"];
     }
 
     //  --------------- Verify Manufacturer ---------------
@@ -163,40 +404,51 @@ function addComputer($attr, $line = "?") {
     }
 
     //  --------------- Verify Type ---------------
-    if (!checkDatabaseExistence($connect, 'computer_type', 'name', $attr["TYPE"])) {
+    if (!checkDatabaseExistence($connect, 'device_types', 'name', 'Computer')) {
         return ["state" => false, "message" => "Line $line: The computer type ".$attr["TYPE"]." isn't registered"];
     }
 
-    // SQL INSERT REQUEST
-    $request_add_computer = "INSERT INTO computer (serial_number, name, model, cpu, ram_mb, disk_gb, domain, location, building, room, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt_add_computer = mysqli_prepare($connect, $request_add_computer);
-    mysqli_stmt_bind_param($stmt_add_computer, "ssssssssssssssss", 
-        $attr["SERIAL"], 
-        $attr["NAME"], 
-        $attr["MODEL"], 
-        $attr["CPU"], 
-        $attr["RAM_MB"], 
-        $attr["DISK_GB"], 
-        $attr["DOMAIN"], 
-        $attr["LOCATION"], 
-        $attr["BUILDING"], 
-        $attr["ROOM"], 
-        $attr["MACADDR"], 
-        $attr["PURCHASE_DATE"], 
-        $attr["WARRANTY_END"], 
-        $attr["MANUFACTURER"], 
-        $attr["OS"], 
-        $attr["TYPE"]
-    );
-    
+    //  --------------- Verify location ---------------
+    if (!checkDatabaseExistence($connect, 'locations', 'location', $attr['LOCATION'])) {
+        return ["state" => false, "message" => "Line $line: The location ".$attr["LOCATION"]." isn't registered"];
+    }
+
+    //  --------------- Verify state ---------------
+    if (!checkDatabaseExistence($connect, 'device_states', 'state', $attr['STATE'])) {
+        return ["state" => false, "message" => "Line $line: The state ".$attr["STATE"]." isn't registered"];
+    }
+
+    // If the 2 inserts are not done, cancel ALL inserts otherwise continue
+    mysqli_begin_transaction($connect);
     try {
-        if (mysqli_stmt_execute($stmt_add_computer)) {
-            return ["state" => true];
-        } else {
-            return ["state" => false, "message" => "Line $line: Database error: " . mysqli_stmt_error($stmt_add_computer)];
+        // Insert into DEVICES first (Parent)
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Computer', ?, ?)";
+        $stmt_dev = mysqli_prepare($connect, $req_devices);
+        mysqli_stmt_bind_param($stmt_dev, "sss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        );
+        
+        if (!mysqli_stmt_execute($stmt_dev)) {
+            throw new Exception("Error inserting into devices: " . mysqli_stmt_error($stmt_dev));
         }
+        // Insert into COMPUTER (Child)
+        $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt_comp = mysqli_prepare($connect, $req_comp);
+        mysqli_stmt_bind_param($stmt_comp, "sssssssssssssss", 
+            $attr["SERIAL"], $attr["NAME"], $attr["LOCATION"], $attr["BUILDING"], $attr["ROOM"], $attr["CPU"], $attr["RAM_MB"], $attr["DISK_GB"], 
+            $attr["DOMAIN"], $attr["MACADDR"], $attr["PURCHASE_DATE"], $attr["WARRANTY_END"], 
+            $attr["MANUFACTURER"], $attr["OS"], $attr["TYPE"]
+        );
+        if (!mysqli_stmt_execute($stmt_comp)) {
+            throw new Exception("Error inserting into computer: " . mysqli_stmt_error($stmt_comp));
+        }
+        // Everything worked
+        mysqli_commit($connect);
+        return ["state" => true];
     } catch (Exception $e) {
-        return ["state" => false, "message" => "Line $line: Database error."];
+        // Something failed -> Undo everything
+        mysqli_rollback($connect);
+        return ["state" => false, "message" => "Line $line: " . $e->getMessage()];
     }
 }
 
