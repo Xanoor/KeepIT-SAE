@@ -1,10 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
     <head>
         <title>Page de configuration</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
-        <link rel="stylesheet" type="text/css" href="../styles/inventory-item.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="../styles/inventory-item.css"
+        />
     </head>
     <body>
         <header>
@@ -65,6 +69,7 @@
                                         id="item-input-name"
                                         type="text"
                                         value="Mac Book Pro Air Max"
+                                        name="item-name"
                                         placeholder="Nom/modèle de l'appareil"
                                     />
                                 </div>
@@ -76,6 +81,7 @@
                                         id="item-input-category"
                                         type="text"
                                         value="Ordinateur portable"
+                                        name="item-type_name"
                                         placeholder="Catégorie de l'appareil"
                                     />
                                 </div>
@@ -83,7 +89,10 @@
                                     <label for="item-input-status"
                                         >Statut</label
                                     >
-                                    <select id="item-input-status">
+                                    <select
+                                        id="item-input-status"
+                                        name="item-state"
+                                    >
                                         <option>En stock</option>
                                         <option>Déployé</option>
                                         <option>Fin de vie</option>
@@ -99,6 +108,7 @@
                                         id="item-input-loc"
                                         type="text"
                                         value="Rambouillet"
+                                        name="item-location"
                                         placeholder="Lieu de détention (ville)"
                                     />
                                 </div>
@@ -110,6 +120,7 @@
                                         id="item-input-building"
                                         type="text"
                                         value="Halle Bastier"
+                                        name="item-building"
                                         placeholder="Nom du bâtiment"
                                     />
                                 </div>
@@ -121,6 +132,7 @@
                                         id="item-input-room"
                                         type="text"
                                         value="H47"
+                                        name="item-room"
                                         placeholder="Nom de la salle"
                                     />
                                 </div>
@@ -137,6 +149,7 @@
                                         id="item-input-cpu"
                                         type="text"
                                         value="CPU #482"
+                                        name="item-cpu"
                                         placeholder="Nom du processeur"
                                     />
                                 </div>
@@ -144,7 +157,10 @@
                                     <label for="item-input-os"
                                         >Système d'exploitation (OS)</label
                                     >
-                                    <select id="item-input-os">
+                                    <select
+                                        id="item-input-os"
+                                        name="item-os_name"
+                                    >
                                         <option>Windows 11</option>
                                         <option>MacOS</option>
                                         <option>Ubuntu 22.04</option>
@@ -154,7 +170,10 @@
                                     <label for="item-input-manufacturer"
                                         >Fabricant</label
                                     >
-                                    <select id="item-input-manufacturer">
+                                    <select
+                                        id="item-input-manufacturer"
+                                        name="item-manufacturer_name"
+                                    >
                                         <option>ASUS</option>
                                         <option>Lenovo</option>
                                         <option>HP</option>
@@ -169,6 +188,7 @@
                                         type="number"
                                         value="16"
                                         id="item-input-ram"
+                                        name="item-ram_mb"
                                         placeholder="Mémoire vive (Giga octets)"
                                     />
                                 </div>
@@ -180,6 +200,7 @@
                                         type="number"
                                         value="512"
                                         id="item-input-disk"
+                                        name="item-disk_gb"
                                         placeholder="Taille du stockage (Giga octets)"
                                     />
                                 </div>
@@ -198,6 +219,7 @@
                                         type="text"
                                         id="item-input-domain"
                                         value="iut.velizy-uvsq.fr"
+                                        name="item-domain"
                                         placeholder="Domaine informatique"
                                     />
                                 </div>
@@ -209,7 +231,34 @@
                                         type="text"
                                         id="item-input-mac"
                                         value="AE:80:10:EA:DB"
+                                        name="item-mac_address"
                                         placeholder="Adresse physique (MAC)"
+                                    />
+                                </div>
+                            </div>
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-purchase_date"
+                                        >Date d'achat</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-purchase_date"
+                                        value="2020-05-04"
+                                        name="item-purchase_date"
+                                        placeholder="2020-05-04"
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-warranty_end"
+                                        >Date de fin de garantie</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-warranty_end"
+                                        value="2020-05-04"
+                                        name="item-warranty_end"
+                                        placeholder="2020-05-04"
                                     />
                                 </div>
                             </div>
