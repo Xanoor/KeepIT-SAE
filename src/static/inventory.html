@@ -4,13 +4,17 @@
         <title>Inventaire</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
-        <link rel="stylesheet" type="text/css" href="../styles/inventory-table.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="../styles/inventory-table.css"
+        />
     </head>
     <body>
         <header>
             <div class="nav-left-container">
                 <div class="app-name-container">
-                    <a href="index.html">KEEPIT</a>
+                    <a href="login.html">KEEPIT</a>
                 </div>
                 <nav class="nav-buttons-container">
                     <a href="#">Dashboard</a>
@@ -31,8 +35,9 @@
                 <img alt="Logo du site" src="../assets/logo.png" />
                 <h1>Inventaire</h1>
             </div>
-            <section class="inventory-top-section">
-                <form action="" method="POST">
+            <!-- Search, Filter and Pagination Form (Single Form) -->
+            <form action="" method="POST" id="main-inventory-form">
+                <section class="inventory-top-section">
                     <div class="form-header">
                         <div>
                             <input
@@ -106,7 +111,7 @@
                         <div>
                             <label for="action_select" class="sr-only"
                                 >Action</label
-                            >
+                                >
                             <select
                                 name="inventory-action"
                                 aria-label="Action"
@@ -121,275 +126,263 @@
                             </select>
                         </div>
                     </div>
-                </form>
-            </section>
-            <section class="page-content">
-                <div class="page-table-content">
-                    <div class="table-preview">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Numéro de série</th>
-                                    <th>Nom de l'appareil</th>
-                                    <th>Catégorie</th>
-                                    <th>Lieu de détention</th>
-                                    <th>Adresse physique</th>
-                                    <th>Statut</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>8H2K1M3</td>
-                                    <td>Dell OptiPlex 7090</td>
-                                    <td>Unité centrale</td>
-                                    <td>Tour Horizon - Paris La Défense</td>
-                                    <td>A4:BB:6D:12:34:56</td>
-                                    <td>
-                                        <div class="table-item-DEPLOYED">
-                                            Déployé
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Z4H5H4MD300291X</td>
-                                    <td>Samsung Odyssey G5 27"</td>
-                                    <td>Écran</td>
-                                    <td>Entrepôt Central - Lyon</td>
-                                    <td>B5:7C:42:78:CD:A7</td>
-                                    <td>
-                                        <div class="table-item-IN_INVENTORY">
-                                            En stock
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>CZC1248DZB</td>
-                                    <td>HP EliteDesk 800</td>
-                                    <td>Unité centrale</td>
-                                    <td>Zone de Tri - Bâtiment C</td>
-                                    <td>88:51:FB:44:EE:11</td>
-                                    <td>
-                                        <div class="table-item-END_OF_LIFE">
-                                            Fin de vie
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>905NTYF3G112</td>
-                                    <td>LG UltraGear 24"</td>
-                                    <td>Écran</td>
-                                    <td>Agence Web - Nantes</td>
-                                    <td>8A:42:48:BF:11:5C</td>
-                                    <td>
-                                        <div class="table-item-DEPLOYED">
-                                            Déployé
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>PF2X9V1A</td>
-                                    <td>Lenovo ThinkStation P340</td>
-                                    <td>Unité centrale</td>
-                                    <td>Stockage IT - Sophia Antipolis</td>
-                                    <td>DC:A9:04:99:88:77</td>
-                                    <td>
-                                        <div class="table-item-IN_INVENTORY">
-                                            En stock
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>CN-0Y1H2K-74445</td>
-                                    <td>Dell UltraSharp U2415</td>
-                                    <td>Écran</td>
-                                    <td>Sous-sol Archives - Lille</td>
-                                    <td>78:CC:1A:AC:91:D1</td>
-                                    <td>
-                                        <div class="table-item-END_OF_LIFE">
-                                            Fin de vie
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>C02F5H8JOL1</td>
-                                    <td>Mac Studio M2 Ultra</td>
-                                    <td>Unité centrale</td>
-                                    <td>Studio Créatif - Bordeaux</td>
-                                    <td>AC:BC:32:11:22:33</td>
-                                    <td>
-                                        <div class="table-item-DEPLOYED">
-                                            Déployé
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>ET95103689SL</td>
-                                    <td>BenQ DesignVue 27" 4K</td>
-                                    <td>Écran</td>
-                                    <td>Placard Technique - Étage 4</td>
-                                    <td>BE:34:1A:E2:15:CD</td>
-                                    <td>
-                                        <div class="table-item-IN_INVENTORY">
-                                            En stock
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>5CG21157BZ</td>
-                                    <td>HP ProLiant MicroServer</td>
-                                    <td>Unité centrale</td>
-                                    <td>Benne Recyclage - Quai N</td>
-                                    <td>00:11:22:33:44:55</td>
-                                    <td>
-                                        <div class="table-item-END_OF_LIFE">
-                                            Fin de vie
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>G6N452300192</td>
-                                    <td>Intel NUC 11 Performance</td>
-                                    <td>Unité centrale</td>
-                                    <td>Accueil Visiteurs - Rennes</td>
-                                    <td>8C:1F:64:B2:A1:C9</td>
-                                    <td>
-                                        <div class="table-item-DEPLOYED">
-                                            Déployé
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>115584590022</td>
-                                    <td>Iiyama ProLite 86" Tactile</td>
-                                    <td>Écran</td>
-                                    <td>Salle de Conseil - Strasbourg</td>
-                                    <td>45:A8:D4:85:BD:61</td>
-                                    <td>
-                                        <div class="table-item-DEPLOYED">
-                                            Déployé
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="./inventory-item.html">
-                                            <img
-                                                src="../assets/open.png"
-                                                alt="Ouvrir"
-                                            />
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </section>
+                <section class="page-content">
+                    <div class="page-table-content">
+                        <div class="table-preview">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Numéro de série</th>
+                                        <th>Nom de l'appareil</th>
+                                        <th>Catégorie</th>
+                                        <th>Lieu de détention</th>
+                                        <th>Statut</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>8H2K1M3</td>
+                                        <td>Dell OptiPlex 7090</td>
+                                        <td>Unité centrale</td>
+                                        <td>Tour Horizon - Paris La Défense</td>
+                                        <td>
+                                            <div class="table-item-DEPLOYED">
+                                                Déployé
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>Z4H5H4MD300291X</td>
+                                        <td>Samsung Odyssey G5 27"</td>
+                                        <td>Écran</td>
+                                        <td>Entrepôt Central - Lyon</td>
+                                        <td>
+                                            <div class="table-item-IN_INVENTORY">
+                                                En stock
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>CZC1248DZB</td>
+                                        <td>HP EliteDesk 800</td>
+                                        <td>Unité centrale</td>
+                                        <td>Zone de Tri - Bâtiment C</td>
+                                        <td>
+                                            <div class="table-item-END_OF_LIFE">
+                                                Fin de vie
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>905NTYF3G112</td>
+                                        <td>LG UltraGear 24"</td>
+                                        <td>Écran</td>
+                                        <td>Agence Web - Nantes</td>
+                                        <td>
+                                            <div class="table-item-DEPLOYED">
+                                                Déployé
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>PF2X9V1A</td>
+                                        <td>Lenovo ThinkStation P340</td>
+                                        <td>Unité centrale</td>
+                                        <td>Stockage IT - Sophia Antipolis</td>
+                                        <td>
+                                            <div class="table-item-IN_INVENTORY">
+                                                En stock
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>CN-0Y1H2K-74445</td>
+                                        <td>Dell UltraSharp U2415</td>
+                                        <td>Écran</td>
+                                        <td>Sous-sol Archives - Lille</td>
+                                        <td>
+                                            <div class="table-item-END_OF_LIFE">
+                                                Fin de vie
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>C02F5H8JOL1</td>
+                                        <td>Mac Studio M2 Ultra</td>
+                                        <td>Unité centrale</td>
+                                        <td>Studio Créatif - Bordeaux</td>
+                                        <td>
+                                            <div class="table-item-DEPLOYED">
+                                                Déployé
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>ET95103689SL</td>
+                                        <td>BenQ DesignVue 27" 4K</td>
+                                        <td>Écran</td>
+                                        <td>Placard Technique - Étage 4</td>
+                                        <td>
+                                            <div class="table-item-IN_INVENTORY">
+                                                En stock
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>5CG21157BZ</td>
+                                        <td>HP ProLiant MicroServer</td>
+                                        <td>Unité centrale</td>
+                                        <td>Benne Recyclage - Quai N</td>
+                                        <td>
+                                            <div class="table-item-END_OF_LIFE">
+                                                Fin de vie
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>G6N452300192</td>
+                                        <td>Intel NUC 11 Performance</td>
+                                        <td>Unité centrale</td>
+                                        <td>Accueil Visiteurs - Rennes</td>
+                                        <td>
+                                            <div class="table-item-DEPLOYED">
+                                                Déployé
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+    
+                                    <tr>
+                                        <td>115584590022</td>
+                                        <td>Iiyama ProLite 86" Tactile</td>
+                                        <td>Écran</td>
+                                        <td>Salle de Conseil - Strasbourg</td>
+                                        <td>
+                                            <div class="table-item-DEPLOYED">
+                                                Déployé
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="./inventory-item.html">
+                                                <img
+                                                    src="../assets/open.png"
+                                                    alt="Ouvrir"
+                                                />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="nav-buttons">
-                    <form>
+                    <div class="nav-buttons">
                         <button type="submit" name="previous-page">
                             <img
                                 src="../assets/arrow-big-left.png"
                                 alt="Page précédente"
                             />
                         </button>
+                        <label for="page-num-input" class="sr-only">Numéro de page</label>
+                        <input type="number" name="page-num" class="page-num-input" value="1" id="page-num-input" aria-label="Numéro de la page actuelle">
                         <button type="submit" name="next-page">
                             <img
                                 src="../assets/arrow-big-right.png"
                                 alt="Page suivante"
                             />
                         </button>
-                    </form>
-                </div>
-            </section>
+                    </div>
+                </section>
+            </form>
         </main>
     </body>
     <script src="../scripts/inventory.js"></script>
