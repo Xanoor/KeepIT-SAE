@@ -1,12 +1,15 @@
 <?php
 
-$connect = mysqli_connect("localhost", "root", "", "IMT_database");
-mysqli_set_charset($connect, "utf8");
+function create_connection() {
+    if (!isset($GLOBALS['connect'])) {
+        $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "IMT_database");
+        mysqli_set_charset($GLOBALS['connect'], "utf8");
 
-// Check connection
-if (!$connect) {
-    die("Database connection failed."); 
+        // Check connection
+        if (!$GLOBALS['connect']) {
+            die("Database connection failed.");
+        }
+    }
 }
 
-
-?>
+create_connection();
