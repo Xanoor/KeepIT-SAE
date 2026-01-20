@@ -7,3 +7,7 @@ if (!isset($_SESSION['login'])) {
     exit();
 }
 
+echo "Infos de l'utilisateur connecté :<br>";
+print_r($_SESSION);
+
+echo "Dernière connexion : " . date("d/m/Y H:i:s", $_SESSION['last_activity']);
