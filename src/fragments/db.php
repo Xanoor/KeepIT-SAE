@@ -2,7 +2,7 @@
 
 function create_connection() {
     if (!isset($GLOBALS['connect'])) {
-        $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "IMT_database");
+        $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "keepit");
         mysqli_set_charset($GLOBALS['connect'], "utf8");
 
         // Check connection
