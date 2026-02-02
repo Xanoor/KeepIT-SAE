@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS devices (
     FOREIGN KEY (state) REFERENCES device_states(state) ON DELETE RESTRICT
 );
 
--- Identifier les différent état rapidement (tableau de bord et inventaire)
+-- Quickly identify the different states (dashboard and inventory)
 CREATE INDEX idx_devices_state ON devices(state);
 
 CREATE TABLE IF NOT EXISTS computer (
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS computer (
     FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT
 );
 
--- Identifier rapidement les équipement d'un site
+-- Quickly identify computers on a site
 CREATE INDEX idx_computer_location ON computer(location);
 
 CREATE TABLE IF NOT EXISTS monitor (
@@ -93,10 +93,11 @@ CREATE TABLE IF NOT EXISTS monitor (
     FOREIGN KEY (attached_to_serial) REFERENCES computer(serial_number) ON DELETE SET NULL
 );
 
--- Identifier rapodement le(s) écran(s) attaché(s) à un ordinateur
+-- Quickly identify the screen(s) attached to a computer
 CREATE INDEX idx_monitor_attached_to_serial ON monitor(attached_to_serial);
 
 INSERT INTO `users` (login, password_hash, role) VALUES ('sysadmin', '$2y$10$H5DAxsFD0gSoVyYXPwLm3uXpRc.wLF5GIgtqjAQMnr0xFuDHasOmy', 'System Administrator');
 INSERT INTO `users` (login, password_hash, role) VALUES ('adminweb', '$2y$10$zsJ2yxGntxq9tBad09LDJeBpvVQVDF5BWtqXezXwOjOyysdfYU6Gq', 'Web Administrator');
 
 INSERT INTO `users` (login, password_hash, role) VALUES ('tech1', '$2y$10$3o1JyIoZLzxXDDL21O5FrObUzxSZB0wHX3P7MlZ3PLnjy0qUXdG.C', 'Technician');
+
