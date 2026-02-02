@@ -1,5 +1,5 @@
 <?php
-require_once '../fragments/db.php';
+require_once '../includes/db.php';
 
 session_start();
 

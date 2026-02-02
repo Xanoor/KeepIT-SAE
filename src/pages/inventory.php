@@ -1,6 +1,6 @@
 <?php 
     session_start();
-    include_once("../fragments/functions.php");
+    include_once("../includes/functions.php");
 
     $notification = $_SESSION['notification'] ?? null;
     $notification_color = $_SESSION['notification_color'] ?? null;

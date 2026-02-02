@@ -1,4 +1,3 @@
-
 .table-preview {
     position: absolute;
     width: 100%;
@@ -48,6 +47,7 @@
 .table-preview table tr {
     border-bottom: 0.25px solid #353535;
     height: auto;
+    max-height: 100px;
 }
 
 .table-preview table tbody tr:nth-last-child(1) {

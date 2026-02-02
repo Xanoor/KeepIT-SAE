@@ -1,7 +1,7 @@
 <?php
-require_once '../fragments/db.php';
+require_once '../includes/db.php';
 
-include '../fragments/functions.php';
+include '../includes/functions.php';
 include '../components/icon.php';
 
 $error_code = $_GET['error'] ?? null;

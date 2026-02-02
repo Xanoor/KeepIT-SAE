@@ -1,8 +1,8 @@
 
 
 <?php 
-require_once '../fragments/functions.php';
-require_once '../fragments/db.php';
+require_once '../includes/functions.php';
+require_once '../includes/db.php';
 
 session_start();
 

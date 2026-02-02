@@ -1,6 +1,7 @@
 <?php 
 
 require_once 'db.php';
+require_once './fragments/computer-details.php';
 
 // Used to convert text to french (language used for this web site)
 function convertDataToFrench($data) {
@@ -10,6 +11,43 @@ function convertDataToFrench($data) {
     ];
     return $translations[$data] ?? $data;
 }
+
+/**
+ * Check if a table exists in the database.
+ * 
+ * @param mysqli $connect Database connection.
+ * @param string $table The table name.
+ * @return bool True if the table exists, false otherwise.
+ */
+function tableExists($conn, $table) {
+    $table = mysqli_real_escape_string($conn, $table);
+    $query = "SHOW TABLES LIKE '$table'";
+
+    $res = mysqli_query($conn, $query);
+    return mysqli_num_rows($res) > 0;
+}
+
+
+/**
+ * Check if multiple columns exist in a specific table.
+ * 
+ * @param mysqli $connect Database connection.
+ * @param string $table The table name.
+ * @param array $columns List of column names to check.
+ * @return bool True if all columns exist, false otherwise.
+ */
+function columnsExists($connect, $table, $columns) {
+    $res = mysqli_query($connect, "DESCRIBE `$table`");
+    if (!$res) return false;
+
+    $existing = [];
+    while ($row = mysqli_fetch_assoc($res)) {
+        $existing[] = $row['Field'];
+    }
+
+    return empty(array_diff($columns, $existing));
+}
+
 
 /**
  * Returns a CSS class name based on the item state by fetching it from the database.
@@ -231,6 +269,10 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     foreach ($fields as $field) {
         $html .= "<th>" . htmlspecialchars(str_replace('_', ' ', strtoupper($field->name))) . "</th>";
     }
+
+    $serialNumber = null;
+    $deviceType = null;
+
     $html .= "<th>ACTION</th>";
     $html .= "</tr></thead><tbody>";
 
@@ -241,15 +283,127 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
             $content = htmlspecialchars($value ?? '');
             if ($colName === 'state') {
                 $content = "<span class=\"" . getStateClass($value) . "\">" . $content . "</span>";
+            } else if ($colName === 'device_type') {
+                $deviceType = $content;
+            } else if ($colName === 'serial_number') {
+                $serialNumber = $content;
             }
             $html .= "<td>" . $content . "</td>";
         }
-        $html .= "<td>"; //Need to add a href to the table to go to item page
+
+        if ($serialNumber != null && $deviceType != null) {
+            $html .= "<td>   
+                        <a href='./inventory-item.php?serialNumber=".$serialNumber."&deviceType=".$deviceType."'>
+                            <img
+                                src='../assets/open.png'
+                                alt='Ouvrir'
+                            />
+                        </a>
+                    </td>"; 
+        } else {
+            $html .= "<td>None</td>";
+        }
+
         $html .= "</tr>";
     }
     $html .= "</tbody></table>";
 
     return $html;
+}
+
+function getTableValues($table, $column) {
+    global $connect;
+
+    if (!tableExists($connect, $table)) {
+        return [];
+    }
+
+    if (!columnsExists($connect, $table, [$column])) {
+        return [];
+    }
+
+    $query = "SELECT {$column} FROM {$table}";
+    $result = mysqli_query($connect, $query);
+
+    if (!$result) {
+        return [];
+    }
+
+    $values = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $values[] = $row[$column];
+    }
+
+    return $values;
+}
+
+function createComputerPage($items) {
+
+    $state_list = getTableValues("device_states", "state");
+    $state_html = "";
+    foreach ($state_list as $index => $value) {
+        $selected = ($value == $items["state"]) ? " selected" : "";
+        $state_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    $os_list = getTableValues("operating_system", "name");
+    $os_html = "";
+    foreach ($os_list as $index => $value) {
+        $selected = ($value == $items["os_name"]) ? " selected" : "";
+        $os_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    $manufacturer_list = getTableValues("manufacturer", "name");
+    $manufacturer_html = "";
+    foreach ($manufacturer_list as $index => $value) {
+        $selected = ($value == $items["manufacturer_name"]) ? " selected" : "";
+        $manufacturer_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html);
+}
+
+function loadInventoryItem($serialNumber, $deviceType) {
+    global $connect;
+
+
+    if (!tableExists($connect, "device_types") || !tableExists($connect, strtolower($deviceType))) {
+        return null;
+    }
+
+    if (!columnsExists($connect, "device_types", ["name"])) {
+        return null;
+    }
+
+    if (!checkDatabaseExistence($connect, "device_types", "name", $deviceType)) {
+        return null;
+    }
+
+    $query = "SELECT * FROM devices d,".strtolower($deviceType)." item 
+            WHERE d.serial_number = ? 
+            AND d.serial_number = item.serial_number";
+
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, "s", $serialNumber);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+
+    switch (strtolower($deviceType)) {
+        case 'computer':
+            // serial number isn't in devices & computer database
+            if (!checkDatabaseExistence($connect, "devices", "serial_number", $serialNumber) || !checkDatabaseExistence($connect, "computer", "serial_number", $serialNumber))
+                return null;
+            return createComputerPage($data);
+            break;
+        
+        default:
+            return null;
+            break;
+    }
+
+    return null;
 }
 
 /**

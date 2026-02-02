@@ -1,6 +1,6 @@
 <?php
 
-require_once '../fragments/functions.php';
+require_once '../includes/functions.php';
 SESSION_START();
 
 $header_computer = array("NAME","SERIAL","MANUFACTURER","MODEL","TYPE","CPU","RAM_MB","DISK_GB","OS","DOMAIN","LOCATION","BUILDING","ROOM","MACADDR","PURCHASE_DATE","WARRANTY_END");
