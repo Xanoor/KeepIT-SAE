@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
     <head>
         <title>Inventaire</title>
@@ -111,14 +111,16 @@
                         <div>
                             <label for="action_select" class="sr-only"
                                 >Action</label
-                                >
+                            >
                             <select
                                 name="inventory-action"
                                 aria-label="Action"
                                 id="action_select"
                             >
                                 <option disabled selected hidden>Action</option>
-                                <option value="#">Ajouter</option>
+                                <option value="./create-item.html">
+                                    Ajouter
+                                </option>
                                 <option value="./importCSV.html">
                                     Importer
                                 </option>
@@ -161,14 +163,16 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>Z4H5H4MD300291X</td>
                                         <td>Samsung Odyssey G5 27"</td>
                                         <td>Écran</td>
                                         <td>Entrepôt Central - Lyon</td>
                                         <td>
-                                            <div class="table-item-IN_INVENTORY">
+                                            <div
+                                                class="table-item-IN_INVENTORY"
+                                            >
                                                 En stock
                                             </div>
                                         </td>
@@ -181,7 +185,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>CZC1248DZB</td>
                                         <td>HP EliteDesk 800</td>
@@ -201,7 +205,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>905NTYF3G112</td>
                                         <td>LG UltraGear 24"</td>
@@ -221,14 +225,16 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>PF2X9V1A</td>
                                         <td>Lenovo ThinkStation P340</td>
                                         <td>Unité centrale</td>
                                         <td>Stockage IT - Sophia Antipolis</td>
                                         <td>
-                                            <div class="table-item-IN_INVENTORY">
+                                            <div
+                                                class="table-item-IN_INVENTORY"
+                                            >
                                                 En stock
                                             </div>
                                         </td>
@@ -241,7 +247,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>CN-0Y1H2K-74445</td>
                                         <td>Dell UltraSharp U2415</td>
@@ -261,7 +267,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>C02F5H8JOL1</td>
                                         <td>Mac Studio M2 Ultra</td>
@@ -281,14 +287,16 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>ET95103689SL</td>
                                         <td>BenQ DesignVue 27" 4K</td>
                                         <td>Écran</td>
                                         <td>Placard Technique - Étage 4</td>
                                         <td>
-                                            <div class="table-item-IN_INVENTORY">
+                                            <div
+                                                class="table-item-IN_INVENTORY"
+                                            >
                                                 En stock
                                             </div>
                                         </td>
@@ -301,7 +309,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>5CG21157BZ</td>
                                         <td>HP ProLiant MicroServer</td>
@@ -321,7 +329,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>G6N452300192</td>
                                         <td>Intel NUC 11 Performance</td>
@@ -341,7 +349,7 @@
                                             </a>
                                         </td>
                                     </tr>
-    
+
                                     <tr>
                                         <td>115584590022</td>
                                         <td>Iiyama ProLite 86" Tactile</td>
@@ -372,8 +380,17 @@
                                 alt="Page précédente"
                             />
                         </button>
-                        <label for="page-num-input" class="sr-only">Numéro de page</label>
-                        <input type="number" name="page-num" class="page-num-input" value="1" id="page-num-input" aria-label="Numéro de la page actuelle">
+                        <label for="page-num-input" class="sr-only"
+                            >Numéro de page</label
+                        >
+                        <input
+                            type="number"
+                            name="page-num"
+                            class="page-num-input"
+                            value="1"
+                            id="page-num-input"
+                            aria-label="Numéro de la page actuelle"
+                        />
                         <button type="submit" name="next-page">
                             <img
                                 src="../assets/arrow-big-right.png"

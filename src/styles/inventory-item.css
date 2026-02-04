@@ -59,7 +59,8 @@
 
 .inventory-item-category input[type="text"],
 .inventory-item-category input[type="number"],
-.inventory-item-category select {
+.inventory-item-category select,
+.create-item-header select {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
     border: 0.125rem solid var(--border-color);
@@ -131,4 +132,9 @@
 
 .activity-main .activity-main-item .activity-date {
     color: #969696;
+}
+
+/* Only for create-item.html/php */
+.create-item-header {
+    padding: 15px 3em;
 }

@@ -145,7 +145,7 @@
                                 id="action_select"
                             >
                                 <option disabled selected hidden>Action</option>
-                                <option value="#">Ajouter</option>
+                                <option value="./create-item.php">Ajouter</option>
                                 <option value="./importCSV.php">
                                     Importer
                                 </option>

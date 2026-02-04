@@ -1,7 +1,7 @@
 <?php 
 
 require_once 'db.php';
-require_once './fragments/computer-details.php';
+require_once '../fragments/computer-details.php';
 
 // Used to convert text to french (language used for this web site)
 function convertDataToFrench($data) {
@@ -337,30 +337,40 @@ function getTableValues($table, $column) {
     return $values;
 }
 
-function createComputerPage($items) {
+/**
+ * Generates the HTML fragment for a computer's details or creation form.
+ * 
+ * Fetches required lookup values (states, OS, manufacturers) from the database 
+ * and selects the current values based on the provided $items array.
+ * 
+ * @param array $items Associative array of computer data (can be empty for new items).
+ * @param bool $new_item If true, adjusts the fragment for creating a new item instead of editing.
+ * @return string The rendered HTML fragment.
+ */
+function createComputerPage($items, $new_item=false) {
 
     $state_list = getTableValues("device_states", "state");
     $state_html = "";
     foreach ($state_list as $index => $value) {
-        $selected = ($value == $items["state"]) ? " selected" : "";
+        $selected = ($value == ($items["state"] ?? "")) ? " selected" : "";
         $state_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
     $os_list = getTableValues("operating_system", "name");
     $os_html = "";
     foreach ($os_list as $index => $value) {
-        $selected = ($value == $items["os_name"]) ? " selected" : "";
+        $selected = ($value == ($items["os_name"] ?? "")) ? " selected" : "";
         $os_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
     $manufacturer_list = getTableValues("manufacturer", "name");
     $manufacturer_html = "";
     foreach ($manufacturer_list as $index => $value) {
-        $selected = ($value == $items["manufacturer_name"]) ? " selected" : "";
+        $selected = ($value == ($items["manufacturer_name"] ?? "")) ? " selected" : "";
         $manufacturer_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
-    return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html);
+    return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $new_item);
 }
 
 function loadInventoryItem($serialNumber, $deviceType) {
