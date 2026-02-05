@@ -50,6 +50,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["name"] ?? "") . "\"
                         name=\"item-name\"
                         placeholder=\"Nom/modèle de l'appareil\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -61,13 +62,14 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["type_name"] ?? "") . "\"
                         name=\"item-type_name\"
                         placeholder=\"Catégorie de l'appareil\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
                     <label for=\"item-input-status\"
                         >Statut</label
                     >
-                    <select id=\"item-input-status\" name=\"item-state\">
+                    <select id=\"item-input-status\" name=\"item-state\" required>
                         $state_html
                     </select>
                 </div>
@@ -80,6 +82,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                     <select
                         id=\"item-input-loc\"
                         name=\"item-location\"
+                        required
                     >
                         $location_html
                     </select>
@@ -94,6 +97,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["building"] ?? "") . "\"
                         name=\"item-building\"
                         placeholder=\"Nom du bâtiment\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -106,6 +110,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["room"] ?? "") . "\"
                         name=\"item-room\"
                         placeholder=\"Nom de la salle\"
+                        required
                     />
                 </div>
             </div>
@@ -123,13 +128,14 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["cpu"] ?? "") . "\"
                         name=\"item-cpu\"
                         placeholder=\"Nom du processeur\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
                     <label for=\"item-input-os\"
                         >Système d'exploitation (OS)</label
                     >
-                    <select id=\"item-input-os\" name=\"item-os_name\">
+                    <select id=\"item-input-os\" name=\"item-os_name\" required>
                         $os_html
                     </select>
                 </div>
@@ -137,7 +143,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                     <label for=\"item-input-manufacturer\"
                         >Fabricant</label
                     >
-                    <select id=\"item-input-manufacturer\" name=\"item-manufacturer_name\">
+                    <select id=\"item-input-manufacturer\" name=\"item-manufacturer_name\" required>
                         $manufacturer_html
                     </select>
                 </div>
@@ -151,6 +157,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         id=\"item-input-ram\"
                         name=\"item-ram_mb\"
                         placeholder=\"Mémoire vive (Mega octets)\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -162,7 +169,8 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["disk_gb"] ?? "") . "\"
                         id=\"item-input-disk\"
                         name=\"item-disk_gb\"
-                        placeholder=\"Taille du stockage (Giga octets)\"
+                        placeholder=\"Taille du stockage (Go)\"
+                        required
                     />
                 </div>
             </div>
@@ -182,6 +190,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["domain"] ?? "") . "\"
                         name=\"item-domain\"
                         placeholder=\"Domaine informatique\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -194,6 +203,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["mac_address"] ?? "") . "\"
                         name=\"item-mac_address\"
                         placeholder=\"Adresse physique (MAC)\"
+                        required
                     />
                 </div>
             </div>
@@ -208,6 +218,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["purchase_date"] ?? "") . "\"
                         name=\"item-purchase_date\"
                         placeholder=\"2024-07-30\"
+                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -220,6 +231,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["warranty_end"] ?? "") . "\"
                         name=\"item-warranty_end\"
                         placeholder=\"2024-07-30\"
+                        required
                     />
                 </div>
             </div>
