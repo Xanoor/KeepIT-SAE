@@ -2,6 +2,7 @@
 
 require_once 'db.php';
 require_once '../fragments/computer-details.php';
+require_once '../fragments/monitor-details.php';
 
 // Used to convert text to french (language used for this web site)
 function convertDataToFrench($data) {
@@ -380,6 +381,49 @@ function createComputerPage($items, $new_item=false) {
     return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $location_html, $new_item);
 }
 
+/**
+ * Generates the HTML fragment for a monitor's details or creation form.
+ * 
+ * Fetches required lookup values (states, manufacturers, connectors, attached computers) from the database 
+ * and selects the current values based on the provided $items array.
+ * 
+ * @param array $items Associative array of monitor data (can be empty for new items).
+ * @param bool $new_item If true, adjusts the fragment for creating a new item instead of editing.
+ * @return string The rendered HTML fragment.
+ */
+function createMonitorPage($items, $new_item=false) {
+
+    $state_list = getTableValues("device_states", "state");
+    $state_html = "";
+    foreach ($state_list as $index => $value) {
+        $selected = ($value == ($items["state"] ?? "")) ? " selected" : "";
+        $state_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    $manufacturer_list = getTableValues("manufacturer", "name");
+    $manufacturer_html = "";
+    foreach ($manufacturer_list as $index => $value) {
+        $selected = ($value == ($items["manufacturer_name"] ?? "")) ? " selected" : "";
+        $manufacturer_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    $connector_list = getTableValues("connector", "name");
+    $connector_html = "";
+    foreach ($connector_list as $index => $value) {
+        $selected = ($value == ($items["connector_name"] ?? "")) ? " selected" : "";
+        $connector_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    $attached_to_list = getTableValues("computer", "serial_number");
+    $attached_to_html = "";
+    foreach ($attached_to_list as $index => $value) {
+        $selected = ($value == ($items["attached_to_serial"] ?? "")) ? " selected" : "";
+        $attached_to_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    return monitorDetailsFragment($items, $state_html, $manufacturer_html, $connector_html, $attached_to_html, $new_item);
+}
+
 function loadInventoryItem($serialNumber, $deviceType) {
     global $connect;
 
@@ -414,7 +458,12 @@ function loadInventoryItem($serialNumber, $deviceType) {
                 return null;
             return createComputerPage($data);
             break;
-        
+        case 'monitor':
+            // serial number isn't in devices & monitor database
+            if (!checkDatabaseExistence($connect, "devices", "serial_number", $serialNumber) || !checkDatabaseExistence($connect, "monitor", "serial_number", $serialNumber))
+                return null;
+            return createMonitorPage($data);
+            break;
         default:
             return null;
             break;
