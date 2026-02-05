@@ -340,7 +340,7 @@ function getTableValues($table, $column) {
 /**
  * Generates the HTML fragment for a computer's details or creation form.
  * 
- * Fetches required lookup values (states, OS, manufacturers) from the database 
+ * Fetches required lookup values (states, OS, manufacturers, locations) from the database 
  * and selects the current values based on the provided $items array.
  * 
  * @param array $items Associative array of computer data (can be empty for new items).
@@ -370,7 +370,14 @@ function createComputerPage($items, $new_item=false) {
         $manufacturer_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
-    return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $new_item);
+    $location_list = getTableValues("locations", "location");
+    $location_html = "";
+    foreach ($location_list as $index => $value) {
+        $selected = ($value == ($items["location"] ?? "")) ? " selected" : "";
+        $location_html .= "<option value='{$value}'{$selected}>{$value}</option>";
+    }
+
+    return computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $location_html, $new_item);
 }
 
 function loadInventoryItem($serialNumber, $deviceType) {

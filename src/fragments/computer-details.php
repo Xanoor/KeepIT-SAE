@@ -1,5 +1,5 @@
 <?php
-function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $new_item) {
+function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $location_html, $new_item) {
     $header_html = "";
     $submit_value = "Enregistrer";
     $serial_field_html = "";
@@ -77,13 +77,12 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                     <label for=\"item-input-loc\"
                         >Lieu de détention</label
                     >
-                    <input
+                    <select
                         id=\"item-input-loc\"
-                        type=\"text\"
-                        value=\"" . htmlspecialchars($items["location"] ?? "") . "\"
                         name=\"item-location\"
-                        placeholder=\"Lieu de détention (ville)\"
-                    />
+                    >
+                        $location_html
+                    </select>
                 </div>
                 <div class=\"inventory-item\">
                     <label for=\"item-input-building\"
