@@ -1,10 +1,11 @@
 <?php 
     session_start();
 
-    // if (!isset($_SESSION['login'])) {
-    //     header("Location: login.php");
-    //     exit();
-    // }
+    // Everyone that have a role (tech, adm...) can access this page
+    if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+        header("Location: login.php");
+        exit();
+    }
 
     include_once("../includes/functions.php"); 
 
@@ -23,6 +24,7 @@
         <title>Page de configuration</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
         <link rel="stylesheet" type="text/css" href="../styles/inventory-item.css" />
     </head>
     <body>
@@ -86,5 +88,9 @@
                 
             </aside>
         </main>
+        <!-- Notification container -->
+        <div class="notifications-container" id="notificationsContainer"></div>
     </body>
+    <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
+    <script src="../scripts/notification.js"></script>
 </html>

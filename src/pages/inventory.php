@@ -1,5 +1,12 @@
 <?php 
     session_start();
+
+    // Everyone that have a role (tech, adm...) can access this page
+    if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+        header("Location: login.php");
+        exit();
+    }
+
     include_once("../includes/functions.php");
 
     $notification = $_SESSION['notification'] ?? null;

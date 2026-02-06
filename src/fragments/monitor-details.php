@@ -28,6 +28,7 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
 
     return "
         $header_html
+        <input type=\"hidden\" name=\"item-device_type\" value=\"MONITOR\">
         <div class=\"inventory-item-inline\">
             <div class=\"inventory-item-data\">
                 Informations générales
@@ -42,7 +43,7 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
         <div class=\"inventory-item-category\">
             <div class=\"inventory-item-col\">
                 <div class=\"inventory-item\">
-                    <label for=\"item-input-name\">Modèle</label>
+                    <label for=\"item-input-model\">Modèle</label>
                     <input
                         id=\"item-input-model\"
                         type=\"text\"

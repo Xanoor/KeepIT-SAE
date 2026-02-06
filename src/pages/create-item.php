@@ -1,9 +1,29 @@
+<?php
+session_start();
+
+// Everyone that have a role (tech, adm...) can access this page
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    header("Location: login.php");
+    exit();
+}
+
+include_once("../includes/functions.php");
+
+$notification = $_SESSION['notification'] ?? null;
+$notification_color = $_SESSION['notification_color'] ?? null;
+$import_errors = $_SESSION['import_errors'] ?? null;
+unset($_SESSION['notification']);
+unset($_SESSION['notification_color']);
+unset($_SESSION['import_errors']);
+?>
+
 <!doctype html>
 <html lang="fr">
     <head>
         <title>Page de configuration</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
         <link
             rel="stylesheet"
             type="text/css"
@@ -54,12 +74,19 @@
 
                 <!-- /!\ This part is an example for the static page /!\ -->
                 <section class="inventory-item-main-section">
-                    <form action="" method="POST" id="create-item-form">
+                    <form action="../actions/create-item_action.php" method="POST" id="create-item-form">
                        
                     </form>
                 </section>
             </div>
         </main>
+        <!-- Notification container -->
+        <div class="notifications-container" id="notificationsContainer"></div>
     </body>
+    <script>
+        const notif = <?= json_encode($notification) ?>;
+        const notif_color = <?= json_encode($notification_color) ?>;
+    </script>
+    <script src="../scripts/notification.js"></script>
     <script src="../scripts/callItemForm.js"></script>
 </html>

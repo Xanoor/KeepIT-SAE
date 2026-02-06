@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-// if (!isset($_SESSION['login'])) {
-//     header("Location: login.php");
-//     exit();
-// }
+// Everyone that have a role (tech, adm...) can access this page
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    header("Location: login.php");
+    exit();
+}
 
 include_once("../includes/functions.php");
 
@@ -160,8 +161,7 @@ unset($_SESSION['import_errors']);
     <div class="notifications-container" id="notificationsContainer"></div>
 </main>
 <!-- Scripts -->
-<script>const notif = <?= json_encode($notification) ?>;
-    const notif_color = <?= json_encode($notification_color) ?>;</script>
+<script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
 <script src="../scripts/importCSV.js"></script>
 <script src="../scripts/notification.js"></script>
 </body>

@@ -28,6 +28,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
 
     return "
         $header_html
+        <input type=\"hidden\" name=\"item-device_type\" value=\"COMPUTER\">
         <div class=\"inventory-item-inline\">
             <div class=\"inventory-item-data\">
                 Informations générales

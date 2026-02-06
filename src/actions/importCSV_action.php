@@ -109,7 +109,7 @@ if (isset($_POST["device_type"], $_POST["file_path_csv"], $_POST["import_csv"]))
         header("location: ../pages/inventory.php");
         exit();
     } else {
-        $_SESSION['notification'] = "Fichié introuvable !";
+        $_SESSION['notification'] = "Fichier introuvable !";
         header("location: ../pages/importCSV.php");
         exit();
     }
