@@ -41,7 +41,31 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
             
             break;
         case 'MONITOR':
-            // TODO: create monitor version
+            $attached_to = $_POST['item-attached_to_serial'] ?? 'null';
+            if ($attached_to === 'null') {
+                $attached_to = null;
+            }
+
+            $attr = [
+                'SERIAL' => $_POST['item-serial_number'] ?? '',
+                'MANUFACTURER' => $_POST['item-manufacturer_name'] ?? '',
+                'MODEL' => $_POST['item-model'] ?? '',
+                'SIZE_INCH' => $_POST['item-size'] ?? '',
+                'RESOLUTION' => $_POST['item-resolution'] ?? '',
+                'CONNECTOR' => $_POST['item-connector_name'] ?? '',
+                'ATTACHED_TO' => $attached_to,
+                'STATE' => $_POST['item-state'] ?? 'En stock'
+            ];
+
+            $result = addMonitor($attr);
+
+            if ($result['state']) {
+                $_SESSION['notification'] = "Écran créé avec succès !";
+                $_SESSION['notification_color'] = "#5CE65C";
+            } else {
+                $_SESSION['notification'] = "Erreur : " . $result['message'];
+                $_SESSION['notification_color'] = "red";
+            }
             break;
         default:
             $_SESSION['notification'] = "Type d'appareil inconnu.";
@@ -53,4 +77,6 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
     header("Location: ../pages/create-item.php");
     exit();
 }
+header("Location: ../pages/create-item.php");
+exit();
 ?>

@@ -159,6 +159,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         name=\"item-ram_mb\"
                         placeholder=\"Mémoire vive (Mega octets)\"
                         required
+                        min="0"
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -172,6 +173,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         name=\"item-disk_gb\"
                         placeholder=\"Taille du stockage (Go)\"
                         required
+                        min="0"
                     />
                 </div>
             </div>

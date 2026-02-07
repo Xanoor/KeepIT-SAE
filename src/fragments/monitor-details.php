@@ -79,11 +79,12 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
                     >
                     <input
                         id=\"item-input-size\"
-                        type=\"text\"
+                        type=\"number\"
                         value=\"" . htmlspecialchars($items["size_inch"] ?? "") . "\"
                         name=\"item-size\"
                         placeholder=\"24\"
                         required
+                        min=\"0\"
                     />
                 </div>
                 <div class=\"inventory-item\">

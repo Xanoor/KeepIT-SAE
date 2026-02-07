@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS computer (
     warranty_end DATE,
     manufacturer_name VARCHAR(50),
     os_name VARCHAR(50),
-    type_name VARCHAR(25),
+    type_name VARCHAR(25), --type of computer ex: laptop, desktop, mini-pc...
     PRIMARY KEY (serial_number),
     FOREIGN KEY (serial_number) REFERENCES devices(serial_number) ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the computer table.
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,

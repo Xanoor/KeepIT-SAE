@@ -507,8 +507,11 @@ function checkDatabaseExistence($connect, $table, $column, $value) {
  * @param int|string $line Line number in the CSV file (for error reporting).
  * @return array "state" (bool) and "message" (string) on error.
  */
-function addMonitor($attr, $line = "?") {
+function addMonitor($attr, $line = null) {
     global $connect;
+    $lineText = "";
+    if ($line) $lineText = "Line $line: ";
+
     $required_keys = ["SERIAL","MANUFACTURER","MODEL","SIZE_INCH","RESOLUTION","CONNECTOR","ATTACHED_TO"];
     
     $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
@@ -518,35 +521,45 @@ function addMonitor($attr, $line = "?") {
 
     // Verify if already in DB
     if (checkDatabaseExistence($connect, 'monitor', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => "Ligne $line : L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
     }
     if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => "Ligne $line : L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
     }
 
     // Verify Manufacturer
     if (!checkDatabaseExistence($connect, 'manufacturer', 'name', $attr["MANUFACTURER"])) {
-        return ["state" => false, "message" => "Ligne $line : Le fabricant ".$attr["MANUFACTURER"]." n'est pas enregistré"];
+        return ["state" => false, "message" => $lineText."Le fabricant ".$attr["MANUFACTURER"]." n'est pas enregistré"];
     }
 
     // Verify Connector
     if (!checkDatabaseExistence($connect, 'connector', 'name', $attr["CONNECTOR"])) {
-        return ["state" => false, "message" => "Ligne $line : Le connecteur ".$attr["CONNECTOR"]." n'est pas enregistré"];
+        return ["state" => false, "message" => $lineText."Le connecteur ".$attr["CONNECTOR"]." n'est pas enregistré"];
     }
 
     // Verify Type
     if (!checkDatabaseExistence($connect, 'device_types', 'name', "Monitor")) {
-        return ["state" => false, "message" => "Ligne $line : Le type d'appareil Monitor n'est pas enregistré"];
+        return ["state" => false, "message" => $lineText."Le type d'appareil Monitor n'est pas enregistré"];
     }
 
-     // Verify attached to computer
-     if (!empty($attr["ATTACHED_TO"])) {
+    // Verify state 
+    if (!checkDatabaseExistence($connect, 'device_states', 'state', $attr['STATE'])) {
+        return ["state" => false, "message" => $lineText."Le statut ".$attr["STATE"]." n'est pas enregistré"];
+    }
+
+    // Verify attached to computer
+    if (!empty($attr["ATTACHED_TO"])) {
         if (!checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["ATTACHED_TO"])) {
-            return ["state" => false, "message" => "Ligne $line : L'ordinateur ".$attr["ATTACHED_TO"]." n'est pas enregistré"];
+            return ["state" => false, "message" => $lineText."L'ordinateur ".$attr["ATTACHED_TO"]." n'est pas enregistré"];
         }
-     } else {
-         $attr["ATTACHED_TO"] = null; // set to null
-     }
+    } else {
+        $attr["ATTACHED_TO"] = null; // set to null
+    }
+
+    // Verify number type for screen size
+    if (!is_numeric($attr["SIZE_INCH"]) || $attr["SIZE_INCH"] < 0) {
+        return ["state" => false, "message" => $lineText."La taille de l'écran ".$attr["SIZE_INCH"]." n'est pas valide"];
+    }
 
     // If the 2 inserts are not done, cancel ALL inserts otherwise continue
     mysqli_begin_transaction($connect);
@@ -561,6 +574,7 @@ function addMonitor($attr, $line = "?") {
         if (!mysqli_stmt_execute($stmt_dev)) {
             throw new Exception("Erreur lors de l'insertion dans devices : " . mysqli_stmt_error($stmt_dev));
         }
+
         // Insert into MONITOR (Child)
         $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_serial) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt_monitor = mysqli_prepare($connect, $req_monitor);
@@ -577,7 +591,7 @@ function addMonitor($attr, $line = "?") {
     } catch (Exception $e) {
         // Something failed -> Undo everything
         mysqli_rollback($connect);
-        return ["state" => false, "message" => "Line $line: " . $e->getMessage()];
+        return ["state" => false, "message" => $lineText.$e->getMessage()];
     }
 }
 
@@ -642,9 +656,9 @@ function addComputer($attr, $line = null) {
     }
 
     // Constraints
-    if ($attr["DISK_GB"] < 0) { // Disk size
+    if (!is_numeric($attr["DISK_GB"]) || $attr["DISK_GB"] < 0) { // Disk size
         return ["state" => false, "message" => $lineText."La taille du disque ".$attr["DISK_GB"]." n'est pas valide."];
-    } else if ($attr["RAM_MB"] < 0 ) { // RAM size
+    } else if (!is_numeric($attr["RAM_MB"]) || $attr["RAM_MB"] < 0 ) { // RAM size
         return ["state" => false, "message" => $lineText."La taille de la RAM ".$attr["RAM_MB"]." n'est pas valide."];
     } else if (preg_match('/^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$/', $attr["MACADDR"]) !== 1) { // MAC Address
         return ["state" => false, "message" => $lineText."L'adresse MAC ".$attr["MACADDR"]." n'est pas valide."];
@@ -663,6 +677,7 @@ function addComputer($attr, $line = null) {
         if (!mysqli_stmt_execute($stmt_dev)) {
             throw new Exception("Erreur lors de l'insertion dans devices : " . mysqli_stmt_error($stmt_dev));
         }
+
         // Insert into COMPUTER (Child)
         $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt_comp = mysqli_prepare($connect, $req_comp);
