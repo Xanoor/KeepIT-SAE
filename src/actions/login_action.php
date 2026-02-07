@@ -40,6 +40,15 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             mysqli_stmt_bind_param($stmt_set_last_activity, "s", $login);
             mysqli_stmt_execute($stmt_set_last_activity);
 
+            // we get the login in the connect sql var
+            $login_safe = mysqli_real_escape_string($GLOBALS['connect'], $login);
+
+            // We set up the @current_user (sql session var) to know which user is connected
+            mysqli_query(
+                $GLOBALS['connect'],
+                "SET @current_user = '$login_safe'"
+            );
+
             header("location: ../pages/index.php");
             exit();
         }
