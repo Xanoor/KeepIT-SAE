@@ -1,3 +1,8 @@
+--DROP DATABASE IF EXISTS keepit;
+--CREATE DATABASE keepit;
+
+USE keepit;
+
 CREATE TABLE IF NOT EXISTS `users` (
     login VARCHAR(36) NOT NULL PRIMARY KEY,
     password_hash VARCHAR(255) NOT NULL,
@@ -6,37 +11,35 @@ CREATE TABLE IF NOT EXISTS `users` (
     role ENUM('System Administrator', 'Web Administrator', 'Technician') NOT NULL DEFAULT 'Technician',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at DATETIME NULL
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `device_types` (
     name ENUM('Computer', 'Monitor') NOT NULL PRIMARY KEY
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `device_states` (
     state VARCHAR(36) NOT NULL PRIMARY KEY,
     css_class VARCHAR(50) NOT NULL DEFAULT ""
-);
-
-INSERT IGNORE INTO `device_states` (state) VALUES ('Déployé'), ('En stock'), ('Fin de vie');
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `locations` (
     location VARCHAR(50) NOT NULL PRIMARY KEY
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS operating_system (
     name VARCHAR(50) NOT NULL,
     PRIMARY KEY (name)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS manufacturer (
     name VARCHAR(50) NOT NULL,
     PRIMARY KEY (name)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS connector (
     name VARCHAR(25) NOT NULL,
     PRIMARY KEY (name)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS devices (
     serial_number VARCHAR(25) NOT NULL,
@@ -46,9 +49,9 @@ CREATE TABLE IF NOT EXISTS devices (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     state VARCHAR(36) NULL DEFAULT 'En stock',
     PRIMARY KEY (serial_number),
-    FOREIGN KEY (device_type) REFERENCES device_types(name) ON DELETE RESTRICT, 
+    FOREIGN KEY (device_type) REFERENCES device_types(name) ON DELETE RESTRICT,
     FOREIGN KEY (state) REFERENCES device_states(state) ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify the different states (dashboard and inventory)
 CREATE INDEX idx_devices_state ON devices(state);
@@ -74,7 +77,7 @@ CREATE TABLE IF NOT EXISTS computer (
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
     FOREIGN KEY (location) REFERENCES locations(location) ON DELETE RESTRICT,
     FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify computers on a site
 CREATE INDEX idx_computer_location ON computer(location);
@@ -91,7 +94,7 @@ CREATE TABLE IF NOT EXISTS monitor (
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
     FOREIGN KEY (connector_name) REFERENCES connector(name) ON DELETE RESTRICT,
     FOREIGN KEY (attached_to_serial) REFERENCES computer(serial_number) ON DELETE SET NULL
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify the screen(s) attached to a computer
 CREATE INDEX idx_monitor_attached_to_serial ON monitor(attached_to_serial);
@@ -100,4 +103,3 @@ INSERT INTO `users` (login, password_hash, role) VALUES ('sysadmin', '$2y$10$H5D
 INSERT INTO `users` (login, password_hash, role) VALUES ('adminweb', '$2y$10$zsJ2yxGntxq9tBad09LDJeBpvVQVDF5BWtqXezXwOjOyysdfYU6Gq', 'Web Administrator');
 
 INSERT INTO `users` (login, password_hash, role) VALUES ('tech1', '$2y$10$3o1JyIoZLzxXDDL21O5FrObUzxSZB0wHX3P7MlZ3PLnjy0qUXdG.C', 'Technician');
-

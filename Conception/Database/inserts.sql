@@ -1,5 +1,6 @@
 -- We use values that we think are good but we aren't sure because we don't have any real data
 
+USE keepit;
 
 -- Inserts per country
 INSERT IGNORE INTO `locations` (location) VALUES ('Rambouillet'), ('Versailles'), ('Toulouse');
