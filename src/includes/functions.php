@@ -312,6 +312,13 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     return $html;
 }
 
+/**
+ * Fetches all unique values from a specific column in a database table.
+ * 
+ * @param string $table The name of the table to query.
+ * @param string $column The name of the column to fetch values from.
+ * @return array An array containing all values found in the column.
+ */
 function getTableValues($table, $column) {
     global $connect;
 
@@ -424,6 +431,13 @@ function createMonitorPage($items, $new_item=false) {
     return monitorDetailsFragment($items, $state_html, $manufacturer_html, $connector_html, $attached_to_html, $new_item);
 }
 
+/**
+ * Loads a specific inventory item's details and renders the appropriate HTML fragment (computer or monitor).
+ * 
+ * @param string $serialNumber The serial number of the device to load.
+ * @param string $deviceType The type of device ('Computer' or 'Monitor').
+ * @return string|null The rendered HTML fragment or null if the item or table doesn't exist.
+ */
 function loadInventoryItem($serialNumber, $deviceType) {
     global $connect;
 
@@ -501,31 +515,14 @@ function checkDatabaseExistence($connect, $table, $column, $value) {
 }
 
 /**
- * Add a monitor to the database.
+ * Validates the technical attributes of a monitor against database constraints and lookup tables.
  * 
- * @param array $attr Associative array containing monitor attributes.
- * @param int|string $line Line number in the CSV file (for error reporting).
- * @return array "state" (bool) and "message" (string) on error.
+ * @param array $attr Associative array containing monitor attributes (MANUFACTURER, CONNECTOR, STATE, etc.).
+ * @param string $lineText Prefix for error messages, typically identifying the CSV line number.
+ * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
  */
-function addMonitor($attr, $line = null) {
+function checkMonitorAttributes($attr, $lineText="") {
     global $connect;
-    $lineText = "";
-    if ($line) $lineText = "Line $line: ";
-
-    $required_keys = ["SERIAL","MANUFACTURER","MODEL","SIZE_INCH","RESOLUTION","CONNECTOR","ATTACHED_TO"];
-    
-    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
-    if (!$checkKeys["state"]) return $checkKeys;
-
-    $attr['STATE'] ??= 'En stock';
-
-    // Verify if already in DB
-    if (checkDatabaseExistence($connect, 'monitor', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
-    }
-    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
-    }
 
     // Verify Manufacturer
     if (!checkDatabaseExistence($connect, 'manufacturer', 'name', $attr["MANUFACTURER"])) {
@@ -559,6 +556,41 @@ function addMonitor($attr, $line = null) {
     // Verify number type for screen size
     if (!is_numeric($attr["SIZE_INCH"]) || $attr["SIZE_INCH"] < 0) {
         return ["state" => false, "message" => $lineText."La taille de l'écran ".$attr["SIZE_INCH"]." n'est pas valide"];
+    }
+
+    return ["state" => true];
+}
+
+/**
+ * Adds a new monitor to the database, ensuring data consistency across 'devices' and 'monitor' tables.
+ * 
+ * @param array $attr Associative array containing all required monitor attributes.
+ * @param int|string|null $line Optional line number for error reporting (imported from CSV).
+ * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
+ */
+function addMonitor($attr, $line = null) {
+    global $connect;
+    $lineText = "";
+    if ($line) $lineText = "Line $line: ";
+
+    $required_keys = ["SERIAL","MANUFACTURER","MODEL","SIZE_INCH","RESOLUTION","CONNECTOR","ATTACHED_TO"];
+    
+    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
+    if (!$checkKeys["state"]) return $checkKeys;
+
+    $attr['STATE'] ??= 'En stock';
+
+    // Verify if already in DB
+    if (checkDatabaseExistence($connect, 'monitor', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+    }
+    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => $lineText."L'écran avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+    }
+
+    $monitorAttributesCheck = checkMonitorAttributes($attr, $lineText);
+    if (!$monitorAttributesCheck["state"]) {
+        return $monitorAttributesCheck;
     }
 
     // If the 2 inserts are not done, cancel ALL inserts otherwise continue
@@ -596,39 +628,14 @@ function addMonitor($attr, $line = null) {
 }
 
 /**
- * Add a computer to the database.
+ * Validates the technical attributes of a computer against database constraints and lookup tables.
  * 
- * @param array $attr Associative array containing computer attributes.
- * @param int|string $line Line number in the CSV file (for error reporting).
- * @return array "state" (bool) and "message" (string) on error.
+ * @param array $attr Associative array containing computer attributes (MANUFACTURER, OS, LOCATION, etc.).
+ * @param string $lineText Prefix for error messages, typically identifying the CSV line number.
+ * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
  */
-function addComputer($attr, $line = null) {    
+function checkComputerAttributes($attr, $lineText="") {
     global $connect;
-    $lineText = "";
-    if ($line) $lineText = "Line $line: ";
-    
-    // Verify if all attributs are in the dict
-    $required_keys = [
-        'NAME', 'SERIAL', 'MANUFACTURER', 'MODEL', 'TYPE', 'CPU', 
-        'RAM_MB', 'DISK_GB', 'OS', 'DOMAIN', 'LOCATION', 'BUILDING', 
-        'ROOM', 'MACADDR', 'PURCHASE_DATE', 'WARRANTY_END'
-    ];
-    
-    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
-    if (!$checkKeys["state"]) return $checkKeys;
-
-    $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
-    $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
-
-    $attr['STATE'] ??= 'En stock';
-
-    // Verify if already in DB
-    if (checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => $lineText."L'ordinateur avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
-    }
-    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
-        return ["state" => false, "message" => $lineText."Un appareil avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
-    }
 
     //  --------------- Verify Manufacturer ---------------
     if (!checkDatabaseExistence($connect, 'manufacturer', 'name', $attr["MANUFACTURER"])) {
@@ -664,6 +671,49 @@ function addComputer($attr, $line = null) {
         return ["state" => false, "message" => $lineText."L'adresse MAC ".$attr["MACADDR"]." n'est pas valide."];
     }
 
+    return ["state" => true];
+}
+
+/**
+ * Adds a new computer to the database, ensuring data consistency across 'devices' and 'computer' tables.
+ * 
+ * @param array $attr Associative array containing all required computer attributes.
+ * @param int|string|null $line Optional line number for error reporting (imported from CSV).
+ * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
+ */
+function addComputer($attr, $line = null) {    
+    global $connect;
+    $lineText = "";
+    if ($line) $lineText = "Line $line: ";
+    
+    // Verify if all attributs are in the dict
+    $required_keys = [
+        'NAME', 'SERIAL', 'MANUFACTURER', 'MODEL', 'TYPE', 'CPU', 
+        'RAM_MB', 'DISK_GB', 'OS', 'DOMAIN', 'LOCATION', 'BUILDING', 
+        'ROOM', 'MACADDR', 'PURCHASE_DATE', 'WARRANTY_END'
+    ];
+    
+    $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
+    if (!$checkKeys["state"]) return $checkKeys;
+
+    $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
+    $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
+
+    $attr['STATE'] ??= 'En stock';
+
+    // Verify if already in DB
+    if (checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => $lineText."L'ordinateur avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+    }
+    if (checkDatabaseExistence($connect, 'devices', 'serial_number', $attr["SERIAL"])) {
+        return ["state" => false, "message" => $lineText."Un appareil avec le numéro de série ".$attr["SERIAL"]." est déjà dans la base de données"];
+    }
+
+    $checkComputerAttribute = checkComputerAttributes($attr, $lineText);
+    if (!$checkComputerAttribute["state"]) {
+        return $checkComputerAttribute;
+    }
+
     // If the 2 inserts are not done, cancel ALL inserts otherwise continue
     mysqli_begin_transaction($connect);
     try {
@@ -697,6 +747,54 @@ function addComputer($attr, $line = null) {
         mysqli_rollback($connect);
         return ["state" => false, "message" => $lineText . $e->getMessage()];
     }
+}
+
+
+/**
+ * Fetches and formats the activity history logs for a specific device from the device_logs table.
+ * 
+ * @param string $serialNumber The serial number of the device to fetch logs for.
+ * @return string HTML string containing formatted log items for the activity sidebar.
+ */
+function loadInventoryLogs($serialNumber) {
+    global $connect;
+
+    $query = "SELECT log_date, login, action_did, field_updated, old_val, new_val 
+              FROM device_logs 
+              WHERE serial_number = ? 
+              ORDER BY log_date DESC";
+
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, "s", $serialNumber);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $html = "";
+    while ($row = mysqli_fetch_assoc($result)) {
+        $date = date('d-m-Y | H:i', strtotime($row['log_date']));
+        $login = htmlspecialchars($row['login'] ?? '?');
+        $action = $row['action_did'];
+        $field = htmlspecialchars($row['field_updated']);
+        $oldVal = htmlspecialchars($row['old_val'] ?? '');
+        $newVal = htmlspecialchars($row['new_val'] ?? '');
+
+        $text = "";
+        if ($action === 'INSERT') {
+            $text = "$login a ajouté l'appareil ($field - $serialNumber)";
+        } else if ($action === 'UPDATE') {
+            $text = "$login a changé $field de \"$oldVal\" a \"$newVal\"";
+        } else if ($action === 'DELETE') {
+            $text = "$login a supprimé l'appareil";
+        }
+
+        $html .= "
+        <div class=\"activity-main-item\">
+            <span class=\"activity-date\">$date</span>
+            <span class=\"activity-text\">$text</span>
+        </div>";
+    }
+
+    return $html;
 }
 
 ?>

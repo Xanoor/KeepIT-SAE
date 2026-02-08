@@ -13,7 +13,7 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
                 'NAME' => $_POST['item-name'] ?? '',
                 'SERIAL' => $_POST['item-serial_number'] ?? '',
                 'MANUFACTURER' => $_POST['item-manufacturer_name'] ?? '',
-                'MODEL' => $_POST['item-name'] ?? '', 
+                'MODEL' => $_POST['item-model'] ?? '', 
                 'TYPE' => $_POST['item-type_name'] ?? '',
                 'CPU' => $_POST['item-cpu'] ?? '',
                 'RAM_MB' => $_POST['item-ram_mb'] ?? '',

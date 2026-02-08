@@ -28,6 +28,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
 
     return "
         $header_html
+        <input type=\"hidden\" name=\"item-serial_number\" value=\"".htmlspecialchars($items["serial_number"] ?? "")."\">
         <input type=\"hidden\" name=\"item-device_type\" value=\"COMPUTER\">
         <div class=\"inventory-item-inline\">
             <div class=\"inventory-item-data\">
@@ -50,7 +51,18 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         type=\"text\"
                         value=\"" . htmlspecialchars($items["name"] ?? "") . "\"
                         name=\"item-name\"
-                        placeholder=\"Nom/modèle de l'appareil\"
+                        placeholder=\"Nom de l'appareil\"
+                        required
+                    />
+                </div>
+                <div class=\"inventory-item\">
+                    <label for=\"item-input-model\">Modèle</label>
+                    <input
+                        id=\"item-input-model\"
+                        type=\"text\"
+                        value=\"" . htmlspecialchars($items["model"] ?? "") . "\"
+                        name=\"item-model\"
+                        placeholder=\"Modèle de l'appareil\"
                         required
                     />
                 </div>
@@ -159,7 +171,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         name=\"item-ram_mb\"
                         placeholder=\"Mémoire vive (Mega octets)\"
                         required
-                        min="0"
+                        min=\"0\"
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -173,7 +185,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         name=\"item-disk_gb\"
                         placeholder=\"Taille du stockage (Go)\"
                         required
-                        min="0"
+                        min=\"0\"
                     />
                 </div>
             </div>

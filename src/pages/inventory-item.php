@@ -62,7 +62,8 @@
                         Data (label + input) inside col = inventory-item
                      -->
                 <section class="inventory-item-main-section">
-                    <form action="" method="POST"> <!-- need to create the inventoryItem_action.php -->
+                    <form action="../actions/inventory-item_action.php" method="POST">
+                        <!-- TODO: if role is admin -> add delete item button -->
                         <?php 
                             // return to inventory.php if serialNumber or deviceType is empty (pre-check)
                             if (empty($_GET['serialNumber']) || empty($_GET['deviceType'])) {
@@ -85,7 +86,13 @@
             </div>
             <aside class="inventory-item-activity">
                 <!-- Activity section -->
-                
+                <div class="activity-top-text">Historique des changements</div>
+                <div class="activity-main">
+                    <?php 
+                        $serialNumber = $_GET['serialNumber']; 
+                        echo loadInventoryLogs($serialNumber); 
+                    ?>
+                </div>
             </aside>
         </main>
         <!-- Notification container -->

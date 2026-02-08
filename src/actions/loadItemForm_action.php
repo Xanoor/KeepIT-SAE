@@ -14,5 +14,5 @@ if (!in_array($type, $allowed)) {
 if ($type === 'COMPUTER') {
     echo createComputerPage([], true);
 } else if ($type === 'MONITOR') {
-    echo (createMonitorPage([], true));
+    echo createMonitorPage([], true);
 }

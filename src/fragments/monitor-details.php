@@ -28,6 +28,7 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
 
     return "
         $header_html
+        <input type=\"hidden\" name=\"item-serial_number\" value=\"".htmlspecialchars($items["serial_number"] ?? "")."\">
         <input type=\"hidden\" name=\"item-device_type\" value=\"MONITOR\">
         <div class=\"inventory-item-inline\">
             <div class=\"inventory-item-data\">
