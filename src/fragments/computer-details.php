@@ -1,4 +1,9 @@
 <?php
+
+if(!isset($_SESSION)) { 
+    session_start(); 
+} 
+
 function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_html, $location_html, $new_item) {
     $header_html = "";
     $submit_value = "Enregistrer";
@@ -26,6 +31,17 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
             </div>";
     }
 
+    $admin_html = "";
+    if (($_SESSION['role'] == "System Administrator" || $_SESSION['role'] == "Web Administrator") && !$new_item) {
+           $admin_html .= "<input
+                type=\"submit\"
+                class=\"inventory-item-data\"
+                value=\"Supprimer\"
+                name=\"submit-delete\"
+                id=\"submit-delete\"
+            />";
+    }
+
     return "
         $header_html
         <input type=\"hidden\" name=\"item-serial_number\" value=\"".htmlspecialchars($items["serial_number"] ?? "")."\">
@@ -40,6 +56,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                 value=\"$submit_value\"
                 name=\"submit\"
             />
+            $admin_html
         </div>
         <div class=\"inventory-item-category\">
             <div class=\"inventory-item-col\">

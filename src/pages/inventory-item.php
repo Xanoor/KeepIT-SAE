@@ -100,4 +100,5 @@
     </body>
     <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
     <script src="../scripts/notification.js"></script>
+    <script src="../scripts/inventory-item.js"></script>
 </html>

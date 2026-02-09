@@ -6,7 +6,9 @@ include '../components/icon.php';
 
 $error_code = $_GET['error'] ?? null;
 
-session_start();
+if(!isset($_SESSION)) { 
+    session_start(); 
+} 
 
 if (isset($_SESSION['login'])) {
     header("Location: index.php");

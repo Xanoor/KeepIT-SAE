@@ -107,6 +107,8 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
             header("Location: ../pages/inventory.php");
             exit();
     }
+} else if (isset($_POST["item-device_type"], $_POST["submit-delete"], $_POST["item-serial_number"])) {
+    // TODO: create delete code
 } else {
     header("Location: ../pages/inventory.php");
     exit();

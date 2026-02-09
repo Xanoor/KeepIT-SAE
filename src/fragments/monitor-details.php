@@ -26,6 +26,17 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
             </div>";
     }
 
+    $admin_html = "";
+    if (($_SESSION['role'] == "System Administrator" || $_SESSION['role'] == "Web Administrator") && !$new_item) {
+           $admin_html .= "<input
+                type=\"submit\"
+                class=\"inventory-item-data\"
+                value=\"Supprimer\"
+                name=\"submit-delete\"
+                id=\"submit-delete\"
+            />";
+    }
+
     return "
         $header_html
         <input type=\"hidden\" name=\"item-serial_number\" value=\"".htmlspecialchars($items["serial_number"] ?? "")."\">
@@ -40,6 +51,7 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
                 value=\"$submit_value\"
                 name=\"submit\"
             />
+            $admin_html
         </div>
         <div class=\"inventory-item-category\">
             <div class=\"inventory-item-col\">
