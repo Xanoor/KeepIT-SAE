@@ -41,7 +41,7 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
             
             break;
         case 'MONITOR':
-            $attached_to = $_POST['item-attached_to_serial'] ?? 'null';
+            $attached_to = $_POST['item-attached_to_computer'] ?? 'null';
             if ($attached_to === 'null') {
                 $attached_to = null;
             }

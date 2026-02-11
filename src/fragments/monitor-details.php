@@ -147,12 +147,12 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
         <div class=\"inventory-item-category\">
             <div class=\"inventory-item-col\">
                 <div class=\"inventory-item\">
-                    <label for=\"item-input-attached_to_serial\"
+                    <label for=\"item-input-attached_to_computer\"
                         >Relier a un appareil (serial number)</label
                     >
                     <select
-                        id=\"item-input-attached_to_serial\"
-                        name=\"item-attached_to_serial\"
+                        id=\"item-input-attached_to_computer\"
+                        name=\"item-attached_to_computer\"
                     >
                         <option selected value=\"null\">Selectionner (optionnel)</option>
                         $attached_to_html

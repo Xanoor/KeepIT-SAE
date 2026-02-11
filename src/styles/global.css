@@ -172,7 +172,8 @@ header .nav-buttons-current {
 
 .form-header input,
 .form-header select,
-.form-header button {
+.form-header button,
+.form-header .btn-back {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
     border: 0.125rem solid var(--border-color);
@@ -232,7 +233,7 @@ header .nav-buttons-current {
     width: 90%;
 }
 
-.page-content .nav-buttons button, 
+.page-content .nav-buttons button,
 .page-content .nav-buttons .page-num-input {
     display: flex;
     justify-content: center;
@@ -254,7 +255,7 @@ header .nav-buttons-current {
     transition: all 0.2s ease-in-out;
 }
 
-.page-content .nav-buttons button:hover, 
+.page-content .nav-buttons button:hover,
 .page-content .nav-buttons .page-num-input:hover {
     background: rgba(59, 59, 59, 0.582);
 }

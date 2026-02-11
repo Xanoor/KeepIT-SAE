@@ -6,11 +6,19 @@ require_once '../fragments/monitor-details.php';
 
 // Used to convert text to french (language used for this web site)
 function convertDataToFrench($data) {
+    $data_edit = strtoupper($data);
+
     $translations = [
-        "Monitor" => "Écrans",
-        "Computer" => "Unités centrales"
+        "MONITOR" => "Écrans",
+        "COMPUTER" => "Ordinateur",
+        "SERIAL NUMBER" => "Numéro de série",
+        "MODEL" => "Modèle",
+        "DEVICE TYPE" => "Type d'appareil",
+        "CREATED AT" => "Créé le",
+        "UPDATED AT" => "Modifié le",
+        "STATE" => "État"
     ];
-    return $translations[$data] ?? $data;
+    return $translations[$data_edit] ?? $data;
 }
 
 /**
@@ -168,7 +176,7 @@ function importCSVTableBuilder($file, $limit = 100) {
     // Header
     $html = "<table><thead><tr>";
     foreach ($result as $value) {
-        $html .= "<th>" . htmlspecialchars($value) . "</th>";
+        $html .= "<th>" . htmlspecialchars(convertDataToFrench($value)) . "</th>";
     }
     $html .= "</tr></thead><tbody>";
 
@@ -268,7 +276,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     }
 
     foreach ($fields as $field) {
-        $html .= "<th>" . htmlspecialchars(str_replace('_', ' ', strtoupper($field->name))) . "</th>";
+        $html .= "<th>" . htmlspecialchars(convertDataToFrench(str_replace('_', ' ', strtoupper($field->name)))) . "</th>";
     }
 
     $serialNumber = null;
@@ -421,10 +429,10 @@ function createMonitorPage($items, $new_item=false) {
         $connector_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
-    $attached_to_list = getTableValues("computer", "serial_number");
+    $attached_to_list = getTableValues("computer", "name");
     $attached_to_html = "";
     foreach ($attached_to_list as $index => $value) {
-        $selected = ($value == ($items["attached_to_serial"] ?? "")) ? " selected" : "";
+        $selected = ($value == ($items["attached_to_computer"] ?? "")) ? " selected" : "";
         $attached_to_html .= "<option value='{$value}'{$selected}>{$value}</option>";
     }
 
@@ -546,7 +554,7 @@ function checkMonitorAttributes($attr, $lineText="") {
 
     // Verify attached to computer
     if (!empty($attr["ATTACHED_TO"])) {
-        if (!checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["ATTACHED_TO"])) {
+        if (!checkDatabaseExistence($connect, 'computer', 'name', $attr["ATTACHED_TO"])) {
             return ["state" => false, "message" => $lineText."L'ordinateur ".$attr["ATTACHED_TO"]." n'est pas enregistré"];
         }
     } else {
@@ -558,7 +566,7 @@ function checkMonitorAttributes($attr, $lineText="") {
         return ["state" => false, "message" => $lineText."La taille de l'écran ".$attr["SIZE_INCH"]." n'est pas valide"];
     }
 
-    return ["state" => true];
+    return ["state" => true, "attr" => $attr];
 }
 
 /**
@@ -592,6 +600,7 @@ function addMonitor($attr, $line = null) {
     if (!$monitorAttributesCheck["state"]) {
         return $monitorAttributesCheck;
     }
+    $attr = $monitorAttributesCheck["attr"];
 
     // If the 2 inserts are not done, cancel ALL inserts otherwise continue
     mysqli_begin_transaction($connect);
@@ -608,7 +617,7 @@ function addMonitor($attr, $line = null) {
         }
 
         // Insert into MONITOR (Child)
-        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_serial) VALUES (?, ?, ?, ?, ?, ?)";
+        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_computer) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt_monitor = mysqli_prepare($connect, $req_monitor);
         mysqli_stmt_bind_param($stmt_monitor, "ssssss", 
             $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["MANUFACTURER"], 
@@ -662,6 +671,11 @@ function checkComputerAttributes($attr, $lineText="") {
         return ["state" => false, "message" => $lineText."Le statut ".$attr["STATE"]." n'est pas enregistré"];
     }
 
+    //  --------------- Verify name ---------------
+    if (checkDatabaseExistence($connect, 'computer', 'name', $attr['NAME'])) {
+        return ["state" => false, "message" => $lineText."Le nom ".$attr["NAME"]." est déjà attribué"];
+    }
+    
     // Constraints
     if (!is_numeric($attr["DISK_GB"]) || $attr["DISK_GB"] < 0) { // Disk size
         return ["state" => false, "message" => $lineText."La taille du disque ".$attr["DISK_GB"]." n'est pas valide."];
@@ -671,7 +685,7 @@ function checkComputerAttributes($attr, $lineText="") {
         return ["state" => false, "message" => $lineText."L'adresse MAC ".$attr["MACADDR"]." n'est pas valide."];
     }
 
-    return ["state" => true];
+    return ["state" => true, "attr" => $attr];
 }
 
 /**
@@ -713,6 +727,7 @@ function addComputer($attr, $line = null) {
     if (!$checkComputerAttribute["state"]) {
         return $checkComputerAttribute;
     }
+    $attr = $checkComputerAttribute["attr"];
 
     // If the 2 inserts are not done, cancel ALL inserts otherwise continue
     mysqli_begin_transaction($connect);

@@ -49,17 +49,17 @@ unset($_SESSION['import_errors']);
 </header>
 <main>
     <div class="page-name">
-        <img src="../assets/logo.png"/>
+        <img src="../assets/logo.png" alt="Logo du site"/>
         <h1>Inventaire</h1>
     </div>
     <section class="importCSV-main-section">
         <form action="" id="csvForm" method="POST" enctype="multipart/form-data">
             <div class="form-header">
                 <div>
-                    <a href="inventory.php">
-                        <input type="button" value="Retour" name="back"/>
+                    <a href="inventory.php" class="btn-back">
+                        Retour
                     </a>
-                    <select name="device_type">
+                    <select name="device_type" aria-label="Type d'appareil">
                         <option disabled selected hidden>
                             Choisir appareil
                         </option>
@@ -129,6 +129,7 @@ unset($_SESSION['import_errors']);
                             <img
                                     src='../assets/upload.png'
                                     class='file-upload-icon'
+                                    alt="Logo téléverser un fichier"
                             />
                             <span class='file-upload-text'
                             >Cliquez et choisissez votre fichier

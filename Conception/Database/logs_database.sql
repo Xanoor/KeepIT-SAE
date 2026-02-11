@@ -22,7 +22,7 @@ DELIMITER //
 
 -- ==============================
 -- Trigger pour la table devices
-CREATE TRIGGER devices_after_insert
+CREATE OR REPLACE TRIGGER devices_after_insert
 AFTER INSERT ON devices
 FOR EACH ROW
 BEGIN
@@ -31,7 +31,7 @@ BEGIN
 END
 //
 
-CREATE TRIGGER devices_after_update
+CREATE OR REPLACE TRIGGER devices_after_update
 AFTER UPDATE ON devices
 FOR EACH ROW
 BEGIN
@@ -46,7 +46,7 @@ BEGIN
 END
 //
 
-CREATE TRIGGER devices_after_delete
+CREATE OR REPLACE TRIGGER devices_after_delete
     AFTER DELETE ON devices
     FOR EACH ROW
 BEGIN
@@ -58,7 +58,7 @@ END
 
 -- ==============================
 -- Trigger pour la table computer
-CREATE TRIGGER computer_after_update
+CREATE OR REPLACE TRIGGER computer_after_update
 AFTER UPDATE ON computer
 FOR EACH ROW
 BEGIN
@@ -131,7 +131,7 @@ END
 
 -- ==============================
 -- Trigger pour la table monitor
-CREATE TRIGGER monitor_after_update
+CREATE OR REPLACE TRIGGER monitor_after_update
 AFTER UPDATE ON monitor
 FOR EACH ROW
 BEGIN
@@ -156,9 +156,9 @@ BEGIN
             VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'connector_name', CAST(OLD.connector_name AS CHAR), CAST(NEW.connector_name AS CHAR));
     END IF;
 
-        IF NOT (OLD.attached_to_serial <=> NEW.attached_to_serial) THEN
+        IF NOT (OLD.attached_to_computer <=> NEW.attached_to_computer) THEN
             INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
-            VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'attached_to_serial', CAST(OLD.attached_to_serial AS CHAR), CAST(NEW.attached_to_serial AS CHAR));
+            VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'attached_to_computer', CAST(OLD.attached_to_computer AS CHAR), CAST(NEW.attached_to_computer AS CHAR));
     END IF;
 
 END

@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS devices (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     state VARCHAR(36) NULL DEFAULT 'En stock',
     PRIMARY KEY (serial_number),
-    FOREIGN KEY (device_type) REFERENCES device_types(name) ON DELETE RESTRICT,
-    FOREIGN KEY (state) REFERENCES device_states(state) ON DELETE RESTRICT
+    FOREIGN KEY (device_type) REFERENCES device_types(name) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    FOREIGN KEY (state) REFERENCES device_states(state) ON UPDATE CASCADE ON DELETE RESTRICT
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify the different states (dashboard and inventory)
@@ -58,7 +58,7 @@ CREATE INDEX idx_devices_state ON devices(state);
 
 CREATE TABLE IF NOT EXISTS computer (
     serial_number VARCHAR(25) NOT NULL,
-    name VARCHAR(25),
+    name VARCHAR(25) UNIQUE,
     location VARCHAR(50),
     building VARCHAR(50),
     room VARCHAR(25),
@@ -71,12 +71,12 @@ CREATE TABLE IF NOT EXISTS computer (
     warranty_end DATE,
     manufacturer_name VARCHAR(50),
     os_name VARCHAR(50),
-    type_name VARCHAR(25), --type of computer ex: laptop, desktop, mini-pc...
+    type_name VARCHAR(25), -- type of computer ex: laptop, desktop, mini-pc...
     PRIMARY KEY (serial_number),
     FOREIGN KEY (serial_number) REFERENCES devices(serial_number) ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the computer table.
-    FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
-    FOREIGN KEY (location) REFERENCES locations(location) ON DELETE RESTRICT,
-    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON DELETE RESTRICT
+    FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (location) REFERENCES locations(location) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (os_name) REFERENCES operating_system(name) ON UPDATE CASCADE ON DELETE RESTRICT
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify computers on a site
@@ -88,18 +88,17 @@ CREATE TABLE IF NOT EXISTS monitor (
     resolution VARCHAR(25),
     manufacturer_name VARCHAR(50),
     connector_name VARCHAR(25),
-    attached_to_serial VARCHAR(25),
+    attached_to_computer VARCHAR(25),
     PRIMARY KEY (serial_number),
     FOREIGN KEY (serial_number) REFERENCES devices(serial_number) ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the monitor table.
     FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name) ON DELETE RESTRICT,
     FOREIGN KEY (connector_name) REFERENCES connector(name) ON DELETE RESTRICT,
-    FOREIGN KEY (attached_to_serial) REFERENCES computer(serial_number) ON DELETE SET NULL
+    FOREIGN KEY (attached_to_computer) REFERENCES computer(name) ON UPDATE CASCADE ON DELETE SET NULL
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Quickly identify the screen(s) attached to a computer
-CREATE INDEX idx_monitor_attached_to_serial ON monitor(attached_to_serial);
+CREATE INDEX idx_monitor_attached_to_computer ON monitor(attached_to_computer);
 
 INSERT INTO `users` (login, password_hash, role) VALUES ('sysadmin', '$2y$10$H5DAxsFD0gSoVyYXPwLm3uXpRc.wLF5GIgtqjAQMnr0xFuDHasOmy', 'System Administrator');
 INSERT INTO `users` (login, password_hash, role) VALUES ('adminweb', '$2y$10$zsJ2yxGntxq9tBad09LDJeBpvVQVDF5BWtqXezXwOjOyysdfYU6Gq', 'Web Administrator');
-
 INSERT INTO `users` (login, password_hash, role) VALUES ('tech1', '$2y$10$3o1JyIoZLzxXDDL21O5FrObUzxSZB0wHX3P7MlZ3PLnjy0qUXdG.C', 'Technician');
