@@ -127,7 +127,6 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["building"] ?? "") . "\"
                         name=\"item-building\"
                         placeholder=\"Nom du bâtiment\"
-                        required
                     />
                 </div>
                 <div class=\"inventory-item\">
@@ -140,7 +139,6 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         value=\"" . htmlspecialchars($items["room"] ?? "") . "\"
                         name=\"item-room\"
                         placeholder=\"Nom de la salle\"
-                        required
                     />
                 </div>
             </div>
@@ -166,6 +164,7 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         >Système d'exploitation (OS)</label
                     >
                     <select id=\"item-input-os\" name=\"item-os_name\" required>
+                        <option value=\"null\">Aucun</option>
                         $os_html
                     </select>
                 </div>
@@ -245,11 +244,10 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         >Date d'achat</label
                     >
                     <input
-                        type=\"text\"
+                        type=\"date\"
                         id=\"item-input-purchase_date\"
                         value=\"" . htmlspecialchars($items["purchase_date"] ?? "") . "\"
                         name=\"item-purchase_date\"
-                        placeholder=\"2024-07-30\"
                         required
                     />
                 </div>
@@ -258,12 +256,10 @@ function computerDetailsFragment($items, $state_html, $os_html, $manufacturer_ht
                         >Date de fin de garantie</label
                     >
                     <input
-                        type=\"text\"
+                        type=\"date\"
                         id=\"item-input-warranty_end\"
                         value=\"" . htmlspecialchars($items["warranty_end"] ?? "") . "\"
                         name=\"item-warranty_end\"
-                        placeholder=\"2024-07-30\"
-                        required
                     />
                 </div>
             </div>

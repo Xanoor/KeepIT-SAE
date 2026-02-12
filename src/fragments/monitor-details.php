@@ -124,6 +124,7 @@ function monitorDetailsFragment($items, $state_html, $manufacturer_html, $connec
                         name=\"item-connector_name\"
                         required
                     >
+                        <option value=\"null\">Aucun</option>
                         $connector_html
                     </select>
                 </div>

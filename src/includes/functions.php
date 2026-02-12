@@ -260,7 +260,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     $limit = $end - $start;
 
     // Final Query with LIMIT
-    $query = "SELECT * FROM `$safeTable`" . $whereClause . " LIMIT $start, $limit";
+    $query = "SELECT * FROM `$safeTable`" . $whereClause . "ORDER BY updated_at DESC LIMIT $start, $limit";
     $result = mysqli_query($connect, $query);
 
     if (!$result) {
@@ -496,6 +496,11 @@ function loadInventoryItem($serialNumber, $deviceType) {
 
 /**
  * Check if specific keys are present in the attributes array.
+ * 
+ * @param array $attr The associative array to check.
+ * @param array $required_keys List of keys that must be present.
+ * @param int|string $line Line number for error reporting.
+ * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
  */
 function verifyRequiredKeys($attr, $required_keys, $line) {
     $required_keys_model = array_flip($required_keys);
@@ -508,6 +513,12 @@ function verifyRequiredKeys($attr, $required_keys, $line) {
 
 /**
  * Check if a value exists in a specific table and column.
+ * 
+ * @param mysqli $connect Database connection.
+ * @param string $table The table name.
+ * @param string $column The column name.
+ * @param mixed $value The value to search for.
+ * @return bool True if the value exists, false otherwise.
  */
 function checkDatabaseExistence($connect, $table, $column, $value) {
     if (empty($value)) return false; // Handle null/empty
@@ -527,7 +538,7 @@ function checkDatabaseExistence($connect, $table, $column, $value) {
  * 
  * @param array $attr Associative array containing monitor attributes (MANUFACTURER, CONNECTOR, STATE, etc.).
  * @param string $lineText Prefix for error messages, typically identifying the CSV line number.
- * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
+ * @return array Returns ['state' => true, 'attr' => array] on success, or ['state' => false, 'message' => '...'] on failure.
  */
 function checkMonitorAttributes($attr, $lineText="") {
     global $connect;
@@ -538,8 +549,12 @@ function checkMonitorAttributes($attr, $lineText="") {
     }
 
     // Verify Connector
-    if (!checkDatabaseExistence($connect, 'connector', 'name', $attr["CONNECTOR"])) {
-        return ["state" => false, "message" => $lineText."Le connecteur ".$attr["CONNECTOR"]." n'est pas enregistré"];
+    if ($attr["CONNECTOR"] != "null") {
+        if (!checkDatabaseExistence($connect, 'connector', 'name', $attr["CONNECTOR"])) {
+            return ["state" => false, "message" => $lineText."Le connecteur ".$attr["CONNECTOR"]." n'est pas enregistré"];
+        }
+    } else {
+        $attr["CONNECTOR"] = null;
     }
 
     // Verify Type
@@ -561,9 +576,13 @@ function checkMonitorAttributes($attr, $lineText="") {
         $attr["ATTACHED_TO"] = null; // set to null
     }
 
-    // Verify number type for screen size
+    // Constraints
     if (!is_numeric($attr["SIZE_INCH"]) || $attr["SIZE_INCH"] < 0) {
         return ["state" => false, "message" => $lineText."La taille de l'écran ".$attr["SIZE_INCH"]." n'est pas valide"];
+    } else if (empty($attr["RESOLUTION"])) {
+        return ["state" => false, "message" => $lineText."Le champ résolution ne peut pas être vide"];
+    } else if (empty($attr["MODEL"])) {
+        return ["state" => false, "message" => $lineText."Le champ modèle ne peut pas être vide"];
     }
 
     return ["state" => true, "attr" => $attr];
@@ -641,7 +660,7 @@ function addMonitor($attr, $line = null) {
  * 
  * @param array $attr Associative array containing computer attributes (MANUFACTURER, OS, LOCATION, etc.).
  * @param string $lineText Prefix for error messages, typically identifying the CSV line number.
- * @return array Returns ['state' => true] on success, or ['state' => false, 'message' => '...'] on failure.
+ * @return array Returns ['state' => true, 'attr' => array] on success, or ['state' => false, 'message' => '...'] on failure.
  */
 function checkComputerAttributes($attr, $lineText="") {
     global $connect;
@@ -652,8 +671,12 @@ function checkComputerAttributes($attr, $lineText="") {
     }
 
     //   --------------- Verify OS ---------------
-    if (!checkDatabaseExistence($connect, 'operating_system', 'name', $attr["OS"])) {
-        return ["state" => false, "message" => $lineText."Le système d'exploitation ".$attr["OS"]." n'est pas enregistré"];
+    if ($attr["OS"] != "null") {
+        if (!checkDatabaseExistence($connect, 'operating_system', 'name', $attr["OS"])) {
+            return ["state" => false, "message" => $lineText."Le système d'exploitation ".$attr["OS"]." n'est pas enregistré"];
+        }
+    } else {
+        $attr["OS"] = null;
     }
 
     //  --------------- Verify Type ---------------
@@ -673,7 +696,47 @@ function checkComputerAttributes($attr, $lineText="") {
 
     //  --------------- Verify name ---------------
     if (checkDatabaseExistence($connect, 'computer', 'name', $attr['NAME'])) {
-        return ["state" => false, "message" => $lineText."Le nom ".$attr["NAME"]." est déjà attribué"];
+        // Verify if the name is already taken by another computer or used by the actual computer
+        $req_sn = "SELECT serial_number FROM computer WHERE name = ? AND serial_number = ?";
+        $stmt = mysqli_prepare($connect, $req_sn);
+        mysqli_stmt_bind_param($stmt, "ss", 
+            $attr["NAME"], $attr["SERIAL"]
+        );
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $num_row = mysqli_num_rows($result);
+
+        if ($num_row == 0 || $num_row > 1)
+            return ["state" => false, "message" => $lineText."Le nom ".$attr["NAME"]." est déjà attribué"];
+    }
+
+    //  --------------- Verify MAC Addr ---------------
+    if (checkDatabaseExistence($connect, 'computer', 'mac_address', $attr['MACADDR'])) {
+        // Verify if the MAC addr is already taken by another computer or used by the actual computer
+        $req_sn = "SELECT serial_number FROM computer WHERE mac_address = ? AND serial_number = ?";
+        $stmt = mysqli_prepare($connect, $req_sn);
+        mysqli_stmt_bind_param($stmt, "ss", 
+            $attr["MACADDR"], $attr["SERIAL"]
+        );
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $num_row = mysqli_num_rows($result);
+
+        if ($num_row == 0 || $num_row > 1)
+            return ["state" => false, "message" => $lineText."L'adresse MAC ".$attr["MACADDR"]." est déjà utilisée"];
+    }
+
+    //  --------------- Verify dates ---------------
+    if (empty($attr["PURCHASE_DATE"])) {
+        return ["state" => false, "message" => $lineText."Le date d'achat ne peut pas être vide"];
+    }
+
+    // Convert dates (to support different formats like DD/MM/YYYY)
+    $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
+    if (!empty($attr["WARRANTY_END"])) {
+        $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
+    } else {
+        $attr["WARRANTY_END"] = null;
     }
     
     // Constraints
@@ -683,6 +746,12 @@ function checkComputerAttributes($attr, $lineText="") {
         return ["state" => false, "message" => $lineText."La taille de la RAM ".$attr["RAM_MB"]." n'est pas valide."];
     } else if (preg_match('/^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$/', $attr["MACADDR"]) !== 1) { // MAC Address
         return ["state" => false, "message" => $lineText."L'adresse MAC ".$attr["MACADDR"]." n'est pas valide."];
+    } else if (empty($attr["CPU"])) {
+        return ["state" => false, "message" => $lineText."Le champ Processeur ne peut pas être vide"];
+    } else if ($attr["WARRANTY_END"] != null && $attr["WARRANTY_END"] < $attr["PURCHASE_DATE"]) {
+        return ["state" => false, "message" => $lineText."La date de fin de garantie ne peut pas précéder la date d'achat"];
+    } else if (empty($attr["MODEL"])) {
+        return ["state" => false, "message" => $lineText."Le champ modèle ne peut pas être vide"];
     }
 
     return ["state" => true, "attr" => $attr];
@@ -709,9 +778,6 @@ function addComputer($attr, $line = null) {
     
     $checkKeys = verifyRequiredKeys($attr, $required_keys, $line);
     if (!$checkKeys["state"]) return $checkKeys;
-
-    $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
-    $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
 
     $attr['STATE'] ??= 'En stock';
 

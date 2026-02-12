@@ -59,6 +59,7 @@
 
 .inventory-item-category input[type="text"],
 .inventory-item-category input[type="number"],
+.inventory-item-category input[type="date"],
 .inventory-item-category select,
 .create-item-header select {
     color: white;

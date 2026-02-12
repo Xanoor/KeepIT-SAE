@@ -30,10 +30,6 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
                 'STATE' => $_POST['item-state'] ?? 'En stock'
             ];
 
-            // Convert dates if needed (to support different formats like DD/MM/YYYY)
-            $attr["PURCHASE_DATE"] = date('Y-m-d', strtotime(str_replace('/', '-', $attr["PURCHASE_DATE"])));
-            $attr["WARRANTY_END"]  = date('Y-m-d', strtotime(str_replace('/', '-', $attr["WARRANTY_END"])));
-
             if (!checkDatabaseExistence($connect, 'computer', 'serial_number', $attr["SERIAL"])) {
                 $_SESSION['notification'] = "L'ordinateur avec le numéro de série ".$attr["SERIAL"]." n'est pas dans la base de données";
                 $_SESSION['notification_color'] = "red";
@@ -54,6 +50,7 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
                 header("Location: ../pages/inventory-item.php?serialNumber=".$attr["SERIAL"]."&deviceType=".$device_type);
                 exit();
             }
+            $attr = $checkComputerAttributes["attr"];
 
             mysqli_begin_transaction($connect);
             try {

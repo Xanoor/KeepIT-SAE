@@ -139,7 +139,6 @@
                                         value="Halle Bastier"
                                         name="item-building"
                                         placeholder="Nom du bâtiment"
-                                        required
                                     />
                                 </div>
                                 <div class="inventory-item">
@@ -152,7 +151,6 @@
                                         value="H47"
                                         name="item-room"
                                         placeholder="Nom de la salle"
-                                        required
                                     />
                                 </div>
                             </div>
@@ -182,6 +180,7 @@
                                         name="item-os_name"
                                         required
                                     >
+                                        <option value="null">Aucun</option>
                                         <option>Windows 11</option>
                                         <option>MacOS</option>
                                         <option>Ubuntu 22.04</option>
@@ -268,11 +267,10 @@
                                         >Date d'achat</label
                                     >
                                     <input
-                                        type="text"
+                                        type="date"
                                         id="item-input-purchase_date"
                                         value="2020-05-04"
                                         name="item-purchase_date"
-                                        placeholder="2020-05-04"
                                         required
                                     />
                                 </div>
@@ -281,12 +279,10 @@
                                         >Date de fin de garantie</label
                                     >
                                     <input
-                                        type="text"
+                                        type="date"
                                         id="item-input-warranty_end"
                                         value="2020-05-04"
                                         name="item-warranty_end"
-                                        placeholder="2020-05-04"
-                                        required
                                     />
                                 </div>
                             </div>
