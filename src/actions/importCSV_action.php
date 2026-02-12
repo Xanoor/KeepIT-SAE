@@ -1,7 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    header("Location: ../pages/login.php");
+    exit();
+}
 
 require_once '../includes/functions.php';
-SESSION_START();
 
 $header_computer = array("NAME","SERIAL","MANUFACTURER","MODEL","TYPE","CPU","RAM_MB","DISK_GB","OS","DOMAIN","LOCATION","BUILDING","ROOM","MACADDR","PURCHASE_DATE","WARRANTY_END");
 $header_screen = array("SERIAL","MANUFACTURER","MODEL","SIZE_INCH","RESOLUTION","CONNECTOR","ATTACHED_TO");

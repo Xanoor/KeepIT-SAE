@@ -1,5 +1,9 @@
 <?php
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 function create_connection() {
     if (!isset($GLOBALS['connect'])) {
         $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "keepit");

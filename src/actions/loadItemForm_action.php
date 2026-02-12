@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    header("Location: ../pages/login.php");
+    exit();
+}
 
 include_once '../includes/functions.php';
 
