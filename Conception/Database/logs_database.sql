@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS device_logs (
     new_val VARCHAR(50),
     INDEX idx_device_logs_date (log_date),
     INDEX idx_device_logs_serial (serial_number)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COMMENT = 'LOGS TABLE ABOUT DEVICES, COMPUTERS AND MONITORS';
 
 
 DELIMITER //
@@ -104,6 +105,11 @@ BEGIN
     IF NOT (OLD.mac_address <=> NEW.mac_address) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'mac_address', CAST(OLD.mac_address AS CHAR), CAST(NEW.mac_address AS CHAR));
+    END IF;
+
+    IF NOT (OLD.purchase_date <=> NEW.purchase_date) THEN
+        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
+        VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'purchase_date', CAST(OLD.purchase_date AS CHAR), CAST(NEW.purchase_date AS CHAR));
     END IF;
 
     IF NOT (OLD.warranty_end <=> NEW.warranty_end) THEN

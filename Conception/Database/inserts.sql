@@ -2,9 +2,8 @@
 
 USE keepit;
 
--- Inserts per country
+-- Insertions gérées par l'ADMIN WEB par la suite une fois que son interface sera prête
 INSERT IGNORE INTO `locations` (location) VALUES ('Vélizy'), ('Rambouillet'), ('Versailles'), ('Toulouse');
-
 INSERT IGNORE INTO `device_types` (name) VALUES ('Computer'), ('Monitor');
 INSERT IGNORE INTO `device_states` (state, css_class) VALUES ('Déployé', 'table-item-DEPLOYED'), ('En stock', 'table-item-IN_INVENTORY'), ('Fin de vie', 'table-item-END_OF_LIFE');
 INSERT IGNORE INTO `manufacturer` (name) VALUES ('Acer'), ('Dell'), ('HP'), ('Lenovo'), ('Asus'), ('Samsung'), ('LG'), ('BenQ'), ('AOC');
