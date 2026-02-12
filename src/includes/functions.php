@@ -197,7 +197,7 @@ function importCSVTableBuilder($file, $limit = 100) {
 
 /**
  * Create an HTML table from a SQL query with pagination.
- *
+ * 
  * @param string $tableName The table to fetch from.
  * @param array $filters Associative array of column => value for the WHERE clause.
  * @param int $start The starting index (offset).
@@ -207,43 +207,49 @@ function importCSVTableBuilder($file, $limit = 100) {
 function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11) {
     global $connect;
 
-    $step = 11;
+    $step = 11; // Default number of items per page
     
     // Validation of start and end
     if ($start < 0) $start = 0;
     if ($end <= $start) $end = $start + $step; // Default range if invalid
 
-    
-    // mysqli_real_escape_string is used to prevent SQL injection (add backslashes before special characters)
+    // We use mysqli_real_escape_string to protect against SQL Injection
+    // It neutralizes special characters that could break the query or allow unauthorized access
     $safeTable = mysqli_real_escape_string($connect, $tableName);
     // Build Base Query and Filter Clause
     // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
     $whereClause = "";
     if (!empty($filters)) {
         $filterParts = [];
+
         foreach ($filters as $column => $value) {
             $safeColumn = mysqli_real_escape_string($connect, $column);
             
             if (is_array($value)) {
-                // Handle "IN" for multiple values
+                // 'IN' is used when we have a list of possible values (e.g. ['Computer', 'Monitor'])
                 $escapedValues = array_map(function($v) use ($connect) {
                     return "'" . mysqli_real_escape_string($connect, $v) . "'";
                 }, $value);
+
                 $filterParts[] = "`$safeColumn` IN (" . implode(", ", $escapedValues) . ")";
-            } else if (strpos((string)$value, '%') !== false) { //strpos = Find the position of the first occurrence of a substring in a string
-                // Handle LIKE for searches
+
+            } else if (strpos((string)$value, '%') !== false) { //strpos = Find the position of the first occurrence of a su
+                // '%' means we're doing a partial search (e.g. search for serial numbers containing 'ABC')
                 $safeValue = mysqli_real_escape_string($connect, $value);
                 $filterParts[] = "`$safeColumn` LIKE '$safeValue'";
+
             } else {
-                // Default 
+                // Simple equality for single values
                 $safeValue = mysqli_real_escape_string($connect, $value);
                 $filterParts[] = "`$safeColumn` = '$safeValue'";
             }
         }
-        $whereClause = " WHERE " . implode(" AND ", $filterParts); //implode = Join array elements with a string
+        // Join all parts with 'AND' so that all conditions must be met
+        //implode = Join array elements with a string
+        $whereClause = " WHERE " . implode(" AND ", $filterParts);
     }
 
-    // Check Total Count to prevent "too high" values
+    // We check the total number of rows matching the filters to ensure pagination index is valid
     $countQuery = "SELECT COUNT(*) as total FROM `$safeTable`" . $whereClause;
     $countResult = mysqli_query($connect, $countQuery);
     $totalRows = mysqli_fetch_assoc($countResult)['total'];
@@ -252,15 +258,15 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
         return "<p>Aucune donnée trouvée (Index de départ trop élevé).</p>";
     }
 
-    // Adjust end if it's too high
+    // If 'end' exceeds total rows, we cap it to the maximum available
     if ($end > $totalRows) {
         $end = $totalRows;
     }
 
     $limit = $end - $start;
 
-    // Final Query with LIMIT
-    $query = "SELECT * FROM `$safeTable`" . $whereClause . "ORDER BY updated_at DESC LIMIT $start, $limit";
+    // We order by 'updated_at' so the user sees recent changes first
+    $query = "SELECT * FROM `$safeTable`" . $whereClause . " ORDER BY updated_at DESC LIMIT $start, $limit";
     $result = mysqli_query($connect, $query);
 
     if (!$result) {
@@ -275,38 +281,45 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
         return "<p>Aucune donnée trouvée.</p>";
     }
 
+    // Draw headers
     foreach ($fields as $field) {
+        // We format column names to be prettier (uppercase, no underscores, translated)
         $html .= "<th>" . htmlspecialchars(convertDataToFrench(str_replace('_', ' ', strtoupper($field->name)))) . "</th>";
     }
-
-    $serialNumber = null;
-    $deviceType = null;
 
     $html .= "<th>ACTION</th>";
     $html .= "</tr></thead><tbody>";
 
-    // Body
+    // Draw rows
     while ($row = mysqli_fetch_assoc($result)) {
         $html .= "<tr>";
+        
+        $serialNumber = null;
+        $deviceType = null;
+
         foreach ($row as $colName => $value) {
             $content = htmlspecialchars($value ?? '');
+
+            // Specific formatting for the 'state' column (adding CSS classes for colors)
             if ($colName === 'state') {
                 $content = "<span class=\"" . getStateClass($value) . "\">" . $content . "</span>";
-            } else if ($colName === 'device_type') {
+            } 
+            
+            // We store these to build the 'Action' link later
+            if ($colName === 'device_type') {
                 $deviceType = $content;
             } else if ($colName === 'serial_number') {
                 $serialNumber = $content;
             }
+
             $html .= "<td>" . $content . "</td>";
         }
 
+        // Action column: create a link to view item details
         if ($serialNumber != null && $deviceType != null) {
             $html .= "<td>   
                         <a href='./inventory-item.php?serialNumber=".$serialNumber."&deviceType=".$deviceType."'>
-                            <img
-                                src='../assets/open.png'
-                                alt='Ouvrir'
-                            />
+                            <img src='../assets/open.png' alt='Ouvrir' />
                         </a>
                     </td>"; 
         } else {
@@ -315,6 +328,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
 
         $html .= "</tr>";
     }
+
     $html .= "</tbody></table>";
 
     return $html;
