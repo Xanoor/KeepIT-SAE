@@ -47,9 +47,9 @@ unset($_SESSION['import_errors']);
             </div>
             <nav class="nav-right-container">
                 <a href="#" class="profile-btn">Profil</a>
-                <a href="#" class="log-out"
-                    ><img src="../assets/log-out.png" alt="Profil"
-                /></a>
+                <a href="../actions/logout_action.php" class="log-out">
+                    <img src="../assets/log-out.png" alt="Déconnexion"/>
+                </a>
             </nav>
         </header>
         <main class="inventory-item-main">
