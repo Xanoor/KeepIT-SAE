@@ -110,3 +110,32 @@ CREATE OR REPLACE VIEW vw_export_monitor AS
             AND dv.device_type LIKE 'Monitor'
        ORDER BY
            dv.serial_number;
+
+-- VIEW FROM DASHBORD
+
+CREATE OR REPLACE VIEW vw_dashboard_five_devices_last_update AS
+SELECT
+    dv.serial_number AS serial_number,
+    dv.model AS model,
+    dv.device_type AS device_type,
+    dv.created_at AS created_at,
+    dv.updated_at AS updated_at
+FROM
+    devices dv
+ORDER BY
+    updated_at DESC,
+    serial_number ASC
+    LIMIT 5;
+
+CREATE OR REPLACE VIEW vw_dashboard_five_users_last_connection AS
+SELECT
+    usr.last_name AS last_name,
+    usr.first_name AS first_name,
+    usr.role AS role,
+    usr.last_login_at AS last_login_at
+FROM
+    users usr
+ORDER BY
+    last_login_at DESC,
+    first_name ASC
+    LIMIT 5;
