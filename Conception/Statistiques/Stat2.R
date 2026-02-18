@@ -1,3 +1,6 @@
+# Génère un graphique permettant de prévoir pour chaque mois
+# le nombre de fin de garanties à partir d'une date
+
 library(ggplot2)
 
 graphique_garantie <- function(fichier, date_debut, nb_mois) {

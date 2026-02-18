@@ -1,3 +1,6 @@
+# Renvoie la probabilité d'avoir n PC correspondant aux exigences passés en paramètres
+# dans un échantillon de taille k
+
 proba_binomial <- function(fichier, ville, taille_salle, minimum_ok, minimum_ram, minimum_disk) {
   
   donnees <- read.csv2(fichier, sep = ",")

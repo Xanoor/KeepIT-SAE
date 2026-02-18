@@ -1,3 +1,6 @@
+# Renvoie un dataframe indiquant le nombre de connexion dont le temps
+# d'activité (en minutes) correspond à un palier
+
 moyennes_connections <- function(fichier, nombre_paliers) {
   
   donnees = read.csv(fichier, sep = ",")
