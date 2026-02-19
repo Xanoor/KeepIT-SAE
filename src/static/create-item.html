@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <title>Page de configuration</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="../styles/inventory-item.css"
+        />
+    </head>
+    <body>
+        <header>
+            <div class="nav-left-container">
+                <div class="app-name-container">
+                    <a href="login.html">KEEPIT</a>
+                </div>
+                <nav class="nav-buttons-container">
+                    <a href="#">Dashboard</a>
+                    <a href="inventory.html" class="nav-buttons-current"
+                        >Inventaire</a
+                    >
+                    <a href="#">Techniciens</a>
+                    <a href="#">Informations</a>
+                </nav>
+            </div>
+            <nav class="nav-right-container">
+                <a href="#" class="profile-btn">Profil</a>
+                <a href="#" class="log-out"
+                    ><img src="../assets/log-out.png" alt="Deconnexion"
+                /></a>
+            </nav>
+        </header>
+        <main class="inventory-item-main">
+            <div>
+                <div class="page-name">
+                    <img alt="Logo du site" src="../assets/logo.png" />
+                    <h1>Inventaire</h1>
+                </div>
+                <div class="create-item-header">
+                    <select
+                        name="device_type"
+                        id="create-item-select"
+                        aria-label="Type d'appareil"
+                    >
+                        <option disabled selected hidden>
+                            Selectionner le type
+                        </option>
+                        <option value="COMPUTER">Ordinateur</option>
+                        <option value="MONITOR">Écran</option>
+                    </select>
+                </div>
+
+                <!-- Item data -->
+                <!-- Structure is (class): 
+                        Category = inventory-item-category
+                        Columns inside category = inventory-item-col
+                        Data (label + input) inside col = inventory-item
+                     -->
+
+                <!-- /!\ This part is an example for the static page /!\ -->
+                <section class="inventory-item-main-section">
+                    <form action="" method="POST" id="create-item-form">
+                        <div class="inventory-item-inline">
+                            <div class="inventory-item-data">
+                                Informations générales
+                            </div>
+                            <input
+                                type="submit"
+                                class="inventory-item-data"
+                                value="Créer"
+                                id="createItem"
+                                name="submit"
+                            />
+                        </div>
+                        <div class="inventory-item-category">
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-name"
+                                        >Numéro de série</label
+                                    >
+                                    <input
+                                        id="item-input-serialNumber"
+                                        type="text"
+                                        value="5CG4115NVQ"
+                                        name="item-serialNumber"
+                                        placeholder="Numéro de série"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-name">Nom</label>
+                                    <input
+                                        id="item-input-name"
+                                        type="text"
+                                        value="Mac Book Pro Air Max"
+                                        name="item-name"
+                                        placeholder="Nom/modèle de l'appareil"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-category"
+                                        >Catégorie</label
+                                    >
+                                    <input
+                                        id="item-input-category"
+                                        type="text"
+                                        value="Ordinateur portable"
+                                        name="item-type_name"
+                                        placeholder="Catégorie de l'appareil"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-status"
+                                        >Statut</label
+                                    >
+                                    <select
+                                        id="item-input-status"
+                                        name="item-state"
+                                        required
+                                    >
+                                        <option>En stock</option>
+                                        <option>Déployé</option>
+                                        <option>Fin de vie</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-loc"
+                                        >Lieu de détention</label
+                                    >
+                                    <input
+                                        id="item-input-loc"
+                                        type="text"
+                                        value="Rambouillet"
+                                        name="item-location"
+                                        placeholder="Lieu de détention (ville)"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-building"
+                                        >Bâtiment</label
+                                    >
+                                    <input
+                                        id="item-input-building"
+                                        type="text"
+                                        value="Halle Bastier"
+                                        name="item-building"
+                                        placeholder="Nom du bâtiment"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-room"
+                                        >Salle de détention</label
+                                    >
+                                    <input
+                                        id="item-input-room"
+                                        type="text"
+                                        value="H47"
+                                        name="item-room"
+                                        placeholder="Nom de la salle"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inventory-item-data">Spécificités</div>
+                        <div class="inventory-item-category">
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-cpu"
+                                        >Processeur (CPU)</label
+                                    >
+                                    <input
+                                        id="item-input-cpu"
+                                        type="text"
+                                        value="CPU #482"
+                                        name="item-cpu"
+                                        placeholder="Nom du processeur"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-os"
+                                        >Système d'exploitation (OS)</label
+                                    >
+                                    <select
+                                        id="item-input-os"
+                                        name="item-os_name"
+                                        required
+                                    >
+                                        <option>Windows 11</option>
+                                        <option>MacOS</option>
+                                        <option>Ubuntu 22.04</option>
+                                    </select>
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-manufacturer"
+                                        >Fabricant</label
+                                    >
+                                    <select
+                                        id="item-input-manufacturer"
+                                        name="item-manufacturer_name"
+                                        required
+                                    >
+                                        <option>ASUS</option>
+                                        <option>Lenovo</option>
+                                        <option>HP</option>
+                                        <option>MSI</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-ram">RAM (GO)</label>
+                                    <input
+                                        type="number"
+                                        value="16"
+                                        id="item-input-ram"
+                                        name="item-ram_mb"
+                                        placeholder="Mémoire vive (Giga octets)"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-disk"
+                                        >Taille du stockage (Go)</label
+                                    >
+                                    <input
+                                        type="number"
+                                        value="512"
+                                        id="item-input-disk"
+                                        name="item-disk_gb"
+                                        placeholder="Taille du stockage (Giga octets)"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inventory-item-data">
+                            Autres informations
+                        </div>
+                        <div class="inventory-item-category">
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-domain"
+                                        >Domaine</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-domain"
+                                        value="iut.velizy-uvsq.fr"
+                                        name="item-domain"
+                                        placeholder="Domaine informatique"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-mac"
+                                        >Adresse physique (MAC)</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-mac"
+                                        value="AE:80:10:EA:DB"
+                                        name="item-mac_address"
+                                        placeholder="Adresse physique (MAC)"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="inventory-item-col">
+                                <div class="inventory-item">
+                                    <label for="item-input-purchase_date"
+                                        >Date d'achat</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-purchase_date"
+                                        value="2020-05-04"
+                                        name="item-purchase_date"
+                                        placeholder="2020-05-04"
+                                        required
+                                    />
+                                </div>
+                                <div class="inventory-item">
+                                    <label for="item-input-warranty_end"
+                                        >Date de fin de garantie</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="item-input-warranty_end"
+                                        value="2020-05-04"
+                                        name="item-warranty_end"
+                                        placeholder="2020-05-04"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </body>
+    <script src="../scripts/callItemForm.js"></script>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html>
 <!-- <?php include 'header.php'; ?> -->
-<?php include '../fragments/functions.php'; ?>
+<?php include '../includes/functions.php'; ?>
 <?php
 
 

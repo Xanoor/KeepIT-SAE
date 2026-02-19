@@ -2,16 +2,13 @@
     --background-color: #121212;
     --secondary-color: #1e1e2e;
 
-    --header-bg: #3f51b5;
+    --third-color: #3f51b5;
+    --alternative-color: #252538;
 
     --border-color: #3f51b5;
-    --login-input-bg: #252538;
-    --login-shadow: #3f51b5;
 
     --submit-disabled: #2b2b33;
     --submit-disabled-border: #787c8e;
-
-    --thead-color: #252538;
 }
 
 /* Body */
@@ -24,6 +21,19 @@ body {
     margin: 0;
 }
 
+/* For readers - accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* Header */
 header {
     display: flex;
@@ -32,7 +42,7 @@ header {
     justify-content: space-between;
 
     padding: 5px;
-    background: var(--header-bg);
+    background: var(--third-color);
 
     height: 5.5vh;
     max-height: 400px;
@@ -111,12 +121,20 @@ header .profile-btn:hover {
 }
 
 header .nav-right-container .log-out {
-    background: url("../assets/log-out.png") no-repeat center / contain;
-
     width: clamp(16px, 2.5vw, 25px);
     height: clamp(16px, 2.5vw, 25px);
+    flex-shrink: 0;
 
-    flex-shrink: 0; /*img cannot disappear*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+header .nav-right-container .log-out img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 header .nav-buttons-current {
@@ -142,4 +160,171 @@ header .nav-buttons-current {
     height: auto;
     aspect-ratio: 1/1;
     object-fit: contain;
+}
+
+/* Form global style (for table style pages) */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin-bottom: 1rem;
+}
+
+.form-header input,
+.form-header select,
+.form-header button,
+.form-header .btn-back {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.35rem 1rem;
+    background: var(--secondary-color);
+    cursor: pointer;
+    height: 2rem;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.form-header input[type="submit"],
+.form-header button[type="submit"]:has(:not(img)) {
+    padding: 0.35rem 2rem;
+}
+
+.form-header input[type="submit"]:disabled,
+.form-header button[type="submit"]:disabled {
+    cursor: not-allowed;
+    background: var(--submit-disabled);
+    border-color: var(--submit-disabled-border);
+}
+
+.form-header button[type="submit"] img {
+    aspect-ratio: 1/1;
+    height: 100%;
+}
+
+.form-header > div {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.importCSV-main-section > form,
+.inventory-top-section,
+.page-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Table form */
+.form-content,
+.page-table-content {
+    position: relative;
+    width: 90%;
+    height: 70vh;
+}
+
+.page-content .nav-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin: 10px 5%;
+    width: 90%;
+}
+
+.page-content .nav-buttons button,
+.page-content .nav-buttons .page-num-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(29, 29, 29, 0.418);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    aspect-ratio: 1/1;
+    margin: 5px;
+    width: 3.5%;
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    box-sizing: border-box;
+    color: white;
+    font-size: 1.1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.page-content .nav-buttons button:hover,
+.page-content .nav-buttons .page-num-input:hover {
+    background: rgba(59, 59, 59, 0.582);
+}
+
+.page-content .nav-buttons button:disabled {
+    cursor: not-allowed;
+    filter: opacity(0.7);
+}
+
+.page-content .nav-buttons button img {
+    width: 75%;
+    aspect-ratio: 1/1;
+}
+
+.page-content .nav-buttons .page-num-input::-webkit-outer-spin-button,
+.page-content .nav-buttons .page-num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Error message styling */
+.error-message {
+    color: #ff5252;
+    background-color: rgba(255, 82, 82, 0.1);
+    border: 1px solid #ff5252;
+    border-radius: 4rem;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    text-align: center;
+    font-weight: bold;
+    box-sizing: border-box;
+    box-shadow: #ff5c5c 0px 0px 10px 0px;
+}
+
+/* Select checkbox */
+.select-checkbox {
+    position: relative;
+    border-radius: 1rem;
+    background: var(--secondary-color);
+}
+
+#select-checkbox-button {
+    padding: 0.35rem 3em;
+    width: 175px;
+}
+
+#select-checkbox-list {
+    display: flex;
+    z-index: 9999;
+    position: absolute;
+    flex-direction: column;
+    background: var(--secondary-color);
+    border-radius: 0 0 1rem 1rem;
+    border: none;
+    max-height: 210px;
+    overflow-y: scroll;
+}
+
+#select-checkbox-list > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 1em;
+}
+
+#select-checkbox-list > div > label {
+    cursor: pointer;
+}
+
+.select-checkbox-active {
+    border-radius: 1rem 1rem 0 0;
 }

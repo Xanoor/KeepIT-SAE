@@ -1,0 +1,141 @@
+/* Inventory-item */
+
+.inventory-item-main {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inventory-item-main > div {
+    width: 100%;
+}
+
+.inventory-item-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inventory-item-container > section:first-child {
+    width: 100%;
+}
+
+.inventory-item-main-section {
+    padding: 15px 3em;
+}
+
+.inventory-item-main-section input[type="submit"] {
+    cursor: pointer;
+}
+
+.inventory-item-inline {
+    display: flex;
+    gap: 10px;
+}
+
+.inventory-item-name {
+    display: flex;
+    align-items: center;
+    gap: 3em;
+}
+
+.inventory-item-name > h2 {
+    color: #cdcdcd;
+    font-size: 2em;
+    margin-top: 0;
+}
+
+.inventory-item-name > h3 {
+    color: #4d68ff;
+    font-size: 1.75em;
+    margin-top: 0;
+}
+
+.inventory-item-category {
+    display: flex;
+    flex-direction: row;
+    margin: 1em;
+    gap: 4em;
+    width: 100%;
+}
+
+.inventory-item-category input[type="text"],
+.inventory-item-category input[type="number"],
+.inventory-item-category input[type="date"],
+.inventory-item-category select,
+.create-item-header select {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.35rem 1rem;
+    background: var(--secondary-color);
+}
+
+.inventory-item-category .inventory-item-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 40%;
+}
+
+.inventory-item-category .inventory-item-col .inventory-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.inventory-item-activity {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 25%;
+    border-left: 2px solid var(--border-color);
+    background: var(--secondary-color);
+    min-width: 200px;
+    min-height: 100vh;
+}
+
+.activity-top-text,
+.inventory-item-data {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    font-weight: bold;
+    padding: 5px 15px;
+    background: var(--alternative-color);
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 30px;
+    color: #969696;
+}
+
+.activity-top-text {
+    margin-top: 35px;
+    height: min-content;
+}
+
+.activity-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 35px;
+    margin-top: 25px;
+}
+
+.activity-main .activity-main-item {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    margin: 10px 2px 10px 15px;
+}
+
+.activity-main .activity-main-item .activity-date {
+    color: #969696;
+}
+
+/* Only for create-item.html/php */
+.create-item-header {
+    padding: 15px 3em;
+}
