@@ -2,19 +2,208 @@
 
 session_start();
 
-if (!isset($_SESSION['login'])) {
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
     header("Location: login.php");
     exit();
 }
 
-echo "Infos de l'utilisateur connecté :<br>";
-print_r($_SESSION);
-echo "<br><br>";
-echo "Lien vers l'inventaire: <a href='../pages/inventory.php'>Inventaire</a>";
-echo "<br>";
-echo "Pages statiques: <a href='http://192.168.25.19/static'>Statique</a>";
-echo "<br>";
-echo "Dernière connexion : " . date("d/m/Y H:i:s", strtotime("+1 hour"));
-echo "<br><br>";
-echo "<a href='../actions/logout_action.php'>Se déconnecter</a>";
-echo "<script>alert('Lien pages statiques: http://192.168.25.19/static/')</script>";
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
+
+$techniciens = [];
+if (tableExists($connect, 'users')) {
+    $techQuery = "SELECT login, last_name, first_name, role, last_login_at
+                  FROM users
+                  ORDER BY last_login_at DESC
+                  LIMIT 5";
+    $techResult = mysqli_query($connect, $techQuery);
+    if ($techResult) {
+        while ($row = mysqli_fetch_assoc($techResult)) {
+            $techniciens[] = $row;
+        }
+    }
+}
+
+$inventaireItems = [];
+if (tableExists($connect, 'devices')) {
+    $invQuery = "SELECT d.serial_number,
+                        COALESCE(c.name, d.model, d.serial_number) AS display_name,
+                        d.device_type,
+                        d.state
+                 FROM devices d
+                 LEFT JOIN computer c ON c.serial_number = d.serial_number
+                 ORDER BY d.updated_at DESC
+                 LIMIT 5";
+    $invResult = mysqli_query($connect, $invQuery);
+    if ($invResult) {
+        while ($row = mysqli_fetch_assoc($invResult)) {
+            $inventaireItems[] = $row;
+        }
+    }
+}
+
+$displayName = htmlspecialchars($_SESSION['login']);
+if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
+    $displayName = htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? '')));
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Dashboard - KEEPIT</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/inventory-table.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/dashboard.css" />
+</head>
+<body>
+    <header>
+        <div class="nav-left-container">
+            <div class="app-name-container">
+                <a href="index.php">KEEPIT</a>
+            </div>
+            <nav class="nav-buttons-container">
+                <a href="index.php" class="nav-buttons-current">Dashboard</a>
+                <a href="inventory.php">Inventaire</a>
+                <a href="#">Techniciens</a>
+                <a href="#">Informations</a>
+            </nav>
+        </div>
+        <nav class="nav-right-container">
+            <a href="#" class="profile-btn"><?= $displayName ?></a>
+            <a href="../actions/logout_action.php" class="log-out">
+                <img src="../assets/log-out.png" alt="Déconnexion" />
+            </a>
+        </nav>
+    </header>
+
+    <main class="dashboard-main">
+
+        <!-- Page title -->
+        <div class="page-name">
+            <img alt="Logo du site" src="../assets/logo.png" />
+            <h1>Dashboard</h1>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <!-- Techniciens -->
+            <div class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <h2>Techniciens</h2>
+                </div>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Login</th>
+                            <th>Nom du technicien</th>
+                            <th>Prénom</th>
+                            <th>Dernière connexion</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($techniciens)): ?>
+                            <tr class="placeholder-row">
+                                <td colspan="5">Aucun technicien trouvé</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($techniciens as $tech): ?>
+                                <tr>
+                                    <td class="col-id"><?= htmlspecialchars($tech['login']) ?></td>
+                                    <td><?= htmlspecialchars($tech['last_name'] ?? '—') ?></td>
+                                    <td><?= htmlspecialchars($tech['first_name'] ?? '—') ?></td>
+                                    <td>
+                                        <?php
+                                            $label = timeAgoFr($tech['last_login_at']);
+                                            $class = ($label === 'Maintenant') ? ' class="last-login-now"' : '';
+                                            echo "<span{$class}>" . htmlspecialchars($label) . "</span>";
+                                        ?>
+                                    </td>
+                                    <td class="col-action">
+                                        <a href="#" title="Voir le profil">
+                                            <img src="../assets/open.png" alt="Ouvrir" />
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Inventaire -->
+            <div class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <h2>Inventaire</h2>
+                </div>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>N° de série</th>
+                            <th>Nom de l'appareil</th>
+                            <th>Catégorie</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($inventaireItems)): ?>
+                            <tr class="placeholder-row">
+                                <td colspan="5">Aucun appareil trouvé</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($inventaireItems as $item): ?>
+                                <tr>
+                                    <td class="col-id"><?= htmlspecialchars($item['serial_number']) ?></td>
+                                    <td><?= htmlspecialchars($item['display_name'] ?? '—') ?></td>
+                                    <td><?= htmlspecialchars($item['device_type'] ?? '—') ?></td>
+                                    <td>
+                                        <span class="<?= getStateClass($item['state']) ?>">
+                                            <?= htmlspecialchars($item['state']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="col-action">
+                                        <a href="inventory-item.php?serialNumber=<?= urlencode($item['serial_number']) ?>&deviceType=<?= urlencode($item['device_type']) ?>"
+                                           title="Voir l'appareil">
+                                            <img src="../assets/open.png" alt="Ouvrir" />
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="dashboard-charts">
+
+            <div class="chart-card">
+                <p class="chart-title">Appareils par type</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-devices-by-type" aria-label="Graphique : appareils par type"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <p class="chart-title">Répartition des statuts</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-states" aria-label="Graphique : répartition des statuts"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <p class="chart-title">Activité récente (14 j.)</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-activity" aria-label="Graphique : activité récente"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script src="../scripts/dashboard.js"></script>
+</body>
+</html>
