@@ -116,12 +116,13 @@ CREATE OR REPLACE VIEW vw_export_monitor AS
 CREATE OR REPLACE VIEW vw_dashboard_five_devices_last_update AS
 SELECT
     dv.serial_number AS serial_number,
-    dv.model AS model,
+    COALESCE(c.name, dv.model, dv.serial_number) AS display_name,
     dv.device_type AS device_type,
-    dv.created_at AS created_at,
+    dv.state AS state,
     dv.updated_at AS updated_at
 FROM
     devices dv
+    LEFT JOIN computer c ON c.serial_number = dv.serial_number
 ORDER BY
     updated_at DESC,
     serial_number ASC

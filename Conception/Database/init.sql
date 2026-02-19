@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     role ENUM('System Administrator', 'Web Administrator', 'Technician') NOT NULL DEFAULT 'Technician',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at DATETIME NULL
+    INDEX idx_users_last_login_at (last_login_at)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 COMMENT = 'Table of user"s account';
 
