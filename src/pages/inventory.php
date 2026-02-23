@@ -72,7 +72,7 @@
                     <a href="index.php">KEEPIT</a>
                 </div>
                 <nav class="nav-buttons-container">
-                    <a href="#">Dashboard</a>
+                    <a href="index.php">Dashboard</a>
                     <a href="#" class="nav-buttons-current">Inventaire</a>
                     <a href="#">Techniciens</a>
                     <a href="#">Informations</a>

@@ -31,10 +31,10 @@
         <header>
             <div class="nav-left-container">
                 <div class="app-name-container">
-                    <a href="login.php">KEEPIT</a>
+                    <a href="index.php">KEEPIT</a>
                 </div>
                 <nav class="nav-buttons-container">
-                    <a href="#">Dashboard</a>
+                    <a href="index.php">Dashboard</a>
                     <a href="inventory.php" class="nav-buttons-current"
                         >Inventaire</a
                     >
