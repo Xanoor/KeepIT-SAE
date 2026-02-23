@@ -10,13 +10,20 @@ if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
+function timeAgoFr(?string $datetime): string {
+    if (empty($datetime)) return "Jamais";
+    $diff = (new DateTime())->diff(new DateTime($datetime));
+    if ($diff->y > 0) return "Il y a " . $diff->y . " an" . ($diff->y > 1 ? "s" : "");
+    if ($diff->m > 0) return "Il y a " . $diff->m . " mois";
+    if ($diff->d > 0) return "Il y a " . $diff->d . " jour" . ($diff->d > 1 ? "s" : "");
+    if ($diff->h > 0) return "Il y a " . $diff->h . " heure" . ($diff->h > 1 ? "s" : "");
+    if ($diff->i > 0) return "Il y a " . $diff->i . " minute" . ($diff->i > 1 ? "s" : "");
+    return "Maintenant";
+}
+
 $techniciens = [];
-if (tableExists($connect, 'users')) {
-    $techQuery = "SELECT login, last_name, first_name, role, last_login_at
-                  FROM users
-                  ORDER BY last_login_at DESC
-                  LIMIT 5";
-    $techResult = mysqli_query($connect, $techQuery);
+if (tableExists($connect, 'vw_dashboard_five_users_last_connection')) {
+    $techResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_users_last_connection");
     if ($techResult) {
         while ($row = mysqli_fetch_assoc($techResult)) {
             $techniciens[] = $row;
@@ -25,16 +32,8 @@ if (tableExists($connect, 'users')) {
 }
 
 $inventaireItems = [];
-if (tableExists($connect, 'devices')) {
-    $invQuery = "SELECT d.serial_number,
-                        COALESCE(c.name, d.model, d.serial_number) AS display_name,
-                        d.device_type,
-                        d.state
-                 FROM devices d
-                 LEFT JOIN computer c ON c.serial_number = d.serial_number
-                 ORDER BY d.updated_at DESC
-                 LIMIT 5";
-    $invResult = mysqli_query($connect, $invQuery);
+if (tableExists($connect, 'vw_dashboard_five_devices_last_update')) {
+    $invResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_devices_last_update");
     if ($invResult) {
         while ($row = mysqli_fetch_assoc($invResult)) {
             $inventaireItems[] = $row;
@@ -95,8 +94,7 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
                 <table class="dashboard-table">
                     <thead>
                         <tr>
-                            <th>Login</th>
-                            <th>Nom du technicien</th>
+                            <th>Nom</th>
                             <th>Prénom</th>
                             <th>Dernière connexion</th>
                             <th>Action</th>
@@ -105,13 +103,12 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
                     <tbody>
                         <?php if (empty($techniciens)): ?>
                             <tr class="placeholder-row">
-                                <td colspan="5">Aucun technicien trouvé</td>
+                                <td colspan="4">Aucun technicien trouvé</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($techniciens as $tech): ?>
                                 <tr>
-                                    <td class="col-id"><?= htmlspecialchars($tech['login']) ?></td>
-                                    <td><?= htmlspecialchars($tech['last_name'] ?? '—') ?></td>
+                                    <td class="col-id"><?= htmlspecialchars($tech['last_name'] ?? '—') ?></td>
                                     <td><?= htmlspecialchars($tech['first_name'] ?? '—') ?></td>
                                     <td>
                                         <?php
