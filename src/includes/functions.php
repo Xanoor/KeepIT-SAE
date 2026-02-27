@@ -22,6 +22,26 @@ function convertDataToFrench($data) {
 }
 
 /**
+ * Formats a datetime string into a human-readable "time ago" format in French.
+ * @param string|null $datetime The datetime string to format (e.g., "2024-06-01 12:00:00").
+ * @return string A human-readable string representing how long ago the datetime was (e.g., "Il y a 2 jours"). Returns "Jamais" if the input is null or empty, and "Maintenant" if the datetime is within the last minute.
+ */
+function timeAgoFr(?string $datetime): string {
+    if (empty($datetime)) return "Jamais";
+
+    $now  = new DateTime();
+    $past = new DateTime($datetime);
+    $diff = $now->diff($past);
+
+    if ($diff->y > 0) return "Il y a " . $diff->y . " an" . ($diff->y > 1 ? "s" : "");
+    if ($diff->m > 0) return "Il y a " . $diff->m . " mois";
+    if ($diff->d > 0) return "Il y a " . $diff->d . " jour" . ($diff->d > 1 ? "s" : "");
+    if ($diff->h > 0) return "Il y a " . $diff->h . " heure" . ($diff->h > 1 ? "s" : "");
+    if ($diff->i > 0) return "Il y a " . $diff->i . " minute" . ($diff->i > 1 ? "s" : "");
+    return "Maintenant";
+}
+
+/**
  * Check if a table exists in the database.
  * 
  * @param mysqli $connect Database connection.

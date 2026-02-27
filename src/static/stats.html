@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Statistiques – KEEPIT</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/inventory-table.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/dashboard.css" />
+</head>
+<body>
+    <header>
+        <div class="nav-left-container">
+            <div class="app-name-container">
+                <a href="login.html">KEEPIT</a>
+            </div>
+            <nav class="nav-buttons-container">
+                <a href="#">Dashboard</a>
+                <a href="inventory.html">Inventaire</a>
+                <a href="#">Techniciens</a>
+                <a href="stats.html" class="nav-buttons-current">Informations</a>
+            </nav>
+        </div>
+        <nav class="nav-right-container">
+            <a href="#" class="profile-btn">Profil</a>
+            <a href="#" class="log-out">
+                <img src="../assets/log-out.png" alt="Déconnexion" />
+            </a>
+        </nav>
+    </header>
+
+    <main class="dashboard-main">
+
+        <div class="page-name">
+            <img alt="Logo du site" src="../assets/logo.png" />
+            <h1>Statistiques</h1>
+        </div>
+
+        <!-- KPI row -->
+        <div class="stats-kpi-row">
+            <div class="stats-kpi-card">
+                <span class="stats-kpi-value">247</span>
+                <span class="stats-kpi-label">Appareils total</span>
+            </div>
+            <div class="stats-kpi-card">
+                <span class="stats-kpi-value" style="color:#52ff58">183</span>
+                <span class="stats-kpi-label">Déployés</span>
+            </div>
+            <div class="stats-kpi-card">
+                <span class="stats-kpi-value" style="color:#808080">41</span>
+                <span class="stats-kpi-label">En stock</span>
+            </div>
+            <div class="stats-kpi-card">
+                <span class="stats-kpi-value" style="color:#a10000">23</span>
+                <span class="stats-kpi-label">Fin de vie</span>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="dashboard-charts">
+
+            <div class="chart-card">
+                <p class="chart-title">Appareils par type</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-by-type"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <p class="chart-title">Répartition des statuts</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-states"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <p class="chart-title">Activité mensuelle (actions)</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-monthly"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Activité récente -->
+        <div class="dashboard-grid" style="margin-top:1.5rem">
+
+            <div class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <h2>Appareils récemment modifiés</h2>
+                </div>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>N° de série</th>
+                            <th>Modèle</th>
+                            <th>Type</th>
+                            <th>Dernière mise à jour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-id">8500</td>
+                            <td>Pixel A8</td>
+                            <td>Smartphone</td>
+                            <td>Il y a 2 minutes</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">8706</td>
+                            <td>MacBook Air M2</td>
+                            <td>Computer</td>
+                            <td>Il y a 1 heure</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">500</td>
+                            <td>Ordinateur IUT n°898</td>
+                            <td>Computer</td>
+                            <td>Il y a 3 heures</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">8080</td>
+                            <td>iPhone 12</td>
+                            <td>Smartphone</td>
+                            <td>Il y a 1 jour</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="dashboard-panel">
+                <div class="dashboard-panel-header">
+                    <h2>Activité par champ modifié</h2>
+                </div>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Champ</th>
+                            <th>Modifications</th>
+                            <th>Appareils concernés</th>
+                            <th>Utilisateurs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-id">state</td>
+                            <td>714</td>
+                            <td>198</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">location</td>
+                            <td>305</td>
+                            <td>87</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">os_name</td>
+                            <td>47</td>
+                            <td>32</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td class="col-id">model</td>
+                            <td>58</td>
+                            <td>41</td>
+                            <td>2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script>
+        Chart.defaults.color = 'rgb(173,173,173)';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+        Chart.defaults.font.family = 'Arial, Helvetica, sans-serif';
+
+        new Chart(document.getElementById('chart-by-type'), {
+            type: 'bar',
+            data: {
+                labels: ['Computer', 'Monitor', 'Smartphone'],
+                datasets: [{
+                    label: 'Appareils',
+                    data: [142, 58, 47],
+                    backgroundColor: 'rgba(63,81,181,0.7)',
+                    borderColor: '#3f51b5',
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(255,255,255,0.07)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('chart-states'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Déployé', 'En stock', 'Fin de vie'],
+                datasets: [{
+                    data: [183, 41, 23],
+                    backgroundColor: ['#52ff58', '#808080', '#a10000'],
+                    borderWidth: 2,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '62%',
+                plugins: { legend: { position: 'bottom', labels: { padding: 12, boxWidth: 14 } } }
+            }
+        });
+
+        new Chart(document.getElementById('chart-monthly'), {
+            type: 'line',
+            data: {
+                labels: ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'],
+                datasets: [{
+                    label: 'Actions',
+                    data: [305, 480, 390, 645, 714, 58],
+                    fill: true,
+                    backgroundColor: 'rgba(63,81,181,0.15)',
+                    borderColor: '#3f51b5',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#3f51b5',
+                    pointRadius: 3,
+                    tension: 0.35,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(255,255,255,0.07)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
