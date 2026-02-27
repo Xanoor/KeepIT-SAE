@@ -72,7 +72,6 @@ unset($_SESSION['import_errors']);
                     </select>
                 </div>
 
-                <!-- /!\ This part is an example for the static page /!\ -->
                 <section class="inventory-item-main-section">
                     <form action="../actions/create-item_action.php" method="POST" id="create-item-form">
                        

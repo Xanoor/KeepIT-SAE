@@ -10,17 +10,6 @@ if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
-function timeAgoFr(?string $datetime): string {
-    if (empty($datetime)) return "Jamais";
-    $diff = (new DateTime())->diff(new DateTime($datetime));
-    if ($diff->y > 0) return "Il y a " . $diff->y . " an" . ($diff->y > 1 ? "s" : "");
-    if ($diff->m > 0) return "Il y a " . $diff->m . " mois";
-    if ($diff->d > 0) return "Il y a " . $diff->d . " jour" . ($diff->d > 1 ? "s" : "");
-    if ($diff->h > 0) return "Il y a " . $diff->h . " heure" . ($diff->h > 1 ? "s" : "");
-    if ($diff->i > 0) return "Il y a " . $diff->i . " minute" . ($diff->i > 1 ? "s" : "");
-    return "Maintenant";
-}
-
 $techniciens = [];
 if (tableExists($connect, 'vw_dashboard_five_users_last_connection')) {
     $techResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_users_last_connection");

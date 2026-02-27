@@ -63,7 +63,6 @@
                      -->
                 <section class="inventory-item-main-section">
                     <form action="../actions/inventory-item_action.php" method="POST">
-                        <!-- TODO: if role is admin -> add delete item button -->
                         <?php 
                             // return to inventory.php if serialNumber or deviceType is empty (pre-check)
                             if (empty($_GET['serialNumber']) || empty($_GET['deviceType'])) {
