@@ -43,15 +43,15 @@ CREATE OR REPLACE VIEW vw_month_activity AS
         nb_modifications,
         nb_devices,
         nb_utilisateurs,
-        -- Classement des champs les plus modifiés par mois
+        -- Classement des champs les plus modifiés par mois (Numérotation)
         DENSE_RANK() OVER (PARTITION BY mois ORDER BY nb_modifications DESC) AS month_rank,
-            -- Classement global
+            -- Classement global (Numérotation)
         RANK() OVER (ORDER BY nb_modifications DESC) AS global_rank,
-            -- Percentile dans le mois
+            -- Percentile dans le mois (Permet la comparaison sur des nb_modifications d'ordre très différent)
         PERCENT_RANK() OVER (PARTITION BY mois ORDER BY nb_modifications DESC) AS percentile_mois,
-            -- Évolution vs mois précédent
+            -- Évolution vs mois précédent (Lag permet de prendre le résultat du mois précédent)
         nb_modifications - LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois) AS evolution_vs_last_month,
-            -- Évolution en pourcentage
+            -- Évolution en pourcentage par rapport au moi précédent
         ROUND(
                 (nb_modifications - LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois))
                     / NULLIF(LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois), 0) * 100,

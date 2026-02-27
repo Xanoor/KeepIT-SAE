@@ -170,4 +170,106 @@ BEGIN
 END
 //
 
+
+CREATE TABLE IF NOT EXISTS constant_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    table_name VARCHAR(25) NOT NULL,
+    action_did VARCHAR(10) NOT NULL,
+    val VARCHAR(50) NOT NULL,
+    INDEX idx_constant_logs_date (log_date),
+    INDEX idx_constant_logs_table (table_name)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COMMENT = 'LOGS TABLE ABOUT FEATURES OF DEVICES'
+//
+
+
+-- ==============================
+-- Trigger pour la table locations
+CREATE OR REPLACE TRIGGER locations_after_insert
+AFTER INSERT ON locations
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+        VALUES (NOW(), 'locations', 'INSERT', CAST(NEW.location AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER locations_after_delete
+AFTER DELETE ON locations
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'locations', 'DELETE', CAST(OLD.location AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table operating_system
+CREATE OR REPLACE TRIGGER operating_system_after_insert
+    AFTER INSERT ON operating_system
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'operating_system', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER operating_system_after_delete
+    AFTER DELETE ON operating_system
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'operating_system', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table manufacturer
+CREATE OR REPLACE TRIGGER manufacturer_after_insert
+    AFTER INSERT ON manufacturer
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'manufacturer', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER manufacturer_after_delete
+    AFTER DELETE ON manufacturer
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'manufacturer', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table connector
+CREATE OR REPLACE TRIGGER connector_after_insert
+    AFTER INSERT ON connector
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'connector', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER connector_after_delete
+    AFTER DELETE ON connector
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'connector', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
 DELIMITER ;
