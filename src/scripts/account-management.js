@@ -9,3 +9,4 @@ document.querySelector('.eye-icon').addEventListener('click', function () {
         this.classList.remove('visible');
     }
 });
+
