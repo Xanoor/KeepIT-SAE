@@ -120,6 +120,19 @@ header .profile-btn:hover {
     cursor: pointer;
 }
 
+header .profile-btn-selected {
+    padding: 2.5px clamp(4px, 1.5vw, 40px);
+    background: #283593;
+    color: white;
+    border-radius: 7.5px;
+}
+
+header .profile-btn-selected:hover {
+    background: #3341af;
+    color: white;
+    cursor: pointer;
+}
+
 header .nav-right-container .log-out {
     width: clamp(16px, 2.5vw, 25px);
     height: clamp(16px, 2.5vw, 25px);
