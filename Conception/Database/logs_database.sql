@@ -56,6 +56,41 @@ BEGIN
 END
 //
 
+CREATE OR REPLACE TRIGGER devices_before_delete
+    BEFORE DELETE ON devices -- Application sur devices car on se base sur cette table pour supprimer dans computer (CASCADE)
+    FOR EACH ROW
+BEGIN
+    DECLARE monitor_upd VARCHAR(25);
+    DECLARE computer_name VARCHAR(25);
+    DECLARE done INT DEFAULT 0;
+    DECLARE monitor_liked cursor for
+        SELECT serial_number
+        FROM monitor
+        WHERE attached_to_computer = computer_name;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    IF OLD.device_type = 'Computer' THEN
+        SELECT c.name INTO computer_name
+        FROM computer c
+        WHERE c.serial_number LIKE OLD.serial_number;
+
+        OPEN monitor_liked;
+        read_loop:
+        LOOP
+            FETCH monitor_liked INTO monitor_upd;
+
+            IF done = 1 THEN
+                LEAVE read_loop;
+            end if;
+
+        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
+        VALUES (NOW(), @current_user, monitor_upd, 'monitor', 'AT_DELETED', 'attached_to_computer', computer_name, null);
+        END LOOP;
+
+        CLOSE monitor_liked;
+    END IF;
+END
+//
 
 -- ==============================
 -- Trigger pour la table computer
