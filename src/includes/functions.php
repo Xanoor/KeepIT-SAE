@@ -897,12 +897,22 @@ function loadInventoryLogs($serialNumber) {
         $newVal = htmlspecialchars($row['new_val'] ?? '');
 
         $text = "";
-        if ($action === 'INSERT') {
-            $text = "$login a ajouté l'appareil ($field - $serialNumber)";
-        } else if ($action === 'UPDATE') {
-            $text = "$login a changé $field de \"$oldVal\" a \"$newVal\"";
-        } else if ($action === 'DELETE') {
-            $text = "$login a supprimé l'appareil";
+        switch ($action) {
+            case 'INSERT':
+                $text = "$login a ajouté l'appareil ($field - $serialNumber)";
+                break;
+
+            case 'UPDATE':
+                $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
+                break;
+
+            case 'DELETE':
+                $text = "$login a supprimé l'appareil";
+                break;
+
+            case 'AT_DELETED':
+                $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
+                break;
         }
 
         $html .= "

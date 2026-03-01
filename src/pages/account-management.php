@@ -15,6 +15,7 @@
     unset($_SESSION['notification_color']);
     unset($_SESSION['import_errors']);
 
+    // These default logins cannot be edited
     if ($_SESSION['login'] === "tech1" || $_SESSION['login'] === "sysadmin" || $_SESSION['login'] === "adminweb") {
         $_SESSION['notification'] = "Vous ne pouvez pas modifier les informations de ce compte.";
         $_SESSION['notification_color'] = "red";
