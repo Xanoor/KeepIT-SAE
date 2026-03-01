@@ -341,3 +341,33 @@ header .nav-buttons-current {
 .select-checkbox-active {
     border-radius: 1rem 1rem 0 0;
 }
+
+/* Password visibility styles */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+.eye-icon {
+    display: block;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    background-image: url("../assets/password_off.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.eye-icon.visible {
+    background-image: url("../assets/password_on.png");
+    opacity: 1;
+}

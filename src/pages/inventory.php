@@ -79,7 +79,7 @@
                 </nav>
             </div>
             <nav class="nav-right-container">
-                <a href="#" class="profile-btn">Profil</a>
+                <a href="account-management.php" class="profile-btn">Profil</a>
                 <a href="../actions/logout_action.php" class="log-out">
                     <img src="../assets/log-out.png" alt="Déconnexion"/>
                 </a>

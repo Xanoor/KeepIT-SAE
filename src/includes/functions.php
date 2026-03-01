@@ -16,7 +16,10 @@ function convertDataToFrench($data) {
         "DEVICE TYPE" => "Type d'appareil",
         "CREATED AT" => "Créé le",
         "UPDATED AT" => "Modifié le",
-        "STATE" => "État"
+        "STATE" => "État",
+        "TECHNICIAN" => "Technicien",
+        "WEB ADMINISTRATOR" => "Administrateur Web",
+        "SYSTEM ADMINISTRATOR" => "Administrateur Système",
     ];
     return $translations[$data_edit] ?? $data;
 }

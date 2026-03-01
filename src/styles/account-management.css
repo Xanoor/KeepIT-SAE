@@ -77,34 +77,6 @@ input[readonly] {
 }
 
 
-/* Password visibility styles */
-.password-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.eye-icon {
-    position: absolute !important;
-    right: 15px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    background-image: url("../assets/password_off.png") !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-size: contain !important;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-}
-
-.eye-icon.visible {
-    background-image: url("../assets/password_on.png") !important;
-    opacity: 1;
-}
-
-
 /* Readonly input tooltips styles*/ 
 .input-readonly-container{
     position: relative;
@@ -134,4 +106,33 @@ input[readonly] {
     opacity: 1;
     visibility: visible;
     bottom: -75%;
+}
+
+
+/* Input button style*/ 
+
+input[type="submit"] {
+    background-color: #1a1a2e;
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 10px 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    display: block;
+    margin: 30px auto 0 auto;
+    width: fit-content;
+}
+
+input[type="submit"]:hover {
+    background-color: var(--border-color);
+    box-shadow: 0 0 15px rgba(61, 90, 254, 0.4);
+    transform: translateY(-2px);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0);
 }

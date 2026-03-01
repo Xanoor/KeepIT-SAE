@@ -47,18 +47,20 @@ if (isset($_SESSION['login'])) {
                     type="text"
                     placeholder="Login"
                 />
-
                 <label for="password">Mot de passe</label>
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="******"
-                />
+                <div class="password-wrapper">
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="******"
+                    />
+                    <span class="eye-icon"></span>
+                </div>
             </div>
             <input name="submit" type="submit" value="Se connecter" />
         </form>
-
+        <script src="../scripts/showPassword.js"></script>
         <input
             type="button"
             id="video-link"

@@ -10,6 +10,13 @@ if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
+$notification = $_SESSION['notification'] ?? null;
+$notification_color = $_SESSION['notification_color'] ?? null;
+$import_errors = $_SESSION['import_errors'] ?? null;
+unset($_SESSION['notification']);
+unset($_SESSION['notification_color']);
+unset($_SESSION['import_errors']);
+
 $techniciens = [];
 if (tableExists($connect, 'vw_dashboard_five_users_last_connection')) {
     $techResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_users_last_connection");
@@ -43,6 +50,7 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
     <link rel="stylesheet" type="text/css" href="../styles/global.css" />
     <link rel="stylesheet" type="text/css" href="../styles/inventory-table.css" />
     <link rel="stylesheet" type="text/css" href="../styles/dashboard.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
 </head>
 <body>
     <header>
@@ -58,7 +66,7 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
             </nav>
         </div>
         <nav class="nav-right-container">
-            <a href="#" class="profile-btn"><?= $displayName ?></a>
+            <a href="account-management.php" class="profile-btn"><?= $displayName ?></a>
             <a href="../actions/logout_action.php" class="log-out">
                 <img src="../assets/log-out.png" alt="Déconnexion" />
             </a>
@@ -191,5 +199,9 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script src="../scripts/dashboard.js"></script>
-</body>
+    <!-- Notification container -->
+        <div class="notifications-container" id="notificationsContainer"></div>
+    </body>
+    <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
+    <script src="../scripts/notification.js"></script>
 </html>
