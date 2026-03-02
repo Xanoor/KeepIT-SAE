@@ -28,9 +28,15 @@
         if (mysqli_stmt_execute($stmt)) {
             $result = mysqli_stmt_get_result($stmt);
             $resultat = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+
+            $notification = [];
+            $color = [];
 
             // Checing if the new values are the same as the old ones, if so we don't update and we notify the user that no modification has been made to his account.
-            if($resultat['first_name'] === $new_firstname && $resultat['last_name'] === $new_lastname && password_verify($new_password, $resultat['password_hash'])) {
+            $passwordUnchanged = empty($new_password) || password_verify($new_password, $resultat['password_hash']);
+
+            if ($resultat['first_name'] === $new_firstname && $resultat['last_name'] === $new_lastname && $passwordUnchanged) {
                 $_SESSION['notification'] = "Aucune modification n'a été apportée à votre compte.";
                 $_SESSION['notification_color'] = "red";
                 header("Location: ../pages/account-management.php");
@@ -38,24 +44,21 @@
             }
 
             // Checking if the password is the same one, in the other case, we change and notify the user that he has been changed.
-            if (!password_verify($new_password, $resultat['password_hash']) && !empty($new_password)) {
+            if (!$passwordUnchanged) {
                 $password = password_hash($new_password, PASSWORD_DEFAULT);
                 $sql = "UPDATE users SET password_hash = ? WHERE login = ?";
                 $stmt = mysqli_prepare($db, $sql);
                 mysqli_stmt_bind_param($stmt, "ss", $password, $login);
 
                 if (mysqli_stmt_execute($stmt)) {
-                    $_SESSION['notification'] = "Mot de passe mis à jour avec succès.";
-                    $_SESSION['notification_color'] = "green";
-                    header("Location: ../pages/account-management.php");
-                    exit();
-
+                    $notification[] = "Mot de passe mis à jour avec succès.";
+                    $color[] = "green";
                 } else {
-                    $_SESSION['notification'] = "Erreur lors de la mise à jour du mot de passe.";
-                    $_SESSION['notification_color'] = "red";
-                    header("Location: ../pages/account-management.php");
-                    exit();
+                    $notification[] = "Erreur lors de la mise à jour du mot de passe.";
+                    $color[] = "red";
                 }
+
+                mysqli_stmt_close($stmt);
             }
 
             // Now we check if the first or the last name has been changed, in the case, we notify the user.
@@ -65,22 +68,22 @@
                 mysqli_stmt_bind_param($stmt, "sss", $new_firstname, $new_lastname, $login);
 
                 if (mysqli_stmt_execute($stmt)) {
-                    $_SESSION['notification'] = "Informations personnelles mises à jour avec succès.";
-                    $_SESSION['notification_color'] = "green";
-                    header("Location: ../pages/account-management.php");
-                    exit();
+                    $notification[] = "Informations personnelles mises à jour avec succès.";
+                    $color[] = "green";
                 } else {
-                    $_SESSION['notification'] = "Erreur lors de la mise à jour des informations personnelles.";
-                    $_SESSION['notification_color'] = "red";
-                    header("Location: ../pages/account-management.php");
-                    exit();
+                    $notification[] = "Erreur lors de la mise à jour des informations personnelles.";
+                    $color[] = "red";
                 }
+
+                mysqli_stmt_close($stmt);
             }
 
-        
+            $_SESSION['notification'] = $notification;
+            $_SESSION['notification_color'] = $color;
+            header("Location: ../pages/account-management.php");
+            exit();
         } 
 
-    mysqli_stmt_close($stmt);
     header("Location: ../pages/account-management.php");
     exit();
     }

@@ -14,18 +14,18 @@ function showNotification(message, duration = 3000, color = "#f56565") {
 
     let hideTimeout = setTimeout(
         () => removeNotification(notification),
-        duration
+        duration,
     );
 
     notification.addEventListener("click", () => removeNotification(notif));
 
     notification.addEventListener("mouseenter", () =>
-        clearTimeout(hideTimeout)
+        clearTimeout(hideTimeout),
     );
     notification.addEventListener("mouseleave", () => {
         hideTimeout = setTimeout(
             () => removeNotification(notification),
-            duration
+            duration,
         );
     });
 }
@@ -37,6 +37,16 @@ function removeNotification(notification) {
 
 // Show notification if notif exist
 if (notif) {
-    if (!notif_color) showNotification(notif, 2500);
-    else showNotification(notif, 2500, notif_color);
+    if (Array.isArray(notif_color)) {
+        if (notif_color.length != notif.length)
+            notif_color.fill("green", notif_color.length, notif_color.length);
+    }
+
+    if (Array.isArray(notif)) {
+        notif.forEach((msg, index) => {
+            showNotification(msg, 2500, notif_color[index] || "green");
+        });
+    } else {
+        showNotification(notif, 2500, notif_color || "green");
+    }
 }

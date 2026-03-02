@@ -10,10 +10,8 @@
     include_once("../includes/functions.php"); 
     $notification = $_SESSION['notification'] ?? null;
     $notification_color = $_SESSION['notification_color'] ?? null;
-    $import_errors = $_SESSION['import_errors'] ?? null;
     unset($_SESSION['notification']);
     unset($_SESSION['notification_color']);
-    unset($_SESSION['import_errors']);
 
     // These default logins cannot be edited
     if ($_SESSION['login'] === "tech1" || $_SESSION['login'] === "sysadmin" || $_SESSION['login'] === "adminweb") {
@@ -122,7 +120,7 @@
     </form>
     </main>
     <!-- Notification container -->
-        <div class="notifications-container" id="notificationsContainer"></div>
+    <div class="notifications-container" id="notificationsContainer"></div>
     </body>
     <script src="../scripts/showPassword.js"></script>
     <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
