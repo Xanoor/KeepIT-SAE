@@ -195,16 +195,7 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
 
     mysqli_begin_transaction($connect);
     try {
-        // Delete from child table first
-        $table = strtolower($device_type);
-        $req_child = "DELETE FROM $table WHERE serial_number = ?";
-        $stmt_child = mysqli_prepare($connect, $req_child);
-        mysqli_stmt_bind_param($stmt_child, "s", $serial_number);
-        if (!mysqli_stmt_execute($stmt_child)) {
-            throw new Exception("Erreur lors de la suppression dans la table $table : " . mysqli_stmt_error($stmt_child));
-        }
-
-        // Delete from devices table
+        // Delete from devices table (DELETE CASCADE -> WILL BE AUTOMATICALLY DELETED FROM "$device_type" TABLE)
         $req_dev = "DELETE FROM devices WHERE serial_number = ?";
         $stmt_dev = mysqli_prepare($connect, $req_dev);
         mysqli_stmt_bind_param($stmt_dev, "s", $serial_number);

@@ -141,3 +141,11 @@ ORDER BY
     last_login_at DESC,
     first_name ASC
     LIMIT 5;
+
+CREATE OR REPLACE VIEW vw_inventory_search_table AS
+SELECT devices.serial_number AS serial_number, name, model, device_type, created_at, updated_at, state
+FROM devices
+LEFT JOIN computer c 
+    ON devices.serial_number = c.serial_number
+LEFT JOIN monitor m
+    ON devices.serial_number = m.serial_number;

@@ -24,8 +24,9 @@
     $filters = [];
 
     if (!empty($searchTerm)) {
-        // Search by serial number using LIKE
+        // Search by serial number & name using LIKE
         $filters['serial_number'] = "%" . $searchTerm . "%";
+        $filters['name'] = "%" . $searchTerm . "%";
     }
 
     if (!in_array("Tout selectionner", $selectedFilters)) { //if "Tout selectionner" is not in the selected filters, build the filters array
@@ -164,7 +165,7 @@
                 <section class="page-content">
                     <div class="page-table-content">
                         <?php 
-                            echo "<div class='table-preview'>" . importSQLTableBuilder("devices", $filters, $start, $end) . "</div>";
+                            echo "<div class='table-preview'>" . importSQLTableBuilder("vw_inventory_search_table", $filters, $start, $end, ["serial_number", "state", "device_type"]) . "</div>";
                         ?>
                     </div>
                     <div class="nav-buttons">

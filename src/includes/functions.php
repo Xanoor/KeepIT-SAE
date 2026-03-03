@@ -227,7 +227,7 @@ function importCSVTableBuilder($file, $limit = 100) {
  * @param int $end The ending index (limit = end - start).
  * @return string HTML table.
  */
-function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11) {
+function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11, $attr = []) {
     global $connect;
 
     $step = 11; // Default number of items per page
@@ -244,7 +244,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     $whereClause = "";
     if (!empty($filters)) {
         $filterParts = [];
-
+        $likeFilters = [];
         foreach ($filters as $column => $value) {
             $safeColumn = mysqli_real_escape_string($connect, $column);
             
@@ -259,7 +259,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
             } else if (strpos((string)$value, '%') !== false) { //strpos = Find the position of the first occurrence of a su
                 // '%' means we're doing a partial search (e.g. search for serial numbers containing 'ABC')
                 $safeValue = mysqli_real_escape_string($connect, $value);
-                $filterParts[] = "`$safeColumn` LIKE '$safeValue'";
+                $likeFilters[] = "`$safeColumn` LIKE '$safeValue'";
 
             } else {
                 // Simple equality for single values
@@ -267,10 +267,16 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
                 $filterParts[] = "`$safeColumn` = '$safeValue'";
             }
         }
-        // Join all parts with 'AND' so that all conditions must be met
+        //Join all parts with 'AND' so that all conditions must be met
         //implode = Join array elements with a string
         $whereClause = " WHERE " . implode(" AND ", $filterParts);
+        if (!empty($likeFilters)) {
+            $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
+        }
     }
+
+    if (empty($attr)) $attributes = "*"; 
+    else $attributes = implode(", ", $attr);
 
     // We check the total number of rows matching the filters to ensure pagination index is valid
     $countQuery = "SELECT COUNT(*) as total FROM `$safeTable`" . $whereClause;
@@ -289,7 +295,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     $limit = $end - $start;
 
     // We order by 'updated_at' so the user sees recent changes first
-    $query = "SELECT * FROM `$safeTable`" . $whereClause . " ORDER BY updated_at DESC LIMIT $start, $limit";
+    $query = "SELECT ".$attributes." FROM `$safeTable`".$whereClause." ORDER BY updated_at DESC LIMIT $start, $limit";
     $result = mysqli_query($connect, $query);
 
     if (!$result) {
