@@ -4,7 +4,10 @@
         header("Location: login.php");
         exit();
     }
-
+    $notification = $_SESSION['notification'] ?? null;
+    $notification_color = $_SESSION['notification_color'] ?? null;
+    unset($_SESSION['notification']);
+    unset($_SESSION['notification_color']);
     include_once("../includes/functions.php");
 ?>
 
@@ -41,7 +44,7 @@
 
         <main>
             <div class="page-name">
-                <img alt="Logo" src="../assets/logo.png" />
+                <img alt="Logo du site" src="../assets/logo.png" />
                 <h1>Techniciens</h1>
             </div>
 
@@ -95,8 +98,8 @@
                                             echo "<td>". $id_tech . "</td>";
                                             echo "<td>". htmlspecialchars($user['last_name']) ."</td>";
                                             echo "<td>". htmlspecialchars($user['first_name']) ."</td>";
-                                            echo "<td>". htmlspecialchars($user['created_at']) ."</td>";
-                                            echo "<td>". ($user['last_login_at'] ?? 'Jamais') ."</td>";
+                                            echo "<td>". timeAgoFr($user['created_at']) ."</td>";
+                                            echo "<td>". timeAgoFr($user['last_login_at']) ."</td>";
                                             echo "<td> ? </td>";
                                             echo "<td></td>";
                                         ?>
@@ -115,21 +118,21 @@
                     
                 </h2>
                 
-                <form class="edit-form-section">
+                <form class="edit-form-section" method="POST" action="../actions/update-technician.php">
                     <div class="form-group">
-                        <label>Prénom</label>
-                        <input type="text" disabled>
+                        <label for="name">Prénom</label>
+                        <input type="text" name="name" id="name" disabled>
                     </div>
                     <div class="form-group">
-                        <label>Nom</label>
-                        <input type="text" disabled>
+                        <label for="surname">Nom</label>
+                        <input type="text" name="surname" id="surname" disabled>
                     </div>
                     <div class="form-group">
-                        <label>Login</label>
-                        <input type="text">
+                        <label for="login">Login</label>
+                        <input type="text" name="login" id="login">
                     </div>
                     <div class="form-group">
-                        <label>Mot de passe</label>
+                        <label for="password">Mot de passe</label>
                         <div class="password-wrapper">
                             <input type="password" id="password" name="password" placeholder="****************">
                             <span class="eye-icon"></span>
@@ -137,16 +140,18 @@
                     </div>
                     
                     <div class="form-actions-row">
-                        <button type="button" class="btn-save-edit" disabled>Enregistrer</button>
-                    </div>
-                    <script src="../scripts/showPassword.js"></script>
-                    <script src="../scripts/technician.js"></script>
+                        <input type="submit" class="btn-save-edit" value="Enregistrer" />
+                    </div>   
                 </form>
             </section>
-
             <div class="notifications-container" id="notificationsContainer"></div>
         </main>
-        
-        
     </body>
+    <script src="../scripts/showPassword.js"></script>
+    <script>
+        const notif = <?= json_encode($notification) ?>;
+        const notif_color = <?= json_encode($notification_color) ?>;
+    </script>
+    <script src="../scripts/notification.js"></script>
+    <script src="../scripts/technician.js"></script>
 </html>

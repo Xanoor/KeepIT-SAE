@@ -931,10 +931,10 @@ function loadInventoryLogs($serialNumber) {
     return $html;
 }
 
-function loadUsersFromDB($role){
+function loadUsersFromDB($role) {
     global $connect;
 
-    $query = "SELECT login, password_hash, first_name, last_name, last_login_at, created_at 
+    $query = "SELECT login, first_name, last_name, last_login_at, created_at 
               FROM users 
               WHERE role = ?";
 
@@ -946,5 +946,18 @@ function loadUsersFromDB($role){
     return $result;
 }
 
+function getPasswordFromLogin($login) {
+    global $connect;
 
+    $query = "SELECT login, password_hash
+                FROM users 
+                WHERE login = ?";
+
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, "s", $login);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    return $result;
+}
 ?>
