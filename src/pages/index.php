@@ -61,7 +61,7 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
             <nav class="nav-buttons-container">
                 <a href="index.php" class="nav-buttons-current">Dashboard</a>
                 <a href="inventory.php">Inventaire</a>
-                <a href="#">Techniciens</a>
+                <a href="technician.php">Techniciens</a>
                 <a href="#">Informations</a>
             </nav>
         </div>
