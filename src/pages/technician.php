@@ -54,11 +54,7 @@
                         <button type="button" class="bar-textfield">Vue d'ensemble</button>
                     </div>
                     <div>
-                        <select name="technician-action" id="action_select">
-                            <option disabled selected hidden>Action</option>
-                            <option value="#">Ajouter</option>
-                            <option value="#">Importer</option>
-                        </select>
+                        <a href="create-technician.php"><button type="button" class="bar-textfield">Ajouter</button></a>
                     </div>
                 </div>
             </section>
@@ -115,26 +111,26 @@
 
             <section class="edit-tech-footer">
                 <h2 class="edit-tech-title">
-                    
+                    Veuillez sélectionner un technicien.
                 </h2>
                 
                 <form class="edit-form-section" method="POST" action="../actions/update-technician.php">
                     <div class="form-group">
                         <label for="name">Prénom</label>
-                        <input type="text" name="name" id="name" disabled>
+                        <input type="text" name="name" id="name" readonly>
                     </div>
                     <div class="form-group">
                         <label for="surname">Nom</label>
-                        <input type="text" name="surname" id="surname" disabled>
+                        <input type="text" name="surname" id="surname" readonly>
                     </div>
                     <div class="form-group">
                         <label for="login">Login</label>
-                        <input type="text" name="login" id="login">
+                        <input type="text" name="login" id="login" required readonly>
                     </div>
                     <div class="form-group">
                         <label for="password">Mot de passe</label>
                         <div class="password-wrapper">
-                            <input type="password" id="password" name="password" placeholder="****************">
+                            <input type="password" id="password" name="password" placeholder="****************" required>
                             <span class="eye-icon"></span>
                         </div>
                     </div>

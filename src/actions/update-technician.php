@@ -36,6 +36,7 @@
                 $_SESSION['notification'] = "Erreur sql lors de la mise à jour.";
                 $_SESSION['notification_color'] = "red";
             }
+            mysqli_stmt_close($stmt);
         }
     }
     else{

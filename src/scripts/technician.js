@@ -14,5 +14,5 @@ function fillEditTechForm(row) {
     fields[3].value = "";
 
     document.querySelectorAll('.tech-row').forEach(r => r.classList.remove('active'));
-    row.classList.add('active'); // On ajoute l'outline bleu à la ligne cliquée
+    row.classList.add('active');
 }
