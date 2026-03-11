@@ -54,7 +54,7 @@
                         <button type="button" class="bar-textfield">Vue d'ensemble</button>
                     </div>
                     <div>
-                        <a href="create-technician.php"><button type="button" class="bar-textfield">Ajouter</button></a>
+                        <a href="create-technician.php" tabindex="-1"><button type="button" class="bar-textfield">Ajouter</button></a>
                     </div>
                 </div>
             </section>
@@ -82,7 +82,7 @@
                                     while ($user = mysqli_fetch_assoc($users)) {
                                         $id_tech++;
                                         ?>
-                                        <tr 
+                                        <tr tabindex=0
                                             class="tech-row <?php echo $isActive; ?>" 
                                             onclick="fillEditTechForm(this)" 
                                             data-id="<?php echo $id_tech; ?>"
@@ -97,8 +97,13 @@
                                             echo "<td>". timeAgoFr($user['created_at']) ."</td>";
                                             echo "<td>". timeAgoFr($user['last_login_at']) ."</td>";
                                             echo "<td> ? </td>";
-                                            echo "<td></td>";
-                                        ?>
+                                            ?>
+                                            <td class='action-cell'>
+                                                <form action="../actions/delete_technician_action.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce technicien ?');">
+                                                    <input type="hidden" name="login_tech" value="<?php echo $user['login']; ?>">
+                                                    <button type="submit" class="btn-delete-small">Supprimer</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                         <?php
                                     }

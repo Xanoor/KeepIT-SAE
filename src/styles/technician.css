@@ -51,7 +51,6 @@
     color: var(--text-muted);
     font-size: 12px;
     text-transform: uppercase;
-    text-align: left;
     padding: 15px 20px;
     background: var(--alternative-color);
 }
@@ -134,13 +133,6 @@
     border-color: white;
 }
 
-.form-group input:disabled {
-    background-color: var(--submit-disabled);
-    border-color: var(--submit-disabled-border);
-    color: #787c8e;
-    cursor: not-allowed;
-}
-
 .password-wrapper {
     position: relative;
 }
@@ -176,9 +168,25 @@
     filter: brightness(1.2);
 }
 
-.form-group input[readonly] {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: #353535;
-    color: #b0b0b0;
+.btn-delete-small {
+    background-color: transparent;
+    color: #EA9999;
+    border: 1px solid red;
+    border-radius: 0.5rem;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-transform: uppercase;
+}
+
+.btn-delete-small:hover {
+    background: red;
+    color: white;
+}
+
+input[readonly] {
     cursor: default;
+    opacity: 0.7;
 }

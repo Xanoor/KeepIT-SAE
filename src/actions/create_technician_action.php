@@ -9,7 +9,8 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'Web Administrator') {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = trim($_POST['first_name']);
-    $last_name = trim($_POST['last_name']);
+    $first_name[0] = strtoupper($first_name[0]);
+    $last_name = strtoupper(trim($_POST['last_name']));
     $login = trim($_POST['login']);
     $password = $_POST['password'];
 
