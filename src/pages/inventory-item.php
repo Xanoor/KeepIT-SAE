@@ -40,6 +40,7 @@
                     >
                     <a href="#">Techniciens</a>
                     <a href="#">Informations</a>
+                    <a href="http://192.168.25.19/static">Pages Statiques</a>
                 </nav>
             </div>
             <nav class="nav-right-container">
