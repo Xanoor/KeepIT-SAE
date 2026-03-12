@@ -1,5 +1,8 @@
 <?php
 
+header("Location: inventory.php");
+exit();
+
 session_start();
 
 if (!isset($_SESSION['login'])) {
