@@ -97,10 +97,15 @@
                                             echo "<td>". timeAgoFr($user['last_login_at']) ."</td>";
                                             ?>
                                             <td class='action-cell'>
-                                                <form action="../actions/delete_technician_action.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce technicien ?');">
-                                                    <input type="hidden" name="login_tech" value="<?php echo $user['login']; ?>">
-                                                    <button type="submit" class="btn-delete-small">Supprimer</button>
-                                                </form>
+                                                <div class='container-btn-delete'>
+                                                    <form action="../actions/delete_technician_action.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce technicien ?');">
+                                                        <input type="hidden" name="login_tech" value="<?php echo $user['login']; ?>">
+                                                        
+                                                        <button type="submit" class="btn-delete-small">
+                                                            <img src="../assets/trash.png" alt="Supprimer" class="trash-icon">
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php

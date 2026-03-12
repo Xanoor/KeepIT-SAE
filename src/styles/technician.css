@@ -179,24 +179,6 @@
     filter: brightness(1.2);
 }
 
-.btn-delete-small {
-    background-color: transparent;
-    color: #EA9999;
-    border: 1px solid red;
-    border-radius: 0.5rem;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    text-transform: uppercase;
-}
-
-.btn-delete-small:hover {
-    background: red;
-    color: white;
-}
-
 input[readonly] {
     cursor: default;
     opacity: 0.7;
@@ -219,4 +201,33 @@ input[readonly] {
 
 .btn-cancel-creation:hover:not(:disabled) {
     filter: brightness(1.2);
+}
+
+.btn-delete-small {
+    width: 50%;
+    background: none;
+    border: none;
+    padding: 0; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.trash-icon {
+    width: 18px;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.btn-delete-small:hover .trash-icon {
+    filter: drop-shadow(0 0 5px white);
+}
+
+.btn-delete-small img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    padding : 0;
 }
