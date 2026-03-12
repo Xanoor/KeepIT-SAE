@@ -49,7 +49,7 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
                 "SET @current_user = '$login_safe'"
             );
 
-            header("location: ../pages/index.php");
+            header("location: ../pages/inventory.php");
             exit();
         }
     }
