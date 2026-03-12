@@ -30,7 +30,7 @@
                 <nav class="nav-buttons-container">
                     <a href="index.php">Dashboard</a>
                     <a href="inventory.php">Inventaire</a>
-                    <a href="#" class="nav-buttons-current">Techniciens</a>
+                    <a href="technician.php" class="nav-buttons-current">Techniciens</a>
                     <a href="#">Informations</a>
                 </nav>
             </div>
@@ -54,7 +54,7 @@
                         <button type="button" class="bar-textfield">Vue d'ensemble</button>
                     </div>
                     <div>
-                        <a href="create-technician.php" tabindex="-1"><button type="button" class="bar-textfield">Ajouter</button></a>
+                        <a href="create-technician.php" id="btn-add-technician">Ajouter</a>
                     </div>
                 </div>
             </section>
@@ -70,7 +70,6 @@
                                     <th>PRÉNOM</th>
                                     <th>CRÉATION DU COMPTE</th>
                                     <th>DERNIÈRE CONNEXION</th>
-                                    <th>TEMPS DE CONNEXION</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
@@ -96,7 +95,6 @@
                                             echo "<td>". htmlspecialchars($user['first_name']) ."</td>";
                                             echo "<td>". timeAgoFr($user['created_at']) ."</td>";
                                             echo "<td>". timeAgoFr($user['last_login_at']) ."</td>";
-                                            echo "<td> ? </td>";
                                             ?>
                                             <td class='action-cell'>
                                                 <form action="../actions/delete_technician_action.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce technicien ?');">

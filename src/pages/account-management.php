@@ -62,7 +62,7 @@
                 <nav class="nav-buttons-container">
                     <a href="index.php">Dashboard</a>
                     <a href="inventory.php">Inventaire</a>
-                    <a href="#">Techniciens</a>
+                    <a href="technician.php">Techniciens</a>
                     <a href="#">Informations</a>
                 </nav>
             </div>

@@ -71,8 +71,10 @@
                 </div>
                 
                 <div class="form-actions-row">
-                    <a href="technician.php"><button type="button" class="btn-save-edit">Annuler</button></a>
                     <button type="submit" class="btn-save-edit">Créer le compte</button>
+                    <a href="technician.php" class="btn-cancel-creation">
+                        Annuler
+                    </a>
                 </div>
             </form>
         </section>

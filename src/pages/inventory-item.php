@@ -38,7 +38,7 @@
                     <a href="inventory.php" class="nav-buttons-current"
                         >Inventaire</a
                     >
-                    <a href="#">Techniciens</a>
+                    <a href="technician.php">Techniciens</a>
                     <a href="#">Informations</a>
                 </nav>
             </div>

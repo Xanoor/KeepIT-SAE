@@ -36,7 +36,7 @@ unset($_SESSION['import_errors']);
         <nav class="nav-buttons-container">
             <a href="index.php">Dashboard</a>
             <a href="./inventory.php" class="nav-buttons-current">Inventaire</a>
-            <a href="#">Techniciens</a>
+            <a href="technician.php">Techniciens</a>
             <a href="#">Informations</a>
         </nav>
     </div>
