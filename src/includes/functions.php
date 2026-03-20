@@ -270,8 +270,12 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11,
         //Join all parts with 'AND' so that all conditions must be met
         //implode = Join array elements with a string
         $whereClause = " WHERE " . implode(" AND ", $filterParts);
+        //TODO: [DONE] fix AND problem: WHERE AND ...  => VERIF IF WE CAN UPGRADE SYNTAX
         if (!empty($likeFilters)) {
-            $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
+            if (!empty($filterParts))
+                $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
+            else
+                $whereClause .= implode(" OR ", $likeFilters);
         }
     }
 
