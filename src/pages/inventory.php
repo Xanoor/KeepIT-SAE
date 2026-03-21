@@ -165,7 +165,7 @@
                 <section class="page-content">
                     <div class="page-table-content">
                         <?php 
-                            echo "<div class='table-preview'>" . importSQLTableBuilder("vw_inventory_search_table", $filters, $start, $end, ["serial_number", "state", "device_type"]) . "</div>";
+                            echo "<div class='table-preview'>" . importSQLTableBuilder("vw_inventory_search_table", $filters, $start, $end, ["serial_number", "model", "device_type", "created_at", "updated_at", "state"]) . "</div>";
                         ?>
                     </div>
                     <div class="nav-buttons">
