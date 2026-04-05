@@ -59,6 +59,27 @@ function tableExists($conn, $table) {
     return mysqli_num_rows($res) > 0;
 }
 
+/**
+ * Retrieves a list of column names for a given table.
+ * 
+ * @param mysqli|null $connect Database connection.
+ * @param string $table The table name.
+ * @return array|false An array of column names if successful, false otherwise.
+ */
+function getColumns($connect, $table) {
+    if (!$connect) global $connect;
+
+    $res = mysqli_query($connect, "DESCRIBE `$table`");
+    if (!$res) return false;
+
+    $existing = [];
+    while ($row = mysqli_fetch_assoc($res)) {
+        $existing[] = $row['Field'];
+    }
+
+    return $existing;
+}
+
 
 /**
  * Check if multiple columns exist in a specific table.
@@ -68,14 +89,8 @@ function tableExists($conn, $table) {
  * @param array $columns List of column names to check.
  * @return bool True if all columns exist, false otherwise.
  */
-function columnsExists($connect, $table, $columns) {
-    $res = mysqli_query($connect, "DESCRIBE `$table`");
-    if (!$res) return false;
-
-    $existing = [];
-    while ($row = mysqli_fetch_assoc($res)) {
-        $existing[] = $row['Field'];
-    }
+function columnsExists($connect, $table, $columns) {    
+    $existing = getColumns($connect, $table);
 
     return empty(array_diff($columns, $existing));
 }
