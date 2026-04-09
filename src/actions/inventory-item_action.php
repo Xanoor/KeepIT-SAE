@@ -59,10 +59,10 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
             mysqli_begin_transaction($connect);
             try {
                 // Update DEVICES first (Parent)
-                $req_devices = "UPDATE devices SET model = ?, state = ? WHERE serial_number = ? AND device_type = 'Computer'";
+                $req_devices = "UPDATE devices SET model = ?, manufacturer_name = ?, state = ? WHERE serial_number = ? AND device_type = 'Computer'";
                 $stmt_dev = mysqli_prepare($connect, $req_devices);
-                mysqli_stmt_bind_param($stmt_dev, "sss", 
-                    $attr["MODEL"], $attr["STATE"], $attr["SERIAL"]
+                mysqli_stmt_bind_param($stmt_dev, "ssss", 
+                    $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"], $attr["SERIAL"]
                 );
                 
                 if (!mysqli_stmt_execute($stmt_dev)) {
@@ -70,13 +70,13 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
                 }
 
                 // Update COMPUTER next (Child)
-                $req_comp = "UPDATE computer SET name = ?, location = ?, building = ?, room = ?, cpu = ?, ram_mb = ?, disk_gb = ?, domain = ?, mac_address = ?, purchase_date = ?, warranty_end = ?, manufacturer_name = ?, os_name = ?, type_name = ?
+                $req_comp = "UPDATE computer SET name = ?, location = ?, building = ?, room = ?, cpu = ?, ram_mb = ?, disk_gb = ?, domain = ?, mac_address = ?, purchase_date = ?, warranty_end = ?, os_name = ?, type_name = ?
                 WHERE serial_number = ?";
                 $stmt_comp = mysqli_prepare($connect, $req_comp);
-                mysqli_stmt_bind_param($stmt_comp, "sssssssssssssss", 
+                mysqli_stmt_bind_param($stmt_comp, "ssssssssssssss", 
                     $attr["NAME"], $attr["LOCATION"], $attr["BUILDING"], $attr["ROOM"], $attr["CPU"], $attr["RAM_MB"], $attr["DISK_GB"], 
                     $attr["DOMAIN"], $attr["MACADDR"], $attr["PURCHASE_DATE"], $attr["WARRANTY_END"], 
-                    $attr["MANUFACTURER"], $attr["OS"], $attr["TYPE"], $attr["SERIAL"]
+                    $attr["OS"], $attr["TYPE"], $attr["SERIAL"]
                 );
                 if (!mysqli_stmt_execute($stmt_comp)) {
                     throw new Exception("Erreur lors de la modification dans la table computer : " . mysqli_stmt_error($stmt_comp));
@@ -139,10 +139,10 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
             mysqli_begin_transaction($connect);
             try {
                 // Update DEVICES first (Parent)
-                $req_devices = "UPDATE devices SET model = ?, state = ? WHERE serial_number = ? AND device_type = 'Monitor'";
+                $req_devices = "UPDATE devices SET model = ?, manufacturer_name = ?, state = ? WHERE serial_number = ? AND device_type = 'Monitor'";
                 $stmt_dev = mysqli_prepare($connect, $req_devices);
-                mysqli_stmt_bind_param($stmt_dev, "sss", 
-                    $attr["MODEL"], $attr["STATE"], $attr["SERIAL"]
+                mysqli_stmt_bind_param($stmt_dev, "ssss", 
+                    $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"], $attr["SERIAL"]
                 );
                 
                 if (!mysqli_stmt_execute($stmt_dev)) {
@@ -150,11 +150,11 @@ if (isset($_POST["item-device_type"], $_POST["submit"], $_POST["item-serial_numb
                 }
 
                 // Update MONITOR next (Child)
-                $req_mon = "UPDATE monitor SET size_inch = ?, resolution = ?, manufacturer_name = ?, connector_name = ?, attached_to_computer = ?
+                $req_mon = "UPDATE monitor SET size_inch = ?, resolution = ?, connector_name = ?, attached_to_computer = ?
                 WHERE serial_number = ?";
                 $stmt_mon = mysqli_prepare($connect, $req_mon);
-                mysqli_stmt_bind_param($stmt_mon, "ssssss", 
-                    $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["MANUFACTURER"], $attr["CONNECTOR"], $attr["ATTACHED_TO"], $attr["SERIAL"]
+                mysqli_stmt_bind_param($stmt_mon, "sssss", 
+                    $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["CONNECTOR"], $attr["ATTACHED_TO"], $attr["SERIAL"]
                 );
                 if (!mysqli_stmt_execute($stmt_mon)) {
                     throw new Exception("Erreur lors de la modification dans la table monitor : " . mysqli_stmt_error($stmt_mon));
