@@ -52,13 +52,19 @@ COMMENT = 'List of connector type to link a screen and a monitor';
 CREATE TABLE IF NOT EXISTS devices (
     serial_number VARCHAR(25),
     model VARCHAR(25),
+    manufacturer_name VARCHAR(50) NOT NULL,
     device_type VARCHAR(25) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     state VARCHAR(36) NOT NULL DEFAULT 'En stock',
     PRIMARY KEY (serial_number),
+    INDEX idx_devices_manufacturer_name (manufacturer_name),
     INDEX idx_devices_device_type (device_type),
     INDEX idx_devices_state (state),
+    CONSTRAINT fk_computer_manufacturer_name
+        FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name)
+            ON UPDATE CASCADE
+            ON DELETE RESTRICT,
     CONSTRAINT fk_devices_device_type
         FOREIGN KEY (device_type) REFERENCES device_types(name)
             ON UPDATE RESTRICT
@@ -83,7 +89,6 @@ CREATE TABLE IF NOT EXISTS computer (
     mac_address VARCHAR(17) UNIQUE NOT NULL CHECK (mac_address REGEXP '^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$'),
     purchase_date DATE NOT NULL,
     warranty_end DATE CHECK (warranty_end >= purchase_date),
-    manufacturer_name VARCHAR(50) NOT NULL,
     os_name VARCHAR(50),
     type_name VARCHAR(25) NOT NULL, -- type of computer ex: laptop, desktop, mini-pc...
     PRIMARY KEY (serial_number),
@@ -91,7 +96,6 @@ CREATE TABLE IF NOT EXISTS computer (
     INDEX idx_computer_name (name),
     INDEX idx_computer_location (location),
     INDEX idx_computer_mac_address (mac_address),
-    INDEX idx_computer_manufacturer_name (manufacturer_name),
     INDEX idx_computer_os_name (os_name),
     CONSTRAINT fk_computer_serial_number
         FOREIGN KEY (serial_number) REFERENCES devices(serial_number)
@@ -99,10 +103,6 @@ CREATE TABLE IF NOT EXISTS computer (
             ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the computer table.
     CONSTRAINT fk_computer_location
         FOREIGN KEY (location) REFERENCES locations(location)
-            ON UPDATE CASCADE
-            ON DELETE RESTRICT,
-    CONSTRAINT fk_computer_manufacturer_name
-        FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name)
             ON UPDATE CASCADE
             ON DELETE RESTRICT,
     CONSTRAINT fk_computer_os_name
@@ -116,22 +116,16 @@ CREATE TABLE IF NOT EXISTS monitor (
     serial_number VARCHAR(25),
     size_inch INT NOT NULL CHECK(size_inch > 0),
     resolution VARCHAR(25) NOT NULL,
-    manufacturer_name VARCHAR(50) NOT NULL,
     connector_name VARCHAR(25),
     attached_to_computer VARCHAR(25),
     PRIMARY KEY (serial_number),
     -- Quickly identify the screen(s) attached to a computer
-    INDEX idx_monitor_manufacturer_name (manufacturer_name),
     INDEX idx_monitor_connector_name (connector_name),
     INDEX idx_monitor_attached_to_computer (attached_to_computer),
     CONSTRAINT fk_monitor_serial_number
         FOREIGN KEY (serial_number) REFERENCES devices(serial_number)
             ON UPDATE RESTRICT
             ON DELETE CASCADE, -- When an element is deleted from the devices table, it is also deleted from the monitor table.
-    CONSTRAINT fk_monitor_manufacturer_name
-        FOREIGN KEY (manufacturer_name) REFERENCES manufacturer(name)
-            ON UPDATE CASCADE
-            ON DELETE RESTRICT,
     CONSTRAINT fk_monitor_connector_name
         FOREIGN KEY (connector_name) REFERENCES connector(name)
             ON UPDATE CASCADE

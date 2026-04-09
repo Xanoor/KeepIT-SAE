@@ -40,6 +40,10 @@ BEGIN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'model', OLD.model, NEW.model);
     END IF;
+    IF NOT (OLD.model <=> NEW.model) THEN
+        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
+        VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'manufacturer_name', OLD.manufacturer_name, NEW.manufacturer_name);
+    END IF;
     IF NOT (OLD.state <=> NEW.state) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'state', OLD.state, NEW.state);
@@ -152,11 +156,6 @@ BEGIN
         VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'warranty_end', CAST(OLD.warranty_end AS CHAR), CAST(NEW.warranty_end AS CHAR));
     END IF;
 
-    IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
-        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
-        VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'manufacturer_name', CAST(OLD.manufacturer_name AS CHAR), CAST(NEW.manufacturer_name AS CHAR));
-    END IF;
-
     IF NOT (OLD.os_name <=> NEW.os_name) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'os_name', CAST(OLD.os_name AS CHAR), CAST(NEW.os_name AS CHAR));
@@ -187,17 +186,13 @@ BEGIN
         VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'resolution', CAST(OLD.resolution AS CHAR), CAST(NEW.resolution AS CHAR));
     END IF;
 
-        IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
-            INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
-            VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'manufacturer_name', CAST(OLD.manufacturer_name AS CHAR), CAST(NEW.manufacturer_name AS CHAR));
-    END IF;
 
-        IF NOT (OLD.connector_name <=> NEW.connector_name) THEN
+    IF NOT (OLD.connector_name <=> NEW.connector_name) THEN
             INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
             VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'connector_name', CAST(OLD.connector_name AS CHAR), CAST(NEW.connector_name AS CHAR));
     END IF;
 
-        IF NOT (OLD.attached_to_computer <=> NEW.attached_to_computer) THEN
+    IF NOT (OLD.attached_to_computer <=> NEW.attached_to_computer) THEN
             INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
             VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'attached_to_computer', CAST(OLD.attached_to_computer AS CHAR), CAST(NEW.attached_to_computer AS CHAR));
     END IF;

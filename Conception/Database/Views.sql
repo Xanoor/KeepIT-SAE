@@ -66,11 +66,11 @@ CREATE OR REPLACE VIEW vw_export_computer AS
        SELECT
            dv.serial_number AS serial_number,
            dv.model AS model,
+           dv.manufacturer_name as manufacturer,
            dv.created_at AS created_at,
            dv.updated_at AS last_update,
            dv.state AS state,
            c.name AS name,
-           c.manufacturer_name as manufacturer,
            c.cpu AS cpu,
            c.ram_mb AS ram_mb,
            c.disk_gb AS disk_gb,
@@ -81,7 +81,8 @@ CREATE OR REPLACE VIEW vw_export_computer AS
            c.room AS room,
            c.mac_address AS macaddr,
            c.purchase_date AS purchase_date,
-           c.warranty_end AS warranty_end
+           c.warranty_end AS warranty_end,
+           c.type_name AS type_name
        FROM
            computer c,
            devices dv
@@ -95,10 +96,10 @@ CREATE OR REPLACE VIEW vw_export_monitor AS
        SELECT
            dv.serial_number AS serial_number,
            dv.model AS model,
+           dv.manufacturer_name AS manufacturer,
            dv.created_at AS created_at,
            dv.updated_at AS last_update,
            dv.state AS state,
-           m.manufacturer_name AS manufacturer,
            m.size_inch AS size_inch,
            m.resolution AS resolution,
            m.connector_name AS connector,
@@ -149,3 +150,39 @@ LEFT JOIN computer c
     ON devices.serial_number = c.serial_number
 LEFT JOIN monitor m
     ON devices.serial_number = m.serial_number;
+
+
+CREATE OR REPLACE VIEW vw_export_inventaire AS
+SELECT
+        dv.serial_number AS serial_number,
+        dv.model AS model,
+        dv.manufacturer_name as manufacturer,
+        dV.device_type,
+        dv.created_at AS created_at,
+        dv.updated_at AS last_update,
+        dv.state AS state,
+
+        c.name AS name,
+        c.location AS location,
+        c.building AS building,
+        c.room AS room,
+        c.cpu AS cpu,
+        c.ram_mb AS ram_mb,
+        c.disk_gb AS disk_gb,
+        c.domain AS domain,
+        c.mac_address AS macaddr,
+        c.purchase_date AS purchase_date,
+        c.warranty_end AS warranty_end,
+        c.os_name AS os,
+        c.type_name AS type_name,
+
+        m.size_inch AS size_inch,
+        m.resolution AS resolution,
+        m.connector_name AS connector,
+        m.attached_to_computer AS attached_to
+FROM devices dv
+LEFT JOIN computer c
+    ON dv.serial_number = c.serial_number
+LEFT JOIN monitor m
+    ON dv.serial_number = m.serial_number;
+

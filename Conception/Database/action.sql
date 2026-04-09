@@ -40,10 +40,10 @@ DELIMITER ;
 CALL add_test_logs();
 
 
-SELECT * FROM device_logs ORDER BY log_date DESC;
+-- SELECT * FROM device_logs ORDER BY log_date DESC;
 
 -- ALTER EVENT clean_logs_daily DISABLE;
 -- ALTER EVENT clean_logs_daily ENABLE;
 
 -- SELECT * FROM information_schema.EVENTS;
-SHOW EVENTS;
+-- SHOW EVENTS;

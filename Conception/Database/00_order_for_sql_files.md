@@ -8,6 +8,8 @@
 | 4     | `Views.sql`         | Les vues                                    |
 | 5     | `action.sql`        | Les procédures, fonctions, jobs, ...        |
 
+Appliquer `mig_manufacturer_name.sql` si la base à été initialiser avec le `init_old.sql`
+
 ---
 
 ## INIT.SQL
