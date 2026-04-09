@@ -285,7 +285,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11,
         //Join all parts with 'AND' so that all conditions must be met
         //implode = Join array elements with a string
         $whereClause = " WHERE " . implode(" AND ", $filterParts);
-        //TODO: [DONE] fix AND problem: WHERE AND ...  => VERIF IF WE CAN UPGRADE SYNTAX
+
         if (!empty($likeFilters)) {
             if (!empty($filterParts))
                 $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
@@ -687,10 +687,10 @@ function addMonitor($attr, $line = null) {
     mysqli_begin_transaction($connect);
     try {
         // Insert into DEVICES first (Parent)
-        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Monitor', ?, ?)";
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, manufacturer_name, state) VALUES (?, 'Monitor', ?, ?, ?)";
         $stmt_dev = mysqli_prepare($connect, $req_devices);
-        mysqli_stmt_bind_param($stmt_dev, "sss", 
-            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        mysqli_stmt_bind_param($stmt_dev, "ssss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"]
         );
         
         if (!mysqli_stmt_execute($stmt_dev)) {
@@ -698,10 +698,10 @@ function addMonitor($attr, $line = null) {
         }
 
         // Insert into MONITOR (Child)
-        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_computer) VALUES (?, ?, ?, ?, ?, ?)";
+        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, connector_name, attached_to_computer) VALUES (?, ?, ?, ?, ?)";
         $stmt_monitor = mysqli_prepare($connect, $req_monitor);
-        mysqli_stmt_bind_param($stmt_monitor, "ssssss", 
-            $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["MANUFACTURER"], 
+        mysqli_stmt_bind_param($stmt_monitor, "sssss", 
+            $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], 
             $attr["CONNECTOR"], $attr["ATTACHED_TO"]
         );
         if (!mysqli_stmt_execute($stmt_monitor)) {
@@ -861,10 +861,10 @@ function addComputer($attr, $line = null) {
     mysqli_begin_transaction($connect);
     try {
         // Insert into DEVICES first (Parent)
-        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Computer', ?, ?)";
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, manufacturer_name, state) VALUES (?, 'Computer', ?, ?, ?)";
         $stmt_dev = mysqli_prepare($connect, $req_devices);
-        mysqli_stmt_bind_param($stmt_dev, "sss", 
-            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        mysqli_stmt_bind_param($stmt_dev, "ssss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"]
         );
         
         if (!mysqli_stmt_execute($stmt_dev)) {
@@ -872,12 +872,12 @@ function addComputer($attr, $line = null) {
         }
 
         // Insert into COMPUTER (Child)
-        $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt_comp = mysqli_prepare($connect, $req_comp);
-        mysqli_stmt_bind_param($stmt_comp, "sssssssssssssss", 
+        mysqli_stmt_bind_param($stmt_comp, "ssssssssssssss", 
             $attr["SERIAL"], $attr["NAME"], $attr["LOCATION"], $attr["BUILDING"], $attr["ROOM"], $attr["CPU"], $attr["RAM_MB"], $attr["DISK_GB"], 
             $attr["DOMAIN"], $attr["MACADDR"], $attr["PURCHASE_DATE"], $attr["WARRANTY_END"], 
-            $attr["MANUFACTURER"], $attr["OS"], $attr["TYPE"]
+            $attr["OS"], $attr["TYPE"]
         );
         if (!mysqli_stmt_execute($stmt_comp)) {
             throw new Exception("Erreur lors de l'insertion dans computer : " . mysqli_stmt_error($stmt_comp));
