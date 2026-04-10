@@ -1,7 +1,7 @@
 const selectCheckboxBtn = document.getElementById("select-checkbox-button");
 const selectCheckboxList = document.getElementById("select-checkbox-list");
 const selectCheckboxes = Array.from(
-    document.querySelectorAll('#select-checkbox-list input[type="checkbox"]')
+    document.querySelectorAll('#select-checkbox-list input[type="checkbox"]'),
 );
 
 const action_select = document.getElementById("action_select");
@@ -14,12 +14,12 @@ function selectCheckboxBtn_clicked(e) {
         if (selectCheckboxList.style.display == "none") {
             selectCheckboxList.style.display = "flex";
             selectCheckboxList.parentElement.classList.add(
-                "select-checkbox-active"
+                "select-checkbox-active",
             );
         } else {
             selectCheckboxList.style.display = "none";
             selectCheckboxList.parentElement.classList.remove(
-                "select-checkbox-active"
+                "select-checkbox-active",
             );
         }
     }
@@ -50,13 +50,30 @@ function selectCheckbox_changed(e) {
 }
 
 selectCheckboxes.forEach((el) =>
-    el.addEventListener("change", (e) => selectCheckbox_changed(e))
+    el.addEventListener("change", (e) => selectCheckbox_changed(e)),
 );
 
 if (selectCheckboxBtn) {
     selectCheckboxBtn.addEventListener("click", (e) =>
-        selectCheckboxBtn_clicked(e)
+        selectCheckboxBtn_clicked(e),
     );
+}
+
+function redirectAction(e) {
+    if (e.target.value === "export") {
+        const exportMenu = document.getElementById("exportMenuContainer");
+        if (exportMenu) {
+            const exportBtn = document.getElementById("export-menu-submit");
+            if (exportBtn) {
+                exportBtn.onclick = () => {
+                    exportMenu.classList.add("hide-menu");
+                };
+            }
+            exportMenu.classList.remove("hide-menu");
+        }
+    } else {
+        window.location.href = e.target.value;
+    }
 }
 
 // WCAG-compliant: navigation occurs only on explicit user action (click or Enter),
@@ -64,13 +81,13 @@ if (selectCheckboxBtn) {
 if (action_select) {
     action_select.addEventListener("change", (e) => {
         if (e.isTrusted) {
-            window.location.href = e.target.value;
+            redirectAction(e);
         }
     });
 
     action_select.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-            window.location.href = e.target.value;
+            redirectAction(e);
         }
     });
 }
@@ -78,7 +95,8 @@ if (action_select) {
 const pageInput = document.querySelector(".page-num-input");
 if (pageInput) {
     pageInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") { //if the user press enter inside number input, submit the form
+        if (e.key === "Enter") {
+            //if the user press enter inside number input, submit the form
             e.preventDefault();
             this.form.submit();
         }

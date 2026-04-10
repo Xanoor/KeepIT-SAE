@@ -38,6 +38,9 @@
             }
         }
     }
+    
+    // Save current filters to session so the export form can seamlessly access them
+    $_SESSION['inventory_export_filters'] = $filters;
 
     // Handle navigation buttons
     if (isset($_POST["next-page"])) {
@@ -157,7 +160,7 @@
                                 <option value="./importCSV.php">
                                     Importer
                                 </option>
-                                <option value="#">Exporter</option>
+                                <option value="export">Exporter</option>
                             </select>
                         </div>
                     </div>
@@ -189,6 +192,10 @@
             </form>
             <!-- Notification container -->
             <div class="notifications-container" id="notificationsContainer"></div>
+            <!-- Export menu container -->
+            <div class="export-menu-container hide-menu" id="exportMenuContainer">
+                <?php echo generateExportMenu(["devices", "computer", "monitor"])?>
+            </div>
         </main>
     </body>
     <!-- Scripts -->

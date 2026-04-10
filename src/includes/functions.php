@@ -234,28 +234,18 @@ function importCSVTableBuilder($file, $limit = 100) {
 }
 
 /**
- * Create an HTML table from a SQL query with pagination.
+ * Builds an SQL WHERE clause string based on an array of filters.
+ *
+ * $filters format: 
+ * - [ "col" => ["val1", "val2"] ] (generates IN clause)
+ * - [ "col" => "%val%" ] (generates LIKE clause) 
+ * - [ "col" => "val" ] (generates = clause)
  * 
- * @param string $tableName The table to fetch from.
- * @param array $filters Associative array of column => value for the WHERE clause.
- * @param int $start The starting index (offset).
- * @param int $end The ending index (limit = end - start).
- * @return string HTML table.
+ * @param array $filters Associative array of column => value(s) for the WHERE clause.
+ * @return string The generated WHERE clause or an empty string if no filters.
  */
-function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11, $attr = []) {
+function buildSQLWhereClause($filters) {
     global $connect;
-
-    $step = 11; // Default number of items per page
-    
-    // Validation of start and end
-    if ($start < 0) $start = 0;
-    if ($end <= $start) $end = $start + $step; // Default range if invalid
-
-    // We use mysqli_real_escape_string to protect against SQL Injection
-    // It neutralizes special characters that could break the query or allow unauthorized access
-    $safeTable = mysqli_real_escape_string($connect, $tableName);
-    // Build Base Query and Filter Clause
-    // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
     $whereClause = "";
     if (!empty($filters)) {
         $filterParts = [];
@@ -285,7 +275,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11,
         //Join all parts with 'AND' so that all conditions must be met
         //implode = Join array elements with a string
         $whereClause = " WHERE " . implode(" AND ", $filterParts);
-
+        
         if (!empty($likeFilters)) {
             if (!empty($filterParts))
                 $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
@@ -293,6 +283,33 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11,
                 $whereClause .= implode(" OR ", $likeFilters);
         }
     }
+    return $whereClause;
+}
+
+/**
+ * Create an HTML table from a SQL query with pagination.
+ * 
+ * @param string $tableName The table to fetch from.
+ * @param array $filters Associative array of column => value for the WHERE clause.
+ * @param int $start The starting index (offset).
+ * @param int $end The ending index (limit = end - start).
+ * @return string HTML table.
+ */
+function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11, $attr = []) {
+    global $connect;
+
+    $step = 11; // Default number of items per page
+    
+    // Validation of start and end
+    if ($start < 0) $start = 0;
+    if ($end <= $start) $end = $start + $step; // Default range if invalid
+
+    // We use mysqli_real_escape_string to protect against SQL Injection
+    // It neutralizes special characters that could break the query or allow unauthorized access
+    $safeTable = mysqli_real_escape_string($connect, $tableName);
+    // Build Base Query and Filter Clause
+    // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
+    $whereClause = buildSQLWhereClause($filters);
 
     if (empty($attr)) $attributes = "*"; 
     else $attributes = implode(", ", $attr);
@@ -948,6 +965,30 @@ function loadInventoryLogs($serialNumber) {
     }
 
     return $html;
+}
+
+function generateExportMenu($tables) {
+    global $connect;
+
+    $columns = [];
+    foreach ($tables as $table) {
+        $columns[] = getColumns($connect, $table);
+    }
+
+    if (count($columns) === 0) {
+        return '';
+    }
+
+    // column 0 reference
+    $column0 = $columns[0];
+    
+    // remove all occurrences of column0 values from subsequent tables
+    for ($i = 1; $i < count($columns); $i++) {
+        $columns[$i] = array_values(array_diff($columns[$i], $column0));
+    }
+
+    $html = include '../fragments/export-menu.php';
+    return $html; 
 }
 
 function loadUsersFromDB($role) {

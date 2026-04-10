@@ -1,0 +1,63 @@
+
+<?php
+session_start();
+if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    header("Location: ../pages/login.php");
+    exit();
+}
+
+include_once '../includes/functions.php';
+
+if (isset($_POST["export_submit"], $_POST["columns"]) && is_array($_POST["columns"])) {
+    global $connect;
+    $columns = $_POST["columns"];
+
+    if (count($columns) <= 0) {
+        $_SESSION['notification'] = "Vous n'avez pas sélectionner d'attributs.";
+        $_SESSION['notification_color'] = "red";
+        header("Location: ../pages/inventory.php");
+        exit();
+    }
+
+    // Retrieve filters exactly as they were in the inventory page
+    $filters = $_SESSION['inventory_export_filters'] ?? [];
+    
+    // Generate the SQL WHERE clause
+    $whereQuery = buildSQLWhereClause($filters);
+
+    $selectColumns = implode(", ", $columns);
+
+    $sql = "SELECT ".$selectColumns." FROM vw_export_inventaire ".$whereQuery;
+    $result = mysqli_query($connect, $sql);
+
+    if ($result) {
+        // Output headers to trigger CSV download
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="inventaire_export.csv"');
+        
+        // Use PHP's output stream
+        $output = fopen('php://output', 'w');
+        
+        // Write the header row
+        fputcsv($output, $columns);
+        
+        // Write the data rows
+        while ($row = mysqli_fetch_assoc($result)) {
+            fputcsv($output, $row);
+        }
+        
+        fclose($output);
+        exit();
+    } else {
+        $_SESSION['notification'] = "Erreur: " . mysqli_error($connect);
+        $_SESSION['notification_color'] = "red";
+    }
+} else {
+    $_SESSION['notification'] = "Des éléments sont manquants pour effectuer l'export.";
+    $_SESSION['notification_color'] = "red";
+}
+
+header("Location: ../pages/inventory.php");
+exit();
+
+?>

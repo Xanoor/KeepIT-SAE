@@ -68,7 +68,7 @@ CREATE OR REPLACE VIEW vw_export_computer AS
            dv.model AS model,
            dv.manufacturer_name as manufacturer,
            dv.created_at AS created_at,
-           dv.updated_at AS last_update,
+           dv.updated_at AS updated_at,
            dv.state AS state,
            c.name AS name,
            c.cpu AS cpu,
@@ -156,10 +156,10 @@ CREATE OR REPLACE VIEW vw_export_inventaire AS
 SELECT
         dv.serial_number AS serial_number,
         dv.model AS model,
-        dv.manufacturer_name as manufacturer,
-        dV.device_type,
+        dv.manufacturer_name AS manufacturer_name,
+        dV.device_type AS device_type,
         dv.created_at AS created_at,
-        dv.updated_at AS last_update,
+        dv.updated_at AS updated_at,
         dv.state AS state,
 
         c.name AS name,
@@ -170,16 +170,16 @@ SELECT
         c.ram_mb AS ram_mb,
         c.disk_gb AS disk_gb,
         c.domain AS domain,
-        c.mac_address AS macaddr,
+        c.mac_address AS mac_address,
         c.purchase_date AS purchase_date,
         c.warranty_end AS warranty_end,
-        c.os_name AS os,
+        c.os_name AS os_name,
         c.type_name AS type_name,
 
         m.size_inch AS size_inch,
         m.resolution AS resolution,
-        m.connector_name AS connector,
-        m.attached_to_computer AS attached_to
+        m.connector_name AS connector_name,
+        m.attached_to_computer AS attached_to_computer
 FROM devices dv
 LEFT JOIN computer c
     ON dv.serial_number = c.serial_number

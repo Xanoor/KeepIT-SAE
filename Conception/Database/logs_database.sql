@@ -40,7 +40,7 @@ BEGIN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'model', OLD.model, NEW.model);
     END IF;
-    IF NOT (OLD.model <=> NEW.model) THEN
+    IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'manufacturer_name', OLD.manufacturer_name, NEW.manufacturer_name);
     END IF;
