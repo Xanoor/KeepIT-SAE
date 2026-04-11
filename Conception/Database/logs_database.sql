@@ -200,6 +200,7 @@ BEGIN
 END
 //
 
+DROP TABLE IF EXISTS constant_logs//
 
 CREATE TABLE IF NOT EXISTS constant_logs (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -301,5 +302,88 @@ BEGIN
     VALUES (NOW(), 'connector', 'DELETE', CAST(OLD.name AS CHAR));
 
 end //
+
+DROP TABLE IF EXISTS users_logs//
+
+DROP PROCEDURE IF EXISTS logs_password//
+
+CREATE TABLE IF NOT EXISTS users_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    login VARCHAR(36) NOT NULL,
+    action_did VARCHAR(25) NOT NULL,
+    old_val VARCHAR(50),
+    new_val VARCHAR(50),
+    INDEX idx_users_logs_logs_date (log_date),
+    INDEX idx_users_logs_login (login),
+    INDEX idx_users_logs_action_did (action_did)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COMMENT = 'LOGS TABLE ABOUT ACTION OF USERS'//
+
+-- ==============================
+-- Procédure de tentative de connection pour un login valide
+CREATE PROCEDURE logs_password(IN user_login VARCHAR(36))
+BEGIN
+    DECLARE exite_login VARCHAR(36);
+
+    -- Vérifier qu'il s'agit bien d'un login valide
+    SELECT login INTO exite_login FROM users WHERE login = user_login;
+
+    IF exite_login IS NOT NULL THEN
+        INSERT INTO users_logs(log_date, login, action_did)
+            VALUES (NOW(),user_login, 'TRY CONNECTION');
+    END IF;
+END
+//
+
+
+-- ==============================
+-- Trigger pour la table users
+CREATE OR REPLACE TRIGGER users_after_insert
+AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+   INSERT INTO users_logs(log_date, login, action_did)
+       VALUES (NOW(), NEW.login, 'CREATED');
+END
+//
+
+CREATE OR REPLACE TRIGGER users_after_update
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+
+    IF NOT (OLD.first_name <=> NEW.first_name) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE FIRST NAME', OLD.first_name, NEW.first_name);
+    END IF;
+
+    IF NOT (OLD.last_name <=> NEW.last_name) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE LAST NAME', OLD.last_name, NEW.last_name);
+    END IF;
+
+    IF NOT (OLD.password_hash <=> NEW.password_hash) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE PASSWORD', null, null);
+        -- DON'T KEEP PASSWORD'S HISTORY
+    END IF;
+
+    IF NOT (OLD.role <=> NEW.role) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE ROLE', OLD.role, NEW.role);
+    END IF;
+
+END
+//
+
+CREATE OR REPLACE TRIGGER users_after_delete
+AFTER DELETE ON users
+FOR EACH ROW
+BEGIN
+   INSERT INTO users_logs(log_date, login, action_did)
+       VALUES (NOW(), OLD.login, 'DELETED');
+END
+//
 
 DELIMITER ;

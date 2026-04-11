@@ -9,6 +9,7 @@ CREATE PROCEDURE clean_inf_month_logs()
 BEGIN
 	DELETE FROM device_logs WHERE log_date < DATE_SUB(NOW(), INTERVAL 1 MONTH);
 	DELETE FROM constant_logs WHERE log_date < DATE_SUB(NOW(), INTERVAL 1 MONTH);
+	DELETE FROM users_logs WHERE log_date < DATE_SUB(NOW(), INTERVAL 1 MONTH);
 END//
 	
 
@@ -37,7 +38,7 @@ END//
 
 DELIMITER ;
 
-CALL add_test_logs();
+-- CALL add_test_logs();
 
 
 -- SELECT * FROM device_logs ORDER BY log_date DESC;
