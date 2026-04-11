@@ -373,7 +373,6 @@ header .nav-buttons-current {
 }
 
 /* Export menu */
-/* TODO: this is a test css, need to be upgraded */
 .export-menu-container {
     position: fixed;
     top: 0;
@@ -381,76 +380,212 @@ header .nav-buttons-current {
     width: 100%;
     height: 100%;
 
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px); /* add a blur effect to the background */
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    z-index: 9999;
+    z-index: 9999; /* put the menu on top of everything */
 }
 
 .menu {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+
     background: var(--secondary-color);
-    padding: 50px 20px;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px 20px 20px 20px;
 
     width: 70%;
     max-width: 900px;
-    max-height: 80%;
+    max-height: 85vh;
+}
 
+.close-menu-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--third-color);
+    font-size: 26px;
+    cursor: pointer;
+    font-weight: 300;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.close-menu-btn:hover {
+    color: #5c6bc0;
+}
+
+.menu-columns {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 15px;
+}
 
-    overflow: hidden;
-    position: relative;
+.menu-columns::-webkit-scrollbar {
+    height: 8px;
+}
+.menu-columns::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
 }
 
 .column {
-    flex: 1;
-    min-width: 150px;
-    max-height: 300px;
+    flex: 1 0 250px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+    min-width: 250px;
+}
 
+.column:not(:first-child) {
+    border-left: 2px solid var(--third-color);
+}
+
+.column-title {
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: white;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.column-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
     overflow-y: auto;
-    border-right: 1px solid #ddd;
-    padding-right: 10px;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+.column-items::-webkit-scrollbar {
+    width: 6px;
+}
+.column-items::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
 }
 
 .item {
-    margin-bottom: 8px;
+    background: #1e1e2e;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+.item:nth-child(even) {
+    background: #252538;
+}
+
+.item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.item label {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #a0a0a0;
+    border-radius: 4px;
+    margin-right: 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+    outline: none;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.item input[type="checkbox"]:checked {
+    background-color: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.item-text {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    user-select: none;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .menu-footer {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
     width: 100%;
+    text-align: center;
+    padding-top: 20px;
+    margin-top: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .menu-text {
-    display: block;
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 10px;
+    font-size: 13px;
+    color: #888;
 }
 
 .export-btn {
     position: absolute;
-    right: 20px;
-    bottom: 0;
-
-    padding: 8px 16px;
+    right: 0;
+    padding: 8px 18px;
     border: none;
     border-radius: 5px;
-
-    background-color: #007bff;
+    background-color: var(--third-color);
     color: white;
+    font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .export-btn:hover {
-    background-color: #0056b3;
+    background-color: white;
+    color: black;
 }
 
 .hide-menu {

@@ -4,11 +4,17 @@ require_once 'db.php';
 require_once '../fragments/computer-details.php';
 require_once '../fragments/monitor-details.php';
 
-// Used to convert text to french (language used for this web site)
+/**
+ * Converts specific English device-related terms to French.
+ * 
+ * @param string $data The text to convert.
+ * @return string The translated text if found, or the original text.
+ */
 function convertDataToFrench($data) {
     $data_edit = strtoupper($data);
 
     $translations = [
+        "DEVICES" => "APPAREILS",
         "MONITOR" => "Écrans",
         "COMPUTER" => "Ordinateur",
         "SERIAL NUMBER" => "Numéro de série",
@@ -967,12 +973,18 @@ function loadInventoryLogs($serialNumber) {
     return $html;
 }
 
+/**
+ * Generates the HTML fragment for the export menu with columns grouped by table.
+ * 
+ * @param array $tables List of tables to include in the export menu.
+ * @return string The rendered HTML fragment.
+ */
 function generateExportMenu($tables) {
     global $connect;
 
     $columns = [];
     foreach ($tables as $table) {
-        $columns[] = getColumns($connect, $table);
+        $columns[convertDataToFrench($table)] = getColumns($connect, $table);
     }
 
     if (count($columns) === 0) {
@@ -980,17 +992,28 @@ function generateExportMenu($tables) {
     }
 
     // column 0 reference
-    $column0 = $columns[0];
-    
-    // remove all occurrences of column0 values from subsequent tables
-    for ($i = 1; $i < count($columns); $i++) {
-        $columns[$i] = array_values(array_diff($columns[$i], $column0));
+    $firstTable = array_key_first($columns);
+    $column0 = $columns[$firstTable];
+
+    // Remove duplicates from other tables
+    foreach ($columns as $table => $cols) {
+        if ($table === $firstTable) {
+            continue;
+        }
+
+        $columns[$table] = array_values(array_diff($cols, $column0));
     }
 
     $html = include '../fragments/export-menu.php';
     return $html; 
 }
 
+/**
+ * Fetches all users from the database matching a specific role.
+ * 
+ * @param string $role The role to filter users by.
+ * @return mysqli_result|false The database query result set, or false on failure.
+ */
 function loadUsersFromDB($role) {
     global $connect;
 
@@ -1006,12 +1029,16 @@ function loadUsersFromDB($role) {
     return $result;
 }
 
+/**
+ * Retrieves the login and hashed password for a specific user.
+ * 
+ * @param string $login The user's login name.
+ * @return mysqli_result|false The database query result set containing the login and password hash, or false on failure.
+ */
 function getPasswordFromLogin($login) {
     global $connect;
 
-    $query = "SELECT login, password_hash
-                FROM users 
-                WHERE login = ?";
+    $query = "SELECT login, password_hash FROM users WHERE login = ?";
 
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, "s", $login);

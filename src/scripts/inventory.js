@@ -5,6 +5,15 @@ const selectCheckboxes = Array.from(
 );
 
 const action_select = document.getElementById("action_select");
+const closeExportMenu = document.getElementById("close-export-menu");
+
+if (closeExportMenu) {
+    closeExportMenu.addEventListener("click", () => {
+        document
+            .getElementById("exportMenuContainer")
+            .classList.add("hide-menu");
+    });
+}
 
 function selectCheckboxBtn_clicked(e) {
     if (
@@ -70,6 +79,7 @@ function redirectAction(e) {
                 };
             }
             exportMenu.classList.remove("hide-menu");
+            action_select.selectedIndex = 0; //reset select option
         }
     } else {
         window.location.href = e.target.value;

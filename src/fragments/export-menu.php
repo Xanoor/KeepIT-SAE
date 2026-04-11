@@ -1,14 +1,23 @@
 <form class="menu" action="../actions/exportCSV_action.php" method="POST">
-    <?php foreach ($columns as $colGroup): ?>
-        <div class="column">
-            <?php foreach ($colGroup as $col): ?>
-                <div class="item">
-                    <input type="checkbox" name="columns[]" value="<?= $col ?>">
-                    <label><?= $col ?></label>
+    <button type="button" class="close-menu-btn" id="close-export-menu" aria-label="Close">X</button>
+
+    <div class="menu-columns">
+        <?php foreach ($columns as $tableName => $colGroup): ?>
+            <div class="column">
+                <h3 class="column-title"><?= htmlspecialchars($tableName) ?></h3>
+                <div class="column-items">
+                    <?php foreach ($colGroup as $col): ?>
+                        <div class="item">
+                            <label>
+                                <input type="checkbox" name="columns[]" value="<?= htmlspecialchars($col) ?>">
+                                <span class="item-text"><?= htmlspecialchars($col) ?></span>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
     <div class="menu-footer">
         <span class="menu-text">Choisissez les attributs à exporter</span>

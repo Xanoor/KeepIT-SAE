@@ -25,6 +25,14 @@ if (isset($_POST["export_submit"], $_POST["columns"]) && is_array($_POST["column
     // Generate the SQL WHERE clause
     $whereQuery = buildSQLWhereClause($filters);
 
+    // Verify if the columns selected can be exported (exist in the sql export view)
+    if (!columnsExists($connect, "vw_export_inventaire", $columns)) {
+        $_SESSION['notification'] = "Une ou plusieurs colonnes ne peuvent être exportées.";
+        $_SESSION['notification_color'] = "red";
+        header("Location: ../pages/inventory.php");
+        exit();
+    }
+
     $selectColumns = implode(", ", $columns);
 
     $sql = "SELECT ".$selectColumns." FROM vw_export_inventaire ".$whereQuery;
