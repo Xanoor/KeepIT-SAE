@@ -143,6 +143,15 @@
     gap: 1.25rem;
 }
 
+.chart-card.full-width {
+    grid-column: 1 / -1;
+    min-height: 350px;
+}
+
+.chart-card.full-width .chart-canvas-wrapper {
+    min-height: 300px;
+}
+
 .chart-card {
     background: var(--alternative-color);
     border-radius: 0.75rem;
@@ -192,4 +201,53 @@
 .dashboard-table td .table-item-END_OF_LIFE,
 .dashboard-table td .table-item-IN_INVENTORY {
     margin: 0;
+}
+
+.select-chart{
+    border: 0.125rem solid var(--border-color);
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.wait {
+    position: relative;
+    overflow: hidden;
+    background-color: #2a2a3a !important;
+    border-color: #353545 !important;
+    z-index: 1;
+}
+
+.wait::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 0, 0.5) 0%,
+        rgba(255, 0, 0, 0.5) 50%,
+        rgba(255, 0, 255, 0.5) 100%
+    );
+    animation: shimmer 2s linear infinite;
+    z-index: 99;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.wait canvas {
+    visibility: hidden;
+}
+
+.chart-canvas-wrapper.wait {
+    position: relative; /* Obligatoire pour le positionnement de ::after */
+    overflow: hidden;   /* Obligatoire pour masquer le reflet qui dépasse */
+    background-color: #2a2a3a;
+    border-radius: 0.75rem; /* Optionnel : pour suivre les bords arrondis de tes cartes */
 }

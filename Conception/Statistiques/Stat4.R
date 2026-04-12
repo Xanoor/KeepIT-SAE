@@ -1,6 +1,6 @@
 #Cette statistique nous donne le nombre de PC jugée "faible" (par rapport à la RAM) 
 #associés à des écrans considérés trop grands
-alerte_ecran_pc <- function(fichier_pc, fichier_ecrans, seuil_max_ram, seuil_mini_ecran) {
+alerte_ecran_pc_old <- function(fichier_pc, fichier_ecrans, seuil_max_ram, seuil_mini_ecran) {
   
   pc = read.csv(fichier_pc, sep = ",")
   ecrans = read.csv(fichier_ecrans, sep = ",")
@@ -23,4 +23,21 @@ alerte_ecran_pc <- function(fichier_pc, fichier_ecrans, seuil_max_ram, seuil_min
   return(nbre_incoherences)
 }
 
+alerte_ecran_pc <- function(fichier_pc, fichier_ecrans, seuil_max_ram, seuil_mini_ecran) {
+  
+  pc = read.csv(fichier_pc, sep = ",")
+  ecrans = read.csv(fichier_ecrans, sep = ",")
+  
+  donnees_fusionnees = merge(pc, ecrans, by.x = "NAME", by.y = "ATTACHED_TO")
+  
+  incoherences = donnees_fusionnees[
+    donnees_fusionnees$RAM_MB < seuil_max_ram & 
+      donnees_fusionnees$SIZE_INCH >= seuil_mini_ecran, 
+  ]
+  incoherences = incoherences[!duplicated(incoherences$NAME), ]
+  stats_villes = as.data.frame(table(incoherences$LOCATION))
+  colnames(stats_villes) = c("ville", "nb")
+  
+  return(stats_villes)
+}
 alerte_ecran_pc("inventory_devices.csv", "inventory_monitors2.csv", 16384, 27)

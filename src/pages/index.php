@@ -178,6 +178,52 @@
                 </div>
             </div>
 
+            <div class="chart-card">
+                <p class="chart-title">Temps de connexion des utilisateurs</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-connexion" aria-label="Graphique : temps de connexion"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <p class="chart-title">UC avec minimum 
+                    <select id="select-memory" class="select-chart">
+                        <option value="4096">4096</option>
+                        <option value="8192">8192</option>
+                        <option value="16384">16384</option>
+                        <option value="32768">32768</option>
+                    </select> 
+                    Mo de RAM et 
+                    <select id="select-disk" class="select-chart">
+                        <option value="256">256</option>
+                        <option value="512">512</option>
+                        <option value="1024">1024</option>
+                    </select>
+                    Go de stockage (
+                    <select id="select-city" class="select-chart">
+                        <option value="Vélizy">Vélizy</option>
+                        <option value="Rambouillet">Rambouillet</option>
+                    </select>
+                )</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-spec-minimum" aria-label="Graphique : Parc info Velizy"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <p class="chart-title">Incohérence entre capacité de l'uc et taille de l'écran associé</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-incoherence" aria-label="Graphique : Incohérence entre uc et écran"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card full-width">
+                <p class="chart-title">Prévisions des fins de garanties en fonction du constructeur</p>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="chart-warranties" aria-label="Graphique : Prévisions des fins de garanties"></canvas>
+                </div>
+            </div>
+
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
