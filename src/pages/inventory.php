@@ -161,7 +161,8 @@
                             />
                         </button>
                         <label for="page-num-input" class="sr-only">Numéro de page</label>
-                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">                        <button type="submit" name="next-page">
+                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">                        
+                        <button type="submit" name="next-page">
                             <img
                                 src="../assets/arrow-big-right.png"
                                 alt="Page suivante"
