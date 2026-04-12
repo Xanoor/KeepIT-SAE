@@ -2,6 +2,12 @@
     session_start();
     require_once '../includes/db.php';
 
+    // Everyone with a role can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role'])) {
+        header("Location: ../pages/login.php");
+        exit();
+    }
+
     if (isset($_POST['submit'])) {
         
         $db = $GLOBALS['connect'];

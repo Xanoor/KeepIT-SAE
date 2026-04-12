@@ -2,7 +2,7 @@
     session_start();
 
     // Everyone that have a role (tech, adm...) can access this page
-    if (!isset($_SESSION['login'])) {
+    if (!isset($_SESSION['login'], $_SESSION['role'])) {
         header("Location: login.php");
         exit();
     }

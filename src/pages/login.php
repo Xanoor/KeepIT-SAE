@@ -1,19 +1,19 @@
 <?php
-require_once '../includes/db.php';
+    require_once '../includes/db.php';
 
-include '../includes/functions.php';
-include '../components/icon.php';
+    include '../includes/functions.php';
+    include '../components/icon.php';
 
-$error_code = $_GET['error'] ?? null;
+    $error_code = $_GET['error'] ?? null;
 
-if(!isset($_SESSION)) { 
-    session_start(); 
-} 
+    if(!isset($_SESSION)) { 
+        session_start(); 
+    } 
 
-if (isset($_SESSION['login'])) {
-    header("Location: index.php");
-    exit();
-}
+    if (isset($_SESSION['login'])) {
+        header("Location: index.php");
+        exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">

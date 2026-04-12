@@ -1,20 +1,20 @@
 <?php
-session_start();
+    session_start();
 
-// Everyone that have a role (tech, adm...) can access this page
-if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
-    header("Location: login.php");
-    exit();
-}
+    // Only web admin and technician can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || !in_array($_SESSION['role'], ['Web Administrator', 'Technician'])) {
+        header("Location: login.php");
+        exit();
+    }
 
-include_once("../includes/functions.php");
+    include_once("../includes/functions.php");
 
-$notification = $_SESSION['notification'] ?? null;
-$notification_color = $_SESSION['notification_color'] ?? null;
-$import_errors = $_SESSION['import_errors'] ?? null;
-unset($_SESSION['notification']);
-unset($_SESSION['notification_color']);
-unset($_SESSION['import_errors']);
+    $notification = $_SESSION['notification'] ?? null;
+    $notification_color = $_SESSION['notification_color'] ?? null;
+    $import_errors = $_SESSION['import_errors'] ?? null;
+    unset($_SESSION['notification']);
+    unset($_SESSION['notification_color']);
+    unset($_SESSION['import_errors']);
 ?>
 
 <!DOCTYPE html>

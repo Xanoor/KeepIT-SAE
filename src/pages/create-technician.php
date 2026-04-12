@@ -1,6 +1,6 @@
 <?php 
     session_start();
-    if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'Web Administrator') {
+    if (!isset($_SESSION['login'], $_SESSION['role']) || $_SESSION['role'] !== 'Web Administrator') {
         header("Location: technician.php");
         exit();
     }

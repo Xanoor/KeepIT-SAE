@@ -1,46 +1,47 @@
 <?php
 
-session_start();
+    session_start();
 
-if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
-    header("Location: login.php");
-    exit();
-}
+    // Everyone can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role'])) {
+        header("Location: login.php");
+        exit();
+    }
 
-require_once '../includes/db.php';
-require_once '../includes/functions.php';
+    require_once '../includes/db.php';
+    require_once '../includes/functions.php';
 
-$notification = $_SESSION['notification'] ?? null;
-$notification_color = $_SESSION['notification_color'] ?? null;
-$import_errors = $_SESSION['import_errors'] ?? null;
-unset($_SESSION['notification']);
-unset($_SESSION['notification_color']);
-unset($_SESSION['import_errors']);
+    $notification = $_SESSION['notification'] ?? null;
+    $notification_color = $_SESSION['notification_color'] ?? null;
+    $import_errors = $_SESSION['import_errors'] ?? null;
+    unset($_SESSION['notification']);
+    unset($_SESSION['notification_color']);
+    unset($_SESSION['import_errors']);
 
-$techniciens = [];
-if (tableExists($connect, 'vw_dashboard_five_users_last_connection')) {
-    $techResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_users_last_connection");
-    if ($techResult) {
-        while ($row = mysqli_fetch_assoc($techResult)) {
-            $techniciens[] = $row;
+    $techniciens = [];
+    if (tableExists($connect, 'vw_dashboard_five_users_last_connection')) {
+        $techResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_users_last_connection");
+        if ($techResult) {
+            while ($row = mysqli_fetch_assoc($techResult)) {
+                $techniciens[] = $row;
+            }
         }
     }
-}
 
-$inventaireItems = [];
-if (tableExists($connect, 'vw_dashboard_five_devices_last_update')) {
-    $invResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_devices_last_update");
-    if ($invResult) {
-        while ($row = mysqli_fetch_assoc($invResult)) {
-            $inventaireItems[] = $row;
+    $inventaireItems = [];
+    if (tableExists($connect, 'vw_dashboard_five_devices_last_update')) {
+        $invResult = mysqli_query($connect, "SELECT * FROM vw_dashboard_five_devices_last_update");
+        if ($invResult) {
+            while ($row = mysqli_fetch_assoc($invResult)) {
+                $inventaireItems[] = $row;
+            }
         }
     }
-}
 
-$displayName = htmlspecialchars($_SESSION['login']);
-if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
-    $displayName = htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? '')));
-}
+    $displayName = htmlspecialchars($_SESSION['login']);
+    if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
+        $displayName = htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? '')));
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -1,8 +1,8 @@
 <?php 
     session_start();
 
-    // Everyone that have a role (tech, adm...) can access this page
-    if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    // Only web admin and technician can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || !in_array($_SESSION['role'], ['Web Administrator', 'Technician'])) {
         header("Location: login.php");
         exit();
     }

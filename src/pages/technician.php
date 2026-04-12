@@ -1,6 +1,8 @@
 <?php 
     session_start();
-    if (!isset($_SESSION['login']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'Web Administrator') {
+
+    // Only the web admin can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || $_SESSION['role'] != 'Web Administrator') {
         header("Location: login.php");
         exit();
     }

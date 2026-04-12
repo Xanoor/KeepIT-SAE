@@ -13,12 +13,24 @@
             <a href="index.php">KEEPIT</a>
         </div>
         <nav class="nav-buttons-container">
+            <!-- Global header (all roles) -->
             <a href="index.php" class="<?= ($currentPageName == 'index.php') ? 'nav-buttons-current' : '' ?>">Dashboard</a>
-            <a href="inventory.php" class="<?= (in_array($currentPageName, ['inventory.php', 'inventory-item.php', 'create-item.php', 'importCSV.php'])) ? 'nav-buttons-current' : '' ?>">Inventaire</a>
+
+            <!-- Tech and admin web only -->
+            <?php if (isset($_SESSION['role']) && ($_SESSION['role'] == "Web Administrator" || $_SESSION['role'] == "Technician")): ?>
+                <a href="inventory.php" class="<?= (in_array($currentPageName, ['inventory.php', 'inventory-item.php', 'create-item.php', 'importCSV.php'])) ? 'nav-buttons-current' : '' ?>">Inventaire</a>
+                <a href="#">Informations</a>
+            <?php endif; ?>
+
+            <!-- Admin web only -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'Web Administrator'): ?>
                 <a href="technician.php" class="<?= (in_array($currentPageName, ['technician.php', 'create-technician.php'])) ? 'nav-buttons-current' : '' ?>">Techniciens</a>
             <?php endif; ?>
-            <a href="#">Informations</a>
+
+            <!-- Sys admin only -->
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] == "System Administrator"): ?>
+                <a href="admin-panel.php" class="<?= ($currentPageName == 'admin-panel.php') ? 'nav-buttons-current' : '' ?>">Panel admin</a>
+            <?php endif; ?>
         </nav>
     </div>
     <nav class="nav-right-container">

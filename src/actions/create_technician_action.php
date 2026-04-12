@@ -1,11 +1,13 @@
 <?php
 session_start();
-include_once("../includes/functions.php");
 
-if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'Web Administrator') {
-    header("Location: ../pages/technician.php");
+// Only the web admin can access this action
+if (!isset($_SESSION['login'], $_SESSION['role']) || $_SESSION['role'] !== 'Web Administrator') {
+    header("Location: ../pages/login.php");
     exit();
 }
+
+include_once("../includes/functions.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = trim($_POST['first_name']);
