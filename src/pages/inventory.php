@@ -70,25 +70,7 @@
         <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="index.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="index.php">Dashboard</a>
-                    <a href="#" class="nav-buttons-current">Inventaire</a>
-                    <a href="technician.php">Techniciens</a>
-                    <a href="#">Informations</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="account-management.php" class="profile-btn">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out">
-                    <img src="../assets/log-out.png" alt="Déconnexion"/>
-                </a>
-            </nav>
-        </header>
+        <?php include_once("../fragments/header.php"); ?>
         <main>
             <div class="page-name">
                 <img alt="Logo du site" src="../assets/logo.png" />
@@ -179,8 +161,7 @@
                             />
                         </button>
                         <label for="page-num-input" class="sr-only">Numéro de page</label>
-                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">
-                        <button type="submit" name="next-page">
+                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">                        <button type="submit" name="next-page">
                             <img
                                 src="../assets/arrow-big-right.png"
                                 alt="Page suivante"

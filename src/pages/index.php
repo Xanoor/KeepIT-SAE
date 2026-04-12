@@ -53,25 +53,7 @@ if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
     <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
 </head>
 <body>
-    <header>
-        <div class="nav-left-container">
-            <div class="app-name-container">
-                <a href="index.php">KEEPIT</a>
-            </div>
-            <nav class="nav-buttons-container">
-                <a href="index.php" class="nav-buttons-current">Dashboard</a>
-                <a href="inventory.php">Inventaire</a>
-                <a href="technician.php">Techniciens</a>
-                <a href="#">Informations</a>
-            </nav>
-        </div>
-        <nav class="nav-right-container">
-            <a href="account-management.php" class="profile-btn"><?= $displayName ?></a>
-            <a href="../actions/logout_action.php" class="log-out">
-                <img src="../assets/log-out.png" alt="Déconnexion" />
-            </a>
-        </nav>
-    </header>
+    <?php include_once("../fragments/header.php"); ?>
 
     <main class="dashboard-main">
 

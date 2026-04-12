@@ -22,26 +22,7 @@
         <link rel="stylesheet" type="text/css" href="../styles/technician.css" />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="index.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="index.php">Dashboard</a>
-                    <a href="inventory.php">Inventaire</a>
-                    <a href="technician.php" class="nav-buttons-current">Techniciens</a>
-                    <a href="#">Informations</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="account-management.php" class="profile-btn">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out">
-                    <img src="../assets/log-out.png" alt="Déconnexion"/>
-                </a>
-            </nav>
-        </header>
-
+        <?php include_once("../fragments/header.php"); ?>
         <main>
             <div class="page-name">
                 <img alt="Logo du site" src="../assets/logo.png" />

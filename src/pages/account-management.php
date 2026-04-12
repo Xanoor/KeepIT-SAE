@@ -19,12 +19,11 @@
         $_SESSION['notification_color'] = "red";
         header("Location: index.php");
         exit();
-
     }
 
     // Searching the values of the user in the sql database.
     require_once '../includes/db.php';
-        
+    // TODO: move this part to functions.php
     $db = $GLOBALS['connect'];
     $login = $_SESSION['login'];
     $sql = "SELECT first_name, last_name, role, password_hash FROM users WHERE login = ?";
@@ -42,8 +41,6 @@
 
     ?>
 
-
-
 <!doctype html>
 <html lang="fr">
     <head>
@@ -54,73 +51,55 @@
         <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="index.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="index.php">Dashboard</a>
-                    <a href="inventory.php">Inventaire</a>
-                    <a href="technician.php">Techniciens</a>
-                    <a href="#">Informations</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="#" class="profile-btn-selected">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out"
-                    ><img src="../assets/log-out.png" alt="Deconnexion"
-                /></a>
-            </nav>
-        </header>
+        <?php include_once("../fragments/header.php"); ?>
         <main class="account-management">
-    <div class="page-name">
-        <img alt="Logo du site" src="../assets/logo.png" />
-        <h1>Mon compte</h1>
-    </div>
-
-    <form id="update-account-form" method="post" action="../actions/account-management_action.php">
-        <div class="account-container">
-            
-            <div class="account-card">
-                <h2>Informations personnelles</h2>
-                <div class="form-group">
-                    <label for="first-name">Prénom</label>
-                    <input type="text" id="first-name" name="first-name" value="<?= htmlspecialchars($resultat['first_name']) ?>" />
-
-                    <label for="last-name">Nom</label>
-                    <input type="text" id="last-name" name="last-name" value="<?= htmlspecialchars($resultat['last_name']) ?>" />
-
-                    <div class="input-readonly-container">
-                        <label for="job">Fonction</label>
-                        <input type="text" id="job" name="job" value="<?= htmlspecialchars(convertDataToFrench($resultat['role'])) ?>" readonly />
-                        <span class="tooltip">Vous n'avez pas la permission de changer de fonction.</span>
-                    </div>
-                </div>
+            <div class="page-name">
+                <img alt="Logo du site" src="../assets/logo.png" />
+                <h1>Mon compte</h1>
             </div>
 
-            <div class="account-card">
-                <h2>Identifiants de connexion</h2>
-                <div class="form-group">
-                    <div class="input-readonly-container">
-                        <label for="login">Login</label>
-                        <input type="text" id="login" name="login" value="<?= htmlspecialchars($_SESSION['login']) ?>" readonly />
-                        <span class="tooltip">Il est impossible de changer de login.</span>
+            <form id="update-account-form" method="post" action="../actions/account-management_action.php">
+                <div class="account-container">
+                    
+                    <div class="account-card">
+                        <h2>Informations personnelles</h2>
+                        <div class="form-group">
+                            <label for="first-name">Prénom</label>
+                            <input type="text" id="first-name" name="first-name" value="<?= htmlspecialchars($resultat['first_name']) ?>" />
+
+                            <label for="last-name">Nom</label>
+                            <input type="text" id="last-name" name="last-name" value="<?= htmlspecialchars($resultat['last_name']) ?>" />
+
+                            <div class="input-readonly-container">
+                                <label for="job">Fonction</label>
+                                <input type="text" id="job" name="job" value="<?= htmlspecialchars(convertDataToFrench($resultat['role'])) ?>" readonly />
+                                <span class="tooltip">Vous n'avez pas la permission de changer de fonction.</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <label for="password">Mot de passe</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="password" name="password" placeholder="*******" />
-                        <span class="eye-icon"></span>
+                    <div class="account-card">
+                        <h2>Identifiants de connexion</h2>
+                        <div class="form-group">
+                            <div class="input-readonly-container">
+                                <label for="login">Login</label>
+                                <input type="text" id="login" name="login" value="<?= htmlspecialchars($_SESSION['login']) ?>" readonly />
+                                <span class="tooltip">Il est impossible de changer de login.</span>
+                            </div>
+
+                            <label for="password">Mot de passe</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" placeholder="*******" />
+                                <span class="eye-icon"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <input type="submit" name="submit" value="Enregistrer" >
-    </form>
-    </main>
-    <!-- Notification container -->
-    <div class="notifications-container" id="notificationsContainer"></div>
+                <input type="submit" name="submit" value="Enregistrer" >
+            </form>
+        </main>
+        <!-- Notification container -->
+        <div class="notifications-container" id="notificationsContainer"></div>
     </body>
     <script src="../scripts/showPassword.js"></script>
     <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
