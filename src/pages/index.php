@@ -186,27 +186,39 @@
             </div>
             
             <div class="chart-card">
-                <p class="chart-title">UC avec minimum 
-                    <select id="select-memory" class="select-chart">
-                        <option value="4096">4096</option>
-                        <option value="8192">8192</option>
-                        <option value="16384">16384</option>
-                        <option value="32768">32768</option>
-                    </select> 
-                    Mo de RAM et 
-                    <select id="select-disk" class="select-chart">
-                        <option value="256">256</option>
-                        <option value="512">512</option>
-                        <option value="1024">1024</option>
-                    </select>
-                    Go de stockage (
-                    <select id="select-city" class="select-chart">
-                        <option value="Vélizy">Vélizy</option>
-                        <option value="Rambouillet">Rambouillet</option>
-                    </select>
-                )</p>
+                <p class="chart-title">Capacités des UC</p>
+                
                 <div class="chart-canvas-wrapper">
-                    <canvas id="chart-spec-minimum" aria-label="Graphique : Parc info Velizy"></canvas>
+                    <canvas id="chart-spec-minimum" aria-label="Graphique : Capacite du parc info"></canvas>
+                </div>
+                
+                <div class="chart-settings-container">
+                    <div class="setting-item">
+                        <label>RAM Minimum (Mo)</label>
+                        <select id="select-memory" class="select-chart">
+                            <option value="4096">4096</option>
+                            <option value="8192">8192</option>
+                            <option value="16384">16384</option>
+                            <option value="32768">32768</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Stockage minimum (Go)</label>
+                        <select id="select-disk" class="select-chart">
+                            <option value="256">256</option>
+                            <option value="512">512</option>
+                            <option value="1024">1024</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Site</label>
+                        <select id="select-city" class="select-chart">
+                            <option value="Vélizy">Vélizy</option>
+                            <option value="Rambouillet">Rambouillet</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
