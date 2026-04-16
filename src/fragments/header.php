@@ -19,7 +19,7 @@
             <!-- Tech and admin web only -->
             <?php if (isset($_SESSION['role']) && ($_SESSION['role'] == "Web Administrator" || $_SESSION['role'] == "Technician")): ?>
                 <a href="inventory.php" class="<?= (in_array($currentPageName, ['inventory.php', 'inventory-item.php', 'create-item.php', 'importCSV.php'])) ? 'nav-buttons-current' : '' ?>">Inventaire</a>
-                <a href="#">Informations</a>
+                <a href="#" class="<?=  (in_array($currentPageName, ['team_infos.php']) ? 'nav-buttons-current' : '') ?>">Informations</a>
             <?php endif; ?>
 
             <!-- Admin web only -->
