@@ -19,7 +19,8 @@
             <!-- Tech and admin web only -->
             <?php if (isset($_SESSION['role']) && ($_SESSION['role'] == "Web Administrator" || $_SESSION['role'] == "Technician")): ?>
                 <a href="inventory.php" class="<?= (in_array($currentPageName, ['inventory.php', 'inventory-item.php', 'create-item.php', 'importCSV.php'])) ? 'nav-buttons-current' : '' ?>">Inventaire</a>
-                <a href="#" class="<?=  (in_array($currentPageName, ['team_infos.php']) ? 'nav-buttons-current' : '') ?>">Informations</a>
+                <a href="team_infos.php" class="<?=  (in_array($currentPageName, ['team_infos.php']) ? 'nav-buttons-current' : '') ?>">L'équipe</a>
+                <a href="rgpd_table.php" class="<?=  (in_array($currentPageName, ['rgpd_table.php']) ? 'nav-buttons-current' : '') ?>">RGPD</a>
             <?php endif; ?>
 
             <!-- Admin web only -->
