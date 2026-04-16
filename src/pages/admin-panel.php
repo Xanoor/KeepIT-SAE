@@ -25,12 +25,26 @@
     </head>
     <body>
         <?php include_once("../fragments/header.php"); ?>
-        <main>
+        <main class="panel-main">
             <div class="page-name">
                 <img alt="Logo du site" src="../assets/logo.png" />
                 <h1>Panel Admin</h1>
             </div>
             
+            <section class="log-section">
+                <div class="section-header">Logs utilisateurs ⬇️</div>
+                <div class="sys-logs subsections">
+                    <?php echo loadUsersLogs() ?>
+                </div>
+            </section>
+
+            <section class="log-section">
+                <div class="section-header">Logs de constantes ⬇️</div>
+                <div class="sys-logs subsections">
+                    <?php echo loadConstantLogs() ?>
+                </div>
+            </section>
+
             <!-- Notification container -->
             <div class="notifications-container" id="notificationsContainer"></div>
         </main>
@@ -38,4 +52,14 @@
     <!-- Scripts -->
     <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
     <script src="../scripts/notification.js"></script>
+    <script>
+        const headers = document.querySelectorAll(".section-header");
+
+        headers.forEach((header) => {
+            header.addEventListener("click", () => {
+                const section = header.parentElement;
+                section.classList.toggle("active");
+            });
+        });
+    </script>
 </html>
