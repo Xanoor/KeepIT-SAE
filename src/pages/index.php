@@ -59,9 +59,15 @@
     <main class="dashboard-main">
 
         <!-- Page title -->
-        <div class="page-name">
-            <img alt="Logo du site" src="../assets/logo.png" />
-            <h1>Dashboard</h1>
+        <div class="container-title">
+            <div class="page-name">
+                <img alt="Logo du site" src="../assets/logo.png" />
+                <h1>Dashboard</h1>
+            </div>
+
+            <div>
+                <a href="statistics.php" class="more-stats">Plus de statistiques</a>
+            </div>
         </div>
 
         <div class="dashboard-grid">
@@ -177,65 +183,6 @@
                     <canvas id="chart-activity" aria-label="Graphique : activité récente"></canvas>
                 </div>
             </div>
-
-            <div class="chart-card">
-                <p class="chart-title">Temps de connexion des utilisateurs</p>
-                <div class="chart-canvas-wrapper">
-                    <canvas id="chart-connexion" aria-label="Graphique : temps de connexion"></canvas>
-                </div>
-            </div>
-            
-            <div class="chart-card">
-                <p class="chart-title">Capacités des UC</p>
-                
-                <div class="chart-canvas-wrapper">
-                    <canvas id="chart-spec-minimum" aria-label="Graphique : Capacite du parc info"></canvas>
-                </div>
-                
-                <div class="chart-settings-container">
-                    <div class="setting-item">
-                        <label>RAM Minimum (Mo)</label>
-                        <select id="select-memory" class="select-chart">
-                            <option value="4096">4096</option>
-                            <option value="8192">8192</option>
-                            <option value="16384">16384</option>
-                            <option value="32768">32768</option>
-                        </select>
-                    </div>
-
-                    <div class="setting-item">
-                        <label>Stockage minimum (Go)</label>
-                        <select id="select-disk" class="select-chart">
-                            <option value="256">256</option>
-                            <option value="512">512</option>
-                            <option value="1024">1024</option>
-                        </select>
-                    </div>
-
-                    <div class="setting-item">
-                        <label>Site</label>
-                        <select id="select-city" class="select-chart">
-                            <option value="Vélizy">Vélizy</option>
-                            <option value="Rambouillet">Rambouillet</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-card">
-                <p class="chart-title">Incohérence entre capacité de l'uc et taille de l'écran associé</p>
-                <div class="chart-canvas-wrapper">
-                    <canvas id="chart-incoherence" aria-label="Graphique : Incohérence entre uc et écran"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-card full-width">
-                <p class="chart-title">Prévisions des fins de garanties en fonction du constructeur</p>
-                <div class="chart-canvas-wrapper">
-                    <canvas id="chart-warranties" aria-label="Graphique : Prévisions des fins de garanties"></canvas>
-                </div>
-            </div>
-
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>

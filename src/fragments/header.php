@@ -14,12 +14,13 @@
         </div>
         <nav class="nav-buttons-container">
             <!-- Global header (all roles) -->
-            <a href="index.php" class="<?= ($currentPageName == 'index.php') ? 'nav-buttons-current' : '' ?>">Dashboard</a>
+            <a href="index.php" class="<?= ($currentPageName == (in_array($currentPageName, ['index.php', 'statistics.php']))) ? 'nav-buttons-current' : '' ?>">Dashboard</a>
 
             <!-- Tech and admin web only -->
             <?php if (isset($_SESSION['role']) && ($_SESSION['role'] == "Web Administrator" || $_SESSION['role'] == "Technician")): ?>
                 <a href="inventory.php" class="<?= (in_array($currentPageName, ['inventory.php', 'inventory-item.php', 'create-item.php', 'importCSV.php'])) ? 'nav-buttons-current' : '' ?>">Inventaire</a>
-                <a href="#">Informations</a>
+                <a href="team_infos.php" class="<?=  (in_array($currentPageName, ['team_infos.php']) ? 'nav-buttons-current' : '') ?>">L'équipe</a>
+                <a href="rgpd_table.php" class="<?=  (in_array($currentPageName, ['rgpd_table.php']) ? 'nav-buttons-current' : '') ?>">RGPD</a>
             <?php endif; ?>
 
             <!-- Admin web only -->
