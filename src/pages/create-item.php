@@ -1,20 +1,20 @@
 <?php
-session_start();
+    session_start();
 
-// Everyone that have a role (tech, adm...) can access this page
-if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
-    header("Location: login.php");
-    exit();
-}
+    // Tech and web admin can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || !in_array($_SESSION['role'], ["Web Administrator", "Technician"])) {
+        header("Location: login.php");
+        exit();
+    }
 
-include_once("../includes/functions.php");
+    include_once("../includes/functions.php");
 
-$notification = $_SESSION['notification'] ?? null;
-$notification_color = $_SESSION['notification_color'] ?? null;
-$import_errors = $_SESSION['import_errors'] ?? null;
-unset($_SESSION['notification']);
-unset($_SESSION['notification_color']);
-unset($_SESSION['import_errors']);
+    $notification = $_SESSION['notification'] ?? null;
+    $notification_color = $_SESSION['notification_color'] ?? null;
+    $import_errors = $_SESSION['import_errors'] ?? null;
+    unset($_SESSION['notification']);
+    unset($_SESSION['notification_color']);
+    unset($_SESSION['import_errors']);
 ?>
 
 <!doctype html>
@@ -31,28 +31,7 @@ unset($_SESSION['import_errors']);
         />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="login.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="#">Dashboard</a>
-                    <a href="inventory.php" class="nav-buttons-current"
-                        >Inventaire</a
-                    >
-                    <a href="#">Techniciens</a>
-                    <a href="#">Informations</a>
-                    <a href="http://192.168.25.19/static">Pages Statiques</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="#" class="profile-btn">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out">
-                    <img src="../assets/log-out.png" alt="Déconnexion"/>
-                </a>
-            </nav>
-        </header>
+        <?php include_once("../fragments/header.php"); ?>
         <main class="inventory-item-main">
             <div>
                 <div class="page-name">
@@ -73,7 +52,6 @@ unset($_SESSION['import_errors']);
                     </select>
                 </div>
 
-                <!-- /!\ This part is an example for the static page /!\ -->
                 <section class="inventory-item-main-section">
                     <form action="../actions/create-item_action.php" method="POST" id="create-item-form">
                        

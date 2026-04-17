@@ -4,11 +4,17 @@ require_once 'db.php';
 require_once '../fragments/computer-details.php';
 require_once '../fragments/monitor-details.php';
 
-// Used to convert text to french (language used for this web site)
+/**
+ * Converts specific English device-related terms to French.
+ * 
+ * @param string $data The text to convert.
+ * @return string The translated text if found, or the original text.
+ */
 function convertDataToFrench($data) {
     $data_edit = strtoupper($data);
 
     $translations = [
+        "DEVICES" => "APPAREILS",
         "MONITOR" => "Écrans",
         "COMPUTER" => "Ordinateur",
         "SERIAL NUMBER" => "Numéro de série",
@@ -16,9 +22,32 @@ function convertDataToFrench($data) {
         "DEVICE TYPE" => "Type d'appareil",
         "CREATED AT" => "Créé le",
         "UPDATED AT" => "Modifié le",
-        "STATE" => "État"
+        "STATE" => "État",
+        "TECHNICIAN" => "Technicien",
+        "WEB ADMINISTRATOR" => "Administrateur Web",
+        "SYSTEM ADMINISTRATOR" => "Administrateur Système",
     ];
     return $translations[$data_edit] ?? $data;
+}
+
+/**
+ * Formats a datetime string into a human-readable "time ago" format in French.
+ * @param string|null $datetime The datetime string to format (e.g., "2024-06-01 12:00:00").
+ * @return string A human-readable string representing how long ago the datetime was (e.g., "Il y a 2 jours"). Returns "Jamais" if the input is null or empty, and "Maintenant" if the datetime is within the last minute.
+ */
+function timeAgoFr(?string $datetime): string {
+    if (empty($datetime)) return "Jamais";
+
+    $now  = new DateTime();
+    $past = new DateTime($datetime);
+    $diff = $now->diff($past);
+
+    if ($diff->y > 0) return "Il y a " . $diff->y . " an" . ($diff->y > 1 ? "s" : "");
+    if ($diff->m > 0) return "Il y a " . $diff->m . " mois";
+    if ($diff->d > 0) return "Il y a " . $diff->d . " jour" . ($diff->d > 1 ? "s" : "");
+    if ($diff->h > 0) return "Il y a " . $diff->h . " heure" . ($diff->h > 1 ? "s" : "");
+    if ($diff->i > 0) return "Il y a " . $diff->i . " minute" . ($diff->i > 1 ? "s" : "");
+    return "Maintenant";
 }
 
 /**
@@ -36,6 +65,27 @@ function tableExists($conn, $table) {
     return mysqli_num_rows($res) > 0;
 }
 
+/**
+ * Retrieves a list of column names for a given table.
+ * 
+ * @param mysqli|null $connect Database connection.
+ * @param string $table The table name.
+ * @return array|false An array of column names if successful, false otherwise.
+ */
+function getColumns($connect, $table) {
+    if (!$connect) global $connect;
+
+    $res = mysqli_query($connect, "DESCRIBE `$table`");
+    if (!$res) return false;
+
+    $existing = [];
+    while ($row = mysqli_fetch_assoc($res)) {
+        $existing[] = $row['Field'];
+    }
+
+    return $existing;
+}
+
 
 /**
  * Check if multiple columns exist in a specific table.
@@ -45,14 +95,8 @@ function tableExists($conn, $table) {
  * @param array $columns List of column names to check.
  * @return bool True if all columns exist, false otherwise.
  */
-function columnsExists($connect, $table, $columns) {
-    $res = mysqli_query($connect, "DESCRIBE `$table`");
-    if (!$res) return false;
-
-    $existing = [];
-    while ($row = mysqli_fetch_assoc($res)) {
-        $existing[] = $row['Field'];
-    }
+function columnsExists($connect, $table, $columns) {    
+    $existing = getColumns($connect, $table);
 
     return empty(array_diff($columns, $existing));
 }
@@ -196,32 +240,22 @@ function importCSVTableBuilder($file, $limit = 100) {
 }
 
 /**
- * Create an HTML table from a SQL query with pagination.
+ * Builds an SQL WHERE clause string based on an array of filters.
+ *
+ * $filters format: 
+ * - [ "col" => ["val1", "val2"] ] (generates IN clause)
+ * - [ "col" => "%val%" ] (generates LIKE clause) 
+ * - [ "col" => "val" ] (generates = clause)
  * 
- * @param string $tableName The table to fetch from.
- * @param array $filters Associative array of column => value for the WHERE clause.
- * @param int $start The starting index (offset).
- * @param int $end The ending index (limit = end - start).
- * @return string HTML table.
+ * @param array $filters Associative array of column => value(s) for the WHERE clause.
+ * @return string The generated WHERE clause or an empty string if no filters.
  */
-function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11) {
+function buildSQLWhereClause($filters) {
     global $connect;
-
-    $step = 11; // Default number of items per page
-    
-    // Validation of start and end
-    if ($start < 0) $start = 0;
-    if ($end <= $start) $end = $start + $step; // Default range if invalid
-
-    // We use mysqli_real_escape_string to protect against SQL Injection
-    // It neutralizes special characters that could break the query or allow unauthorized access
-    $safeTable = mysqli_real_escape_string($connect, $tableName);
-    // Build Base Query and Filter Clause
-    // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
     $whereClause = "";
     if (!empty($filters)) {
         $filterParts = [];
-
+        $likeFilters = [];
         foreach ($filters as $column => $value) {
             $safeColumn = mysqli_real_escape_string($connect, $column);
             
@@ -236,7 +270,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
             } else if (strpos((string)$value, '%') !== false) { //strpos = Find the position of the first occurrence of a su
                 // '%' means we're doing a partial search (e.g. search for serial numbers containing 'ABC')
                 $safeValue = mysqli_real_escape_string($connect, $value);
-                $filterParts[] = "`$safeColumn` LIKE '$safeValue'";
+                $likeFilters[] = "`$safeColumn` LIKE '$safeValue'";
 
             } else {
                 // Simple equality for single values
@@ -244,10 +278,47 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
                 $filterParts[] = "`$safeColumn` = '$safeValue'";
             }
         }
-        // Join all parts with 'AND' so that all conditions must be met
+        //Join all parts with 'AND' so that all conditions must be met
         //implode = Join array elements with a string
         $whereClause = " WHERE " . implode(" AND ", $filterParts);
+        
+        if (!empty($likeFilters)) {
+            if (!empty($filterParts))
+                $whereClause .= " AND (" . implode(" OR ", $likeFilters) . ")";
+            else
+                $whereClause .= implode(" OR ", $likeFilters);
+        }
     }
+    return $whereClause;
+}
+
+/**
+ * Create an HTML table from a SQL query with pagination.
+ * 
+ * @param string $tableName The table to fetch from.
+ * @param array $filters Associative array of column => value for the WHERE clause.
+ * @param int $start The starting index (offset).
+ * @param int $end The ending index (limit = end - start).
+ * @return string HTML table.
+ */
+function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11, $attr = []) {
+    global $connect;
+
+    $step = 11; // Default number of items per page
+    
+    // Validation of start and end
+    if ($start < 0) $start = 0;
+    if ($end <= $start) $end = $start + $step; // Default range if invalid
+
+    // We use mysqli_real_escape_string to protect against SQL Injection
+    // It neutralizes special characters that could break the query or allow unauthorized access
+    $safeTable = mysqli_real_escape_string($connect, $tableName);
+    // Build Base Query and Filter Clause
+    // $filters format: [ "col" => ["val1", "val2"] ] (IN) OR [ "col" => "%val%" ] (LIKE) OR [ "col" => "val" ]
+    $whereClause = buildSQLWhereClause($filters);
+
+    if (empty($attr)) $attributes = "*"; 
+    else $attributes = implode(", ", $attr);
 
     // We check the total number of rows matching the filters to ensure pagination index is valid
     $countQuery = "SELECT COUNT(*) as total FROM `$safeTable`" . $whereClause;
@@ -266,7 +337,7 @@ function importSQLTableBuilder($tableName, $filters = [], $start = 0, $end = 11)
     $limit = $end - $start;
 
     // We order by 'updated_at' so the user sees recent changes first
-    $query = "SELECT * FROM `$safeTable`" . $whereClause . " ORDER BY updated_at DESC LIMIT $start, $limit";
+    $query = "SELECT ".$attributes." FROM `$safeTable`".$whereClause." ORDER BY updated_at DESC LIMIT $start, $limit";
     $result = mysqli_query($connect, $query);
 
     if (!$result) {
@@ -639,10 +710,10 @@ function addMonitor($attr, $line = null) {
     mysqli_begin_transaction($connect);
     try {
         // Insert into DEVICES first (Parent)
-        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Monitor', ?, ?)";
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, manufacturer_name, state) VALUES (?, 'Monitor', ?, ?, ?)";
         $stmt_dev = mysqli_prepare($connect, $req_devices);
-        mysqli_stmt_bind_param($stmt_dev, "sss", 
-            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        mysqli_stmt_bind_param($stmt_dev, "ssss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"]
         );
         
         if (!mysqli_stmt_execute($stmt_dev)) {
@@ -650,10 +721,10 @@ function addMonitor($attr, $line = null) {
         }
 
         // Insert into MONITOR (Child)
-        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, manufacturer_name, connector_name, attached_to_computer) VALUES (?, ?, ?, ?, ?, ?)";
+        $req_monitor = "INSERT INTO monitor (serial_number, size_inch, resolution, connector_name, attached_to_computer) VALUES (?, ?, ?, ?, ?)";
         $stmt_monitor = mysqli_prepare($connect, $req_monitor);
-        mysqli_stmt_bind_param($stmt_monitor, "ssssss", 
-            $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], $attr["MANUFACTURER"], 
+        mysqli_stmt_bind_param($stmt_monitor, "sssss", 
+            $attr["SERIAL"], $attr["SIZE_INCH"], $attr["RESOLUTION"], 
             $attr["CONNECTOR"], $attr["ATTACHED_TO"]
         );
         if (!mysqli_stmt_execute($stmt_monitor)) {
@@ -813,10 +884,10 @@ function addComputer($attr, $line = null) {
     mysqli_begin_transaction($connect);
     try {
         // Insert into DEVICES first (Parent)
-        $req_devices = "INSERT INTO devices (serial_number, device_type, model, state) VALUES (?, 'Computer', ?, ?)";
+        $req_devices = "INSERT INTO devices (serial_number, device_type, model, manufacturer_name, state) VALUES (?, 'Computer', ?, ?, ?)";
         $stmt_dev = mysqli_prepare($connect, $req_devices);
-        mysqli_stmt_bind_param($stmt_dev, "sss", 
-            $attr["SERIAL"], $attr["MODEL"], $attr["STATE"]
+        mysqli_stmt_bind_param($stmt_dev, "ssss", 
+            $attr["SERIAL"], $attr["MODEL"], $attr["MANUFACTURER"], $attr["STATE"]
         );
         
         if (!mysqli_stmt_execute($stmt_dev)) {
@@ -824,12 +895,12 @@ function addComputer($attr, $line = null) {
         }
 
         // Insert into COMPUTER (Child)
-        $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, manufacturer_name, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $req_comp = "INSERT INTO computer (serial_number, name, location, building, room, cpu, ram_mb, disk_gb, domain, mac_address, purchase_date, warranty_end, os_name, type_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt_comp = mysqli_prepare($connect, $req_comp);
-        mysqli_stmt_bind_param($stmt_comp, "sssssssssssssss", 
+        mysqli_stmt_bind_param($stmt_comp, "ssssssssssssss", 
             $attr["SERIAL"], $attr["NAME"], $attr["LOCATION"], $attr["BUILDING"], $attr["ROOM"], $attr["CPU"], $attr["RAM_MB"], $attr["DISK_GB"], 
             $attr["DOMAIN"], $attr["MACADDR"], $attr["PURCHASE_DATE"], $attr["WARRANTY_END"], 
-            $attr["MANUFACTURER"], $attr["OS"], $attr["TYPE"]
+            $attr["OS"], $attr["TYPE"]
         );
         if (!mysqli_stmt_execute($stmt_comp)) {
             throw new Exception("Erreur lors de l'insertion dans computer : " . mysqli_stmt_error($stmt_comp));
@@ -874,12 +945,22 @@ function loadInventoryLogs($serialNumber) {
         $newVal = htmlspecialchars($row['new_val'] ?? '');
 
         $text = "";
-        if ($action === 'INSERT') {
-            $text = "$login a ajouté l'appareil ($field - $serialNumber)";
-        } else if ($action === 'UPDATE') {
-            $text = "$login a changé $field de \"$oldVal\" a \"$newVal\"";
-        } else if ($action === 'DELETE') {
-            $text = "$login a supprimé l'appareil";
+        switch ($action) {
+            case 'INSERT':
+                $text = "$login a ajouté l'appareil ($field - $serialNumber)";
+                break;
+
+            case 'UPDATE':
+                $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
+                break;
+
+            case 'DELETE':
+                $text = "$login a supprimé l'appareil";
+                break;
+
+            case 'AT_DELETED':
+                $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
+                break;
         }
 
         $html .= "
@@ -892,4 +973,164 @@ function loadInventoryLogs($serialNumber) {
     return $html;
 }
 
+function loadUsersLogs() {
+    global $connect;
+
+    $query = "SELECT log_date, login, action_did, old_val, new_val 
+              FROM users_logs 
+              ORDER BY log_date DESC";
+    $result = mysqli_query($connect, $query);
+    $html = "";
+
+    if (!$result) {
+        return $html;
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row["action_did"]) {
+
+            case 'TRY CONNECTION': //connexion failure
+                $html .= "{$row['log_date']} - Échec de connexion pour l'utilisateur \"{$row['login']}\".";
+                break;
+
+            case 'CREATED': //account created
+                $html .= "{$row['log_date']} - Création du compte \"{$row['login']}\".";
+                break;
+
+            case 'UPDATE FIRST NAME': //first name updated
+                $html .= "{$row['log_date']} - Modification du prénom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'UPDATE LAST NAME': //last name updated
+                $html .= "{$row['log_date']} - Modification du nom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'UPDATE PASSWORD': //password updated
+                $html .= "{$row['log_date']} - Mot de passe modifié pour l'utilisateur \"{$row['login']}\".";
+                break;
+
+            case 'UPDATE ROLE': //role updated
+                $html .= "{$row['log_date']} - Modification du rôle de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'DELETED': //account deleted
+                $html .= "{$row['log_date']} - Suppression du compte \"{$row['login']}\".";
+                break;
+
+            default: //else
+                break;
+        }
+        $html .= "<br>";
+    }
+
+    return $html;
+}
+
+function loadConstantLogs() {
+    global $connect;
+
+    $query = "SELECT log_date, table_name, action_did, val 
+              FROM constant_logs 
+              ORDER BY log_date DESC";
+    $result = mysqli_query($connect, $query);
+    $html = "";
+
+    if (!$result) {
+        return $html;
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row["action_did"]) {
+
+            case 'INSERT': //constant created
+                $html .= "{$row['log_date']} - Nouvelle constante dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                break;
+
+            case 'DELETE': //constant removed
+                $html .= "{$row['log_date']} - Constante supprimée dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                break;
+
+            default: //else
+                break;
+        }
+        $html .= "<br>";
+    }
+
+    return $html;
+}
+
+/**
+ * Generates the HTML fragment for the export menu with columns grouped by table.
+ * 
+ * @param array $tables List of tables to include in the export menu.
+ * @return string The rendered HTML fragment.
+ */
+function generateExportMenu($tables) {
+    global $connect;
+
+    $columns = [];
+    foreach ($tables as $table) {
+        $columns[convertDataToFrench($table)] = getColumns($connect, $table);
+    }
+
+    if (count($columns) === 0) {
+        return '';
+    }
+
+    // column 0 reference
+    $firstTable = array_key_first($columns);
+    $column0 = $columns[$firstTable];
+
+    // Remove duplicates from other tables
+    foreach ($columns as $table => $cols) {
+        if ($table === $firstTable) {
+            continue;
+        }
+
+        $columns[$table] = array_values(array_diff($cols, $column0));
+    }
+
+    $html = include '../fragments/export-menu.php';
+    return $html; 
+}
+
+/**
+ * Fetches all users from the database matching a specific role.
+ * 
+ * @param string $role The role to filter users by.
+ * @return mysqli_result|false The database query result set, or false on failure.
+ */
+function loadUsersFromDB($role) {
+    global $connect;
+
+    $query = "SELECT login, first_name, last_name, last_login_at, created_at 
+              FROM users 
+              WHERE role = ?";
+
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, "s", $role);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    return $result;
+}
+
+/**
+ * Retrieves the login and hashed password for a specific user.
+ * 
+ * @param string $login The user's login name.
+ * @return mysqli_result|false The database query result set containing the login and password hash, or false on failure.
+ */
+function getPasswordFromLogin($login) {
+    global $connect;
+
+    $query = "SELECT login, password_hash FROM users WHERE login = ?";
+
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, "s", $login);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    return $result;
+}
 ?>

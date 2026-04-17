@@ -120,6 +120,19 @@ header .profile-btn:hover {
     cursor: pointer;
 }
 
+header .profile-btn-selected {
+    padding: 2.5px clamp(4px, 1.5vw, 40px);
+    background: #283593;
+    color: white;
+    border-radius: 7.5px;
+}
+
+header .profile-btn-selected:hover {
+    background: #3341af;
+    color: white;
+    cursor: pointer;
+}
+
 header .nav-right-container .log-out {
     width: clamp(16px, 2.5vw, 25px);
     height: clamp(16px, 2.5vw, 25px);
@@ -327,4 +340,309 @@ header .nav-buttons-current {
 
 .select-checkbox-active {
     border-radius: 1rem 1rem 0 0;
+}
+
+/* Password visibility styles */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+.eye-icon {
+    display: block;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    background-image: url("../assets/password_off.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.eye-icon.visible {
+    background-image: url("../assets/password_on.png");
+    opacity: 1;
+}
+
+/* Export menu */
+.export-menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px); /* add a blur effect to the background */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999; /* put the menu on top of everything */
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+
+    background: var(--secondary-color);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px 20px 20px 20px;
+
+    width: 70%;
+    max-width: 900px;
+    max-height: 85vh;
+}
+
+.close-menu-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--third-color);
+    font-size: 26px;
+    cursor: pointer;
+    font-weight: 300;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.close-menu-btn:hover {
+    color: #5c6bc0;
+}
+
+.menu-columns {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 15px;
+}
+
+.menu-columns::-webkit-scrollbar {
+    height: 8px;
+}
+.menu-columns::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.column {
+    flex: 1 0 250px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+    min-width: 250px;
+}
+
+.column:not(:first-child) {
+    border-left: 2px solid var(--third-color);
+}
+
+.column-title {
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: white;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.column-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+.column-items::-webkit-scrollbar {
+    width: 6px;
+}
+.column-items::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.item {
+    background: #1e1e2e;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+.item:nth-child(even) {
+    background: #252538;
+}
+
+.item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.item label {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #a0a0a0;
+    border-radius: 4px;
+    margin-right: 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+    outline: none;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.item input[type="checkbox"]:checked {
+    background-color: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.item-text {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    user-select: none;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.menu-footer {
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+    margin-top: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-text {
+    font-size: 13px;
+    color: #888;
+}
+
+.export-btn {
+    position: absolute;
+    right: 0;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--third-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.export-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+.hide-menu {
+    display: none;
+}
+
+/* Sys admin - panel admin */
+.panel-main {
+    padding: 0 2.5% 2rem;
+    box-sizing: border-box;
+}
+
+.sys-logs {
+    background-color: #000;
+    color: #d4d4d4;
+    font-family: monospace;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-line;
+}
+
+.section {
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    padding: 15px;
+    cursor: pointer;
+    background: var(--third-color);
+    width: fit-content;
+    border-radius: 15px;
+    margin-top: 10px;
+    color: white;
+    font-weight: bold;
+    user-select: none;
+}
+
+.section-header:hover {
+    background: #3b5be0;
+}
+
+.subsections {
+    display: none;
+    margin: 5px;
+    padding: 10px 15px;
+}
+
+.subsections p {
+    margin: 5px 0;
+}
+
+.log-section.active .subsections {
+    display: block;
 }
