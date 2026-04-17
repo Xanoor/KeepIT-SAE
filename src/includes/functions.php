@@ -973,6 +973,92 @@ function loadInventoryLogs($serialNumber) {
     return $html;
 }
 
+function loadUsersLogs() {
+    global $connect;
+
+    $query = "SELECT log_date, login, action_did, old_val, new_val 
+              FROM users_logs 
+              ORDER BY log_date DESC";
+    $result = mysqli_query($connect, $query);
+    $html = "";
+
+    if (!$result) {
+        return $html;
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row["action_did"]) {
+
+            case 'TRY CONNECTION': //connexion failure
+                $html .= "{$row['log_date']} - Échec de connexion pour l'utilisateur \"{$row['login']}\".";
+                break;
+
+            case 'CREATED': //account created
+                $html .= "{$row['log_date']} - Création du compte \"{$row['login']}\".";
+                break;
+
+            case 'UPDATE FIRST NAME': //first name updated
+                $html .= "{$row['log_date']} - Modification du prénom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'UPDATE LAST NAME': //last name updated
+                $html .= "{$row['log_date']} - Modification du nom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'UPDATE PASSWORD': //password updated
+                $html .= "{$row['log_date']} - Mot de passe modifié pour l'utilisateur \"{$row['login']}\".";
+                break;
+
+            case 'UPDATE ROLE': //role updated
+                $html .= "{$row['log_date']} - Modification du rôle de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                break;
+
+            case 'DELETED': //account deleted
+                $html .= "{$row['log_date']} - Suppression du compte \"{$row['login']}\".";
+                break;
+
+            default: //else
+                break;
+        }
+        $html .= "<br>";
+    }
+
+    return $html;
+}
+
+function loadConstantLogs() {
+    global $connect;
+
+    $query = "SELECT log_date, table_name, action_did, val 
+              FROM constant_logs 
+              ORDER BY log_date DESC";
+    $result = mysqli_query($connect, $query);
+    $html = "";
+
+    if (!$result) {
+        return $html;
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row["action_did"]) {
+
+            case 'INSERT': //constant created
+                $html .= "{$row['log_date']} - Nouvelle constante dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                break;
+
+            case 'DELETE': //constant removed
+                $html .= "{$row['log_date']} - Constante supprimée dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                break;
+
+            default: //else
+                break;
+        }
+        $html .= "<br>";
+    }
+
+    return $html;
+}
+
 /**
  * Generates the HTML fragment for the export menu with columns grouped by table.
  * 
