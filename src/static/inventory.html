@@ -124,7 +124,7 @@
                                 <option value="./importCSV.html">
                                     Importer
                                 </option>
-                                <option value="#">Exporter</option>
+                                <option value="export">Exporter</option>
                             </select>
                         </div>
                     </div>
@@ -400,6 +400,319 @@
                     </div>
                 </section>
             </form>
+            <!-- Export menu container -->
+            <div
+                class="export-menu-container hide-menu"
+                id="exportMenuContainer"
+            >
+                <form
+                    class="menu"
+                    action="../actions/exportCSV_action.php"
+                    method="POST"
+                >
+                    <button
+                        type="button"
+                        class="close-menu-btn"
+                        id="close-export-menu"
+                        aria-label="Close"
+                    >
+                        X
+                    </button>
+
+                    <div class="menu-columns">
+                        <div class="column">
+                            <h3 class="column-title">APPAREILS</h3>
+                            <div class="column-items">
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="serial_number"
+                                        />
+                                        <span class="item-text"
+                                            >serial_number</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="model"
+                                        />
+                                        <span class="item-text">model</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="manufacturer_name"
+                                        />
+                                        <span class="item-text"
+                                            >manufacturer_name</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="device_type"
+                                        />
+                                        <span class="item-text"
+                                            >device_type</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="created_at"
+                                        />
+                                        <span class="item-text"
+                                            >created_at</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="updated_at"
+                                        />
+                                        <span class="item-text"
+                                            >updated_at</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="state"
+                                        />
+                                        <span class="item-text">state</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <h3 class="column-title">Ordinateur</h3>
+                            <div class="column-items">
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="name"
+                                        />
+                                        <span class="item-text">name</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="location"
+                                        />
+                                        <span class="item-text">location</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="building"
+                                        />
+                                        <span class="item-text">building</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="room"
+                                        />
+                                        <span class="item-text">room</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="cpu"
+                                        />
+                                        <span class="item-text">cpu</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="ram_mb"
+                                        />
+                                        <span class="item-text">ram_mb</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="disk_gb"
+                                        />
+                                        <span class="item-text">disk_gb</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="domain"
+                                        />
+                                        <span class="item-text">domain</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="mac_address"
+                                        />
+                                        <span class="item-text"
+                                            >mac_address</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="purchase_date"
+                                        />
+                                        <span class="item-text"
+                                            >purchase_date</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="warranty_end"
+                                        />
+                                        <span class="item-text"
+                                            >warranty_end</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="os_name"
+                                        />
+                                        <span class="item-text">os_name</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="type_name"
+                                        />
+                                        <span class="item-text">type_name</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <h3 class="column-title">Écrans</h3>
+                            <div class="column-items">
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="size_inch"
+                                        />
+                                        <span class="item-text">size_inch</span>
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="resolution"
+                                        />
+                                        <span class="item-text"
+                                            >resolution</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="connector_name"
+                                        />
+                                        <span class="item-text"
+                                            >connector_name</span
+                                        >
+                                    </label>
+                                </div>
+                                <div class="item">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            name="columns[]"
+                                            value="attached_to_computer"
+                                        />
+                                        <span class="item-text"
+                                            >attached_to_computer</span
+                                        >
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-footer">
+                        <span class="menu-text"
+                            >Choisissez les attributs à exporter</span
+                        >
+                        <input
+                            type="submit"
+                            name="export_submit"
+                            value="Exporter"
+                            class="export-btn"
+                            id="export-menu-submit"
+                        />
+                    </div>
+                </form>
+            </div>
         </main>
     </body>
     <script src="../scripts/inventory.js"></script>

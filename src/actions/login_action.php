@@ -19,12 +19,10 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
 
     $res = mysqli_stmt_get_result($request_prepare);
 
-    var_dump($res);
 
     if (mysqli_num_rows($res) === 1) {
         $user = mysqli_fetch_assoc($res);
 
-        var_dump($user);
         
         if (password_verify($password, $user["password_hash"])) {
 
@@ -51,6 +49,12 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
 
             header("location: ../pages/inventory.php");
             exit();
+        }
+        else{
+            $query_wrong_password = "CALL logs_password(?)";
+            $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            mysqli_stmt_bind_param($stmt_wrong_password, "s", $login);
+            mysqli_stmt_execute($stmt_wrong_password);
         }
     }
 

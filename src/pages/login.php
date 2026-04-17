@@ -1,19 +1,19 @@
 <?php
-require_once '../includes/db.php';
+    require_once '../includes/db.php';
 
-include '../includes/functions.php';
-include '../components/icon.php';
+    include '../includes/functions.php';
+    include '../components/icon.php';
 
-$error_code = $_GET['error'] ?? null;
+    $error_code = $_GET['error'] ?? null;
 
-if(!isset($_SESSION)) { 
-    session_start(); 
-} 
+    if(!isset($_SESSION)) { 
+        session_start(); 
+    } 
 
-if (isset($_SESSION['login'])) {
-    header("Location: index.php");
-    exit();
-}
+    if (isset($_SESSION['login'])) {
+        header("Location: index.php");
+        exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -47,18 +47,20 @@ if (isset($_SESSION['login'])) {
                     type="text"
                     placeholder="Login"
                 />
-
                 <label for="password">Mot de passe</label>
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="******"
-                />
+                <div class="password-wrapper">
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="******"
+                    />
+                    <span class="eye-icon"></span>
+                </div>
             </div>
             <input name="submit" type="submit" value="Se connecter" />
         </form>
-
+        <script src="../scripts/showPassword.js"></script>
         <input
             type="button"
             id="video-link"

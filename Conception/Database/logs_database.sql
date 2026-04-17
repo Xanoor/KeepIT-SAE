@@ -40,6 +40,10 @@ BEGIN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'model', OLD.model, NEW.model);
     END IF;
+    IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
+        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
+        VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'manufacturer_name', OLD.manufacturer_name, NEW.manufacturer_name);
+    END IF;
     IF NOT (OLD.state <=> NEW.state) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'devices', 'UPDATE', 'state', OLD.state, NEW.state);
@@ -56,6 +60,41 @@ BEGIN
 END
 //
 
+CREATE OR REPLACE TRIGGER devices_before_delete
+    BEFORE DELETE ON devices -- Application sur devices car on se base sur cette table pour supprimer dans computer (CASCADE)
+    FOR EACH ROW
+BEGIN
+    DECLARE monitor_upd VARCHAR(25);
+    DECLARE computer_name VARCHAR(25);
+    DECLARE done INT DEFAULT 0;
+    DECLARE monitor_liked cursor for
+        SELECT serial_number
+        FROM monitor
+        WHERE attached_to_computer = computer_name;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    IF OLD.device_type = 'Computer' THEN
+        SELECT c.name INTO computer_name
+        FROM computer c
+        WHERE c.serial_number LIKE OLD.serial_number;
+
+        OPEN monitor_liked;
+        read_loop:
+        LOOP
+            FETCH monitor_liked INTO monitor_upd;
+
+            IF done = 1 THEN
+                LEAVE read_loop;
+            end if;
+
+        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
+        VALUES (NOW(), @current_user, monitor_upd, 'monitor', 'AT_DELETED', 'attached_to_computer', computer_name, null);
+        END LOOP;
+
+        CLOSE monitor_liked;
+    END IF;
+END
+//
 
 -- ==============================
 -- Trigger pour la table computer
@@ -117,11 +156,6 @@ BEGIN
         VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'warranty_end', CAST(OLD.warranty_end AS CHAR), CAST(NEW.warranty_end AS CHAR));
     END IF;
 
-    IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
-        INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
-        VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'manufacturer_name', CAST(OLD.manufacturer_name AS CHAR), CAST(NEW.manufacturer_name AS CHAR));
-    END IF;
-
     IF NOT (OLD.os_name <=> NEW.os_name) THEN
         INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
         VALUES (NOW(), @current_user, OLD.serial_number, 'computer', 'UPDATE', 'os_name', CAST(OLD.os_name AS CHAR), CAST(NEW.os_name AS CHAR));
@@ -152,21 +186,203 @@ BEGIN
         VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'resolution', CAST(OLD.resolution AS CHAR), CAST(NEW.resolution AS CHAR));
     END IF;
 
-        IF NOT (OLD.manufacturer_name <=> NEW.manufacturer_name) THEN
-            INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
-            VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'manufacturer_name', CAST(OLD.manufacturer_name AS CHAR), CAST(NEW.manufacturer_name AS CHAR));
-    END IF;
 
-        IF NOT (OLD.connector_name <=> NEW.connector_name) THEN
+    IF NOT (OLD.connector_name <=> NEW.connector_name) THEN
             INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
             VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'connector_name', CAST(OLD.connector_name AS CHAR), CAST(NEW.connector_name AS CHAR));
     END IF;
 
-        IF NOT (OLD.attached_to_computer <=> NEW.attached_to_computer) THEN
+    IF NOT (OLD.attached_to_computer <=> NEW.attached_to_computer) THEN
             INSERT INTO device_logs (log_date, login, serial_number, table_name, action_did, field_updated, old_val, new_val)
             VALUES (NOW(), @current_user, OLD.serial_number, 'monitor', 'UPDATE', 'attached_to_computer', CAST(OLD.attached_to_computer AS CHAR), CAST(NEW.attached_to_computer AS CHAR));
     END IF;
 
+END
+//
+
+DROP TABLE IF EXISTS constant_logs//
+
+CREATE TABLE IF NOT EXISTS constant_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    table_name VARCHAR(25) NOT NULL,
+    action_did VARCHAR(10) NOT NULL,
+    val VARCHAR(50) NOT NULL,
+    INDEX idx_constant_logs_date (log_date),
+    INDEX idx_constant_logs_table (table_name)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COMMENT = 'LOGS TABLE ABOUT FEATURES OF DEVICES'
+//
+
+
+-- ==============================
+-- Trigger pour la table locations
+CREATE OR REPLACE TRIGGER locations_after_insert
+AFTER INSERT ON locations
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+        VALUES (NOW(), 'locations', 'INSERT', CAST(NEW.location AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER locations_after_delete
+AFTER DELETE ON locations
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'locations', 'DELETE', CAST(OLD.location AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table operating_system
+CREATE OR REPLACE TRIGGER operating_system_after_insert
+    AFTER INSERT ON operating_system
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'operating_system', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER operating_system_after_delete
+    AFTER DELETE ON operating_system
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'operating_system', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table manufacturer
+CREATE OR REPLACE TRIGGER manufacturer_after_insert
+    AFTER INSERT ON manufacturer
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'manufacturer', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER manufacturer_after_delete
+    AFTER DELETE ON manufacturer
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'manufacturer', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
+-- ==============================
+-- Trigger pour la table connector
+CREATE OR REPLACE TRIGGER connector_after_insert
+    AFTER INSERT ON connector
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'connector', 'INSERT', CAST(NEW.name AS CHAR));
+
+end //
+
+CREATE OR REPLACE TRIGGER connector_after_delete
+    AFTER DELETE ON connector
+    FOR EACH ROW
+BEGIN
+
+    INSERT INTO constant_logs (log_date, table_name, action_did, val)
+    VALUES (NOW(), 'connector', 'DELETE', CAST(OLD.name AS CHAR));
+
+end //
+
+DROP TABLE IF EXISTS users_logs//
+
+DROP PROCEDURE IF EXISTS logs_password//
+
+CREATE TABLE IF NOT EXISTS users_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    login VARCHAR(36) NOT NULL,
+    action_did VARCHAR(25) NOT NULL,
+    old_val VARCHAR(50),
+    new_val VARCHAR(50),
+    INDEX idx_users_logs_logs_date (log_date),
+    INDEX idx_users_logs_login (login),
+    INDEX idx_users_logs_action_did (action_did)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COMMENT = 'LOGS TABLE ABOUT ACTION OF USERS'//
+
+-- ==============================
+-- Procédure de tentative de connection pour un login valide
+CREATE PROCEDURE logs_password(IN user_login VARCHAR(36))
+BEGIN
+    DECLARE exite_login VARCHAR(36);
+
+    -- Vérifier qu'il s'agit bien d'un login valide
+    SELECT login INTO exite_login FROM users WHERE login = user_login;
+
+    IF exite_login IS NOT NULL THEN
+        INSERT INTO users_logs(log_date, login, action_did)
+            VALUES (NOW(),user_login, 'TRY CONNECTION');
+    END IF;
+END
+//
+
+
+-- ==============================
+-- Trigger pour la table users
+CREATE OR REPLACE TRIGGER users_after_insert
+AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+   INSERT INTO users_logs(log_date, login, action_did)
+       VALUES (NOW(), NEW.login, 'CREATED');
+END
+//
+
+CREATE OR REPLACE TRIGGER users_after_update
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+
+    IF NOT (OLD.first_name <=> NEW.first_name) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE FIRST NAME', OLD.first_name, NEW.first_name);
+    END IF;
+
+    IF NOT (OLD.last_name <=> NEW.last_name) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE LAST NAME', OLD.last_name, NEW.last_name);
+    END IF;
+
+    IF NOT (OLD.password_hash <=> NEW.password_hash) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE PASSWORD', null, null);
+        -- DON'T KEEP PASSWORD'S HISTORY
+    END IF;
+
+    IF NOT (OLD.role <=> NEW.role) THEN
+        INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
+            VALUES (NOW(), NEW.login, 'UPDATE ROLE', OLD.role, NEW.role);
+    END IF;
+
+END
+//
+
+CREATE OR REPLACE TRIGGER users_after_delete
+AFTER DELETE ON users
+FOR EACH ROW
+BEGIN
+   INSERT INTO users_logs(log_date, login, action_did)
+       VALUES (NOW(), OLD.login, 'DELETED');
 END
 //
 

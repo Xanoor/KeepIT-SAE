@@ -43,15 +43,16 @@ CREATE OR REPLACE VIEW vw_month_activity AS
         nb_modifications,
         nb_devices,
         nb_utilisateurs,
-        -- Classement des champs les plus modifiés par mois
+        -- Classement des champs les plus modifiés par mois (Numérotation)
         DENSE_RANK() OVER (PARTITION BY mois ORDER BY nb_modifications DESC) AS month_rank,
-            -- Classement global
+            -- Classement global (Numérotation)
         RANK() OVER (ORDER BY nb_modifications DESC) AS global_rank,
-            -- Percentile dans le mois
-        PERCENT_RANK() OVER (PARTITION BY mois ORDER BY nb_modifications DESC) AS percentile_mois,
-            -- Évolution vs mois précédent
+            -- Permet de savoir si un champ est dans le top X% des modifications du mois
+            -- Reçoit un score de 1 à 4 (1 = top 25% des champs les plus modifiés du mois)
+        NTILE(4) OVER (PARTITION BY mois ORDER BY nb_modifications DESC) AS quartile_mois,
+            -- Évolution vs mois précédent (Lag permet de prendre le résultat du mois précédent)
         nb_modifications - LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois) AS evolution_vs_last_month,
-            -- Évolution en pourcentage
+            -- Évolution en pourcentage par rapport au mois précédent
         ROUND(
                 (nb_modifications - LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois))
                     / NULLIF(LAG(nb_modifications) OVER (PARTITION BY field_updated ORDER BY mois), 0) * 100,
@@ -65,11 +66,11 @@ CREATE OR REPLACE VIEW vw_export_computer AS
        SELECT
            dv.serial_number AS serial_number,
            dv.model AS model,
+           dv.manufacturer_name as manufacturer,
            dv.created_at AS created_at,
-           dv.updated_at AS last_update,
+           dv.updated_at AS updated_at,
            dv.state AS state,
            c.name AS name,
-           c.manufacturer_name as manufacturer,
            c.cpu AS cpu,
            c.ram_mb AS ram_mb,
            c.disk_gb AS disk_gb,
@@ -80,7 +81,8 @@ CREATE OR REPLACE VIEW vw_export_computer AS
            c.room AS room,
            c.mac_address AS macaddr,
            c.purchase_date AS purchase_date,
-           c.warranty_end AS warranty_end
+           c.warranty_end AS warranty_end,
+           c.type_name AS type_name
        FROM
            computer c,
            devices dv
@@ -94,10 +96,10 @@ CREATE OR REPLACE VIEW vw_export_monitor AS
        SELECT
            dv.serial_number AS serial_number,
            dv.model AS model,
+           dv.manufacturer_name AS manufacturer,
            dv.created_at AS created_at,
            dv.updated_at AS last_update,
            dv.state AS state,
-           m.manufacturer_name AS manufacturer,
            m.size_inch AS size_inch,
            m.resolution AS resolution,
            m.connector_name AS connector,
@@ -140,3 +142,47 @@ ORDER BY
     last_login_at DESC,
     first_name ASC
     LIMIT 5;
+
+CREATE OR REPLACE VIEW vw_inventory_search_table AS
+SELECT devices.serial_number AS serial_number, name, model, device_type, created_at, updated_at, state
+FROM devices
+LEFT JOIN computer c 
+    ON devices.serial_number = c.serial_number
+LEFT JOIN monitor m
+    ON devices.serial_number = m.serial_number;
+
+
+CREATE OR REPLACE VIEW vw_export_inventaire AS
+SELECT
+        dv.serial_number AS serial_number,
+        dv.model AS model,
+        dv.manufacturer_name AS manufacturer_name,
+        dV.device_type AS device_type,
+        dv.created_at AS created_at,
+        dv.updated_at AS updated_at,
+        dv.state AS state,
+
+        c.name AS name,
+        c.location AS location,
+        c.building AS building,
+        c.room AS room,
+        c.cpu AS cpu,
+        c.ram_mb AS ram_mb,
+        c.disk_gb AS disk_gb,
+        c.domain AS domain,
+        c.mac_address AS mac_address,
+        c.purchase_date AS purchase_date,
+        c.warranty_end AS warranty_end,
+        c.os_name AS os_name,
+        c.type_name AS type_name,
+
+        m.size_inch AS size_inch,
+        m.resolution AS resolution,
+        m.connector_name AS connector_name,
+        m.attached_to_computer AS attached_to_computer
+FROM devices dv
+LEFT JOIN computer c
+    ON dv.serial_number = c.serial_number
+LEFT JOIN monitor m
+    ON dv.serial_number = m.serial_number;
+

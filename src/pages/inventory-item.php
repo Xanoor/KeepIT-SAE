@@ -1,8 +1,8 @@
 <?php 
     session_start();
 
-    // Everyone that have a role (tech, adm...) can access this page
-    if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    // Only web admin and technician can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || !in_array($_SESSION['role'], ['Web Administrator', 'Technician'])) {
         header("Location: login.php");
         exit();
     }
@@ -28,28 +28,7 @@
         <link rel="stylesheet" type="text/css" href="../styles/inventory-item.css" />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="login.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="#">Dashboard</a>
-                    <a href="inventory.php" class="nav-buttons-current"
-                        >Inventaire</a
-                    >
-                    <a href="#">Techniciens</a>
-                    <a href="#">Informations</a>
-                    <a href="http://192.168.25.19/static">Pages Statiques</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="#" class="profile-btn">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out">
-                    <img src="../assets/log-out.png" alt="Déconnexion"/>
-                </a>
-            </nav>
-        </header>
+        <?php include_once("../fragments/header.php"); ?>
         <main class="inventory-item-main">
             <div>
                 <div class="page-name">
@@ -64,7 +43,6 @@
                      -->
                 <section class="inventory-item-main-section">
                     <form action="../actions/inventory-item_action.php" method="POST">
-                        <!-- TODO: if role is admin -> add delete item button -->
                         <?php 
                             // return to inventory.php if serialNumber or deviceType is empty (pre-check)
                             if (empty($_GET['serialNumber']) || empty($_GET['deviceType'])) {

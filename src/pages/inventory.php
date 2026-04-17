@@ -1,8 +1,8 @@
 <?php 
     session_start();
 
-    // Everyone that have a role (tech, adm...) can access this page
-    if (!isset($_SESSION['login']) || !isset($_SESSION['role'])) {
+    // Only web admin and technician can access this page
+    if (!isset($_SESSION['login'], $_SESSION['role']) || !in_array($_SESSION['role'], ['Web Administrator', 'Technician'])) {
         header("Location: login.php");
         exit();
     }
@@ -24,8 +24,9 @@
     $filters = [];
 
     if (!empty($searchTerm)) {
-        // Search by serial number using LIKE
+        // Search by serial number & name using LIKE
         $filters['serial_number'] = "%" . $searchTerm . "%";
+        $filters['name'] = "%" . $searchTerm . "%";
     }
 
     if (!in_array("Tout selectionner", $selectedFilters)) { //if "Tout selectionner" is not in the selected filters, build the filters array
@@ -37,6 +38,9 @@
             }
         }
     }
+    
+    // Save current filters to session so the export form can seamlessly access them
+    $_SESSION['inventory_export_filters'] = $filters;
 
     // Handle navigation buttons
     if (isset($_POST["next-page"])) {
@@ -66,26 +70,7 @@
         <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
     </head>
     <body>
-        <header>
-            <div class="nav-left-container">
-                <div class="app-name-container">
-                    <a href="index.php">KEEPIT</a>
-                </div>
-                <nav class="nav-buttons-container">
-                    <a href="#">Dashboard</a>
-                    <a href="#" class="nav-buttons-current">Inventaire</a>
-                    <a href="#">Techniciens</a>
-                    <a href="#">Informations</a>
-                    <a href="http://192.168.25.19/static">Pages Statiques</a>
-                </nav>
-            </div>
-            <nav class="nav-right-container">
-                <a href="#" class="profile-btn">Profil</a>
-                <a href="../actions/logout_action.php" class="log-out">
-                    <img src="../assets/log-out.png" alt="Déconnexion"/>
-                </a>
-            </nav>
-        </header>
+        <?php include_once("../fragments/header.php"); ?>
         <main>
             <div class="page-name">
                 <img alt="Logo du site" src="../assets/logo.png" />
@@ -157,7 +142,7 @@
                                 <option value="./importCSV.php">
                                     Importer
                                 </option>
-                                <option value="#">Exporter</option>
+                                <option value="export">Exporter</option>
                             </select>
                         </div>
                     </div>
@@ -165,7 +150,7 @@
                 <section class="page-content">
                     <div class="page-table-content">
                         <?php 
-                            echo "<div class='table-preview'>" . importSQLTableBuilder("devices", $filters, $start, $end) . "</div>";
+                            echo "<div class='table-preview'>" . importSQLTableBuilder("vw_inventory_search_table", $filters, $start, $end, ["serial_number", "model", "device_type", "created_at", "updated_at", "state"]) . "</div>";
                         ?>
                     </div>
                     <div class="nav-buttons">
@@ -176,7 +161,7 @@
                             />
                         </button>
                         <label for="page-num-input" class="sr-only">Numéro de page</label>
-                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">
+                        <input type="number" name="page-num" class="page-num-input" value="<?php echo $currentPage ?>" id="page-num-input" aria-label="Numéro de la page actuelle">                        
                         <button type="submit" name="next-page">
                             <img
                                 src="../assets/arrow-big-right.png"
@@ -189,6 +174,10 @@
             </form>
             <!-- Notification container -->
             <div class="notifications-container" id="notificationsContainer"></div>
+            <!-- Export menu container -->
+            <div class="export-menu-container hide-menu" id="exportMenuContainer">
+                <?php echo generateExportMenu(["devices", "computer", "monitor"])?>
+            </div>
         </main>
     </body>
     <!-- Scripts -->
