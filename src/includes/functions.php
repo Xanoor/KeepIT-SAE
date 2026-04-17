@@ -987,40 +987,45 @@ function loadUsersLogs() {
     }
 
     while ($row = mysqli_fetch_assoc($result)) {
-        switch ($row["action_did"]) {
+        $action_did = $row["action_did"];
+        $log_date = $row["log_date"];
+        $login = htmlspecialchars($row["login"]);
+        $old_val = htmlspecialchars($row["old_val"]);
+        $new_val = htmlspecialchars($row["new_val"]);
+
+        switch ($action_did) {
 
             case 'TRY CONNECTION': //connexion failure
-                $html .= "{$row['log_date']} - Échec de connexion pour l'utilisateur \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Échec de connexion pour l'utilisateur \"{$login}\".</p>";
                 break;
 
             case 'CREATED': //account created
-                $html .= "{$row['log_date']} - Création du compte \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Création du compte \"{$login}\".</p>";
                 break;
 
             case 'UPDATE FIRST NAME': //first name updated
-                $html .= "{$row['log_date']} - Modification du prénom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du prénom de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'UPDATE LAST NAME': //last name updated
-                $html .= "{$row['log_date']} - Modification du nom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du nom de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'UPDATE PASSWORD': //password updated
-                $html .= "{$row['log_date']} - Mot de passe modifié pour l'utilisateur \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Mot de passe modifié pour l'utilisateur \"{$login}\".</p>";
                 break;
 
             case 'UPDATE ROLE': //role updated
-                $html .= "{$row['log_date']} - Modification du rôle de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du rôle de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'DELETED': //account deleted
-                $html .= "{$row['log_date']} - Suppression du compte \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Suppression du compte \"{$login}\".</p>";
                 break;
 
             default: //else
                 break;
         }
-        $html .= "<br>";
     }
 
     return $html;
@@ -1040,20 +1045,24 @@ function loadConstantLogs() {
     }
 
     while ($row = mysqli_fetch_assoc($result)) {
-        switch ($row["action_did"]) {
+        $action_did = $row["action_did"];
+        $log_date = $row["log_date"];
+        $table_name = htmlspecialchars($row["table_name"]);
+        $val = htmlspecialchars($row["val"]);
+
+        switch ($action_did) {
 
             case 'INSERT': //constant created
-                $html .= "{$row['log_date']} - Nouvelle constante dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                $html .= "<p>{$log_date} - Nouvelle constante dans \"{$table_name}\": \"{$val}\".</p>";
                 break;
 
             case 'DELETE': //constant removed
-                $html .= "{$row['log_date']} - Constante supprimée dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                $html .= "<p>{$log_date} - Constante supprimée dans \"{$table_name}\": \"{$val}\".</p>";
                 break;
 
             default: //else
                 break;
         }
-        $html .= "<br>";
     }
 
     return $html;
