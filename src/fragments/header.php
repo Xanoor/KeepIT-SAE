@@ -14,7 +14,7 @@
         </div>
         <nav class="nav-buttons-container">
             <!-- Global header (all roles) -->
-            <a href="index.php" class="<?= ($currentPageName == 'index.php') ? 'nav-buttons-current' : '' ?>">Dashboard</a>
+            <a href="index.php" class="<?= ($currentPageName == (in_array($currentPageName, ['index.php', 'statistics.php']))) ? 'nav-buttons-current' : '' ?>">Dashboard</a>
 
             <!-- Tech and admin web only -->
             <?php if (isset($_SESSION['role']) && ($_SESSION['role'] == "Web Administrator" || $_SESSION['role'] == "Technician")): ?>

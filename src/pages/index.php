@@ -59,9 +59,15 @@
     <main class="dashboard-main">
 
         <!-- Page title -->
-        <div class="page-name">
-            <img alt="Logo du site" src="../assets/logo.png" />
-            <h1>Dashboard</h1>
+        <div class="container-title">
+            <div class="page-name">
+                <img alt="Logo du site" src="../assets/logo.png" />
+                <h1>Dashboard</h1>
+            </div>
+
+            <div>
+                <a href="statistics.php" class="more-stats">Plus de statistiques</a>
+            </div>
         </div>
 
         <div class="dashboard-grid">
@@ -177,7 +183,6 @@
                     <canvas id="chart-activity" aria-label="Graphique : activité récente"></canvas>
                 </div>
             </div>
-
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
