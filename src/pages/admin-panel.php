@@ -30,20 +30,26 @@
                 <img alt="Logo du site" src="../assets/logo.png" />
                 <h1>Panel Admin</h1>
             </div>
-            
-            <section class="log-section">
-                <div class="section-header">Logs utilisateurs ⬇️</div>
-                <div class="sys-logs subsections">
-                    <?php echo loadUsersLogs() ?>
-                </div>
+            <section class="maintenance-section">
+                <label for="maintenance-btn">Mode maintenance</label>
+                <input type="checkbox" id="maintenance-btn"/>
             </section>
+            <div class="logs-container">
+                <section class="log-section">
+                    <div class="section-header">Logs utilisateurs ⬇️</div>
+                    <div class="sys-logs subsections">
+                        <?php echo loadUsersLogs() ?>
+                    </div>
+                </section>
 
-            <section class="log-section">
-                <div class="section-header">Logs de constantes ⬇️</div>
-                <div class="sys-logs subsections">
-                    <?php echo loadConstantLogs() ?>
-                </div>
-            </section>
+                <section class="log-section">
+                    <div class="section-header">Logs de constantes ⬇️</div>
+                    <div class="sys-logs subsections">
+                        <?php echo loadConstantLogs() ?>
+                    </div>
+                </section>
+            </div>
+        
 
             <!-- Notification container -->
             <div class="notifications-container" id="notificationsContainer"></div>

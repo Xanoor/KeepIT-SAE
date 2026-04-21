@@ -604,29 +604,50 @@ header .nav-buttons-current {
     font-family: monospace;
     padding: 15px;
     border-radius: 5px;
-    max-height: 400px;
+    max-height: 600px;
     overflow-y: auto;
     white-space: pre-line;
 }
 
-.section {
+.maintenance-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: white;
     margin-bottom: 10px;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 2.5em;
+    font-weight: bold;
+    width: 100%;
+    padding: 25px;
+    color: black;
+    box-sizing: border-box;
+}
+
+.logs-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.log-section {
+    width: 100%;
 }
 
 .section-header {
-    padding: 15px;
     cursor: pointer;
     background: var(--third-color);
-    width: fit-content;
-    border-radius: 15px;
+    width: 100%;
+    border-radius: 15px 15px 0px 0px;
     margin-top: 10px;
     color: white;
     font-weight: bold;
     user-select: none;
+    padding: 15px;
+    box-sizing: border-box;
 }
 
 .section-header:hover {
@@ -635,8 +656,8 @@ header .nav-buttons-current {
 
 .subsections {
     display: none;
-    margin: 5px;
     padding: 10px 15px;
+    height: 100%;
 }
 
 .subsections p {
