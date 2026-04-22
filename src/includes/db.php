@@ -6,13 +6,22 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function create_connection() {
     if (!isset($GLOBALS['connect'])) {
-        $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "keepit");
-        mysqli_set_charset($GLOBALS['connect'], "utf8");
+        // Disables MySQL exceptions/fatal errors on connection failure so we can handle it manually
+        mysqli_report(MYSQLI_REPORT_OFF);
+        $GLOBALS['connect'] = @mysqli_connect("localhost", "root", "", "keepit");
 
         // Check connection
         if (!$GLOBALS['connect']) {
-            die("Database connection failed.");
+            require_once __DIR__ . '/maintenance-fnc.php';
+            if (!isMaintenanceActive()) {
+                file_put_contents(getMaintenanceFile(), "Maintenance auto activée (BDD hors ligne)");
+            }
+            checkMaintenance();
+            // If the user is a sysadmin (bypassing maintenance), we still stop to prevent MySQL errors
+            die("Erreur critique : Service MySQL hors ligne.");
         }
+
+        mysqli_set_charset($GLOBALS['connect'], "utf8");
     }
 }
 

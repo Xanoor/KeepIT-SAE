@@ -6,6 +6,15 @@
     if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
         $displayName = htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? '')));
     }
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    require_once __DIR__ . '/../includes/maintenance-fnc.php';
+    $test = checkMaintenance();
+    echo $test;
+
 ?>
 <header>
     <div class="nav-left-container">
