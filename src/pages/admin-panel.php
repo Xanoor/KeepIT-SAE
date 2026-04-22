@@ -31,8 +31,12 @@
                 <h1>Panel Admin</h1>
             </div>
             <section class="maintenance-section">
-                <label for="maintenance-btn">Mode maintenance</label>
-                <input type="checkbox" id="maintenance-btn"/>
+                <p>Mode maintenance</p>
+                <form method="post" action="../actions/maintenance_action.php">
+                    <button name="maintenance_action" value="<?= isMaintenanceActive() ? 'off' : 'on' ?>" class="maintenance_button<?= isMaintenanceActive() ? ' maintenance_button_on' : '' ?>">
+                        <?= isMaintenanceActive() ? 'Maintenance Activée (Désactiver)' : 'Maintenance Désactivée (Activer)' ?>
+                    </button>
+                </form>
             </section>
             <div class="logs-container">
                 <section class="log-section">
@@ -50,7 +54,6 @@
                 </section>
             </div>
         
-
             <!-- Notification container -->
             <div class="notifications-container" id="notificationsContainer"></div>
         </main>

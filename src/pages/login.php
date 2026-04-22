@@ -3,16 +3,20 @@
 
     include '../includes/functions.php';
     include '../components/icon.php';
+    require_once '../includes/maintenance-fnc.php';
 
     $error_code = $_GET['error'] ?? null;
 
-    if(!isset($_SESSION)) { 
+    if (session_status() === PHP_SESSION_NONE) { 
         session_start(); 
     } 
 
     if (isset($_SESSION['login'])) {
-        header("Location: index.php");
-        exit();
+        // If maintenance is active, users are allowed to stay on the login page to switch to an admin account.
+        if (isMaintenanceActive() && canBypassMaintenance()) {
+            header("Location: index.php");
+            exit();
+        }
     }
 ?>
 <!DOCTYPE html>
