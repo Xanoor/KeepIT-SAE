@@ -35,6 +35,7 @@
             <!-- Admin web only -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'Web Administrator'): ?>
                 <a href="technician.php" class="<?= (in_array($currentPageName, ['technician.php', 'create-technician.php'])) ? 'nav-buttons-current' : '' ?>">Techniciens</a>
+                <a href="admin-settings.php" class="<?= (in_array($currentPageName, ['admin-settings.php'])) ? 'nav-buttons-current' : '' ?>">Réglages</a>
             <?php endif; ?>
 
             <!-- Sys admin only -->

@@ -1142,4 +1142,11 @@ function getPasswordFromLogin($login) {
 
     return $result;
 }
+
+function createVariableConfig($tableName, $columnName) {    
+    $varItems = getTableValues($tableName, $columnName);
+
+    $html = include '../fragments/variable-settings.php';
+    return $html; 
+}
 ?>
