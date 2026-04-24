@@ -1,0 +1,106 @@
+/* Sys admin - panel admin */
+.panel-main {
+    padding: 0 2.5% 2rem;
+    box-sizing: border-box;
+}
+
+.sys-logs {
+    background-color: #000;
+    color: #d4d4d4;
+    font-family: monospace;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 600px;
+    overflow-y: auto;
+    white-space: pre-line;
+}
+
+.maintenance-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 2.5em;
+    font-weight: bold;
+    width: 100%;
+    padding: 25px;
+    color: black;
+    box-sizing: border-box;
+}
+
+.logs-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.log-section {
+    width: 100%;
+}
+
+.section-header {
+    cursor: pointer;
+    background: var(--third-color);
+    width: 100%;
+    border-radius: 15px 15px 0px 0px;
+    margin-top: 10px;
+    color: white;
+    font-weight: bold;
+    user-select: none;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.section-header:hover {
+    background: #3b5be0;
+}
+
+.subsections {
+    display: none;
+    padding: 10px 15px;
+    height: 100%;
+}
+
+.subsections p {
+    margin: 5px 0;
+}
+
+.log-section.active .subsections {
+    display: block;
+}
+
+.maintenance_button {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.35rem 1.5rem;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    height: 2.2rem;
+    box-sizing: border-box;
+}
+
+.maintenance_button:hover {
+    background: var(--alternative-color);
+}
+
+.maintenance_button_on {
+    background: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.maintenance_button_on:hover {
+    background: #3b5be0;
+    border-color: #3b5be0;
+}
+
+/* Web admin - admin settings */
+/* TODO: create admin settings style */
