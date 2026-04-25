@@ -1,5 +1,6 @@
 <form class="edit-variable-form" action="../actions/admin-settings_action.php" method="POST">
     <input type="hidden" value="<?=  $tableName ?>" name="var-name"/>
+    <input type="hidden" value="<?=  $columnName ?>" name="var-column"/>
     <div>
         <label for="var-items"><?= convertDataToFrench($tableName) ?></label>
         <select name="var-items" id="var-items">
@@ -8,6 +9,6 @@
             <?php endforeach; ?>
         </select>
     </div>
-    <input type="button" value="Supprimer" name="DELETE_VAR">
-    <input type="button" value="Créer" name="CREATE_VAR">
+    <input type="submit" value="Supprimer" name="DELETE_VAR">
+    <input type="submit" value="Créer" name="CREATE_VAR">
 </form>

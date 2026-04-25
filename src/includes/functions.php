@@ -66,6 +66,46 @@ function tableExists($conn, $table) {
 }
 
 /**
+ * Finds all foreign keys that link to a specific table and column.
+ *
+ * @param mysqli $conn The database connection.
+ * @param string $table The name of the target table.
+ * @param string $column The name of the target column.
+ * @return array A list of tables and columns that point to the target.
+ */
+function getForeignKeysReferencing($conn, $table, $column)
+{
+    $table = mysqli_real_escape_string($conn, $table);
+    $column = mysqli_real_escape_string($conn, $column);
+
+    $query = "
+        SELECT 
+            TABLE_NAME,
+            COLUMN_NAME,
+            CONSTRAINT_NAME
+        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+        WHERE 
+            REFERENCED_TABLE_SCHEMA = DATABASE()
+            AND REFERENCED_TABLE_NAME = '$table'
+            AND REFERENCED_COLUMN_NAME = '$column'
+    ";
+
+    $res = mysqli_query($conn, $query);
+    $result = [];
+
+    if (!$res) {
+        return $result;
+    }
+
+
+    while ($row = mysqli_fetch_assoc($res)) {
+        $result[] = $row;
+    }
+
+    return $result;
+}
+
+/**
  * Retrieves a list of column names for a given table.
  * 
  * @param mysqli|null $connect Database connection.
@@ -1031,6 +1071,11 @@ function loadUsersLogs() {
     return $html;
 }
 
+/**
+ * Loads constant activity logs from the database and returns them formatted as HTML paragraphs.
+ * 
+ * @return string The generated HTML logs.
+ */
 function loadConstantLogs() {
     global $connect;
 
