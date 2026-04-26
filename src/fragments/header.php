@@ -12,8 +12,7 @@
     }
 
     require_once __DIR__ . '/../includes/maintenance-fnc.php';
-    $test = checkMaintenance();
-    echo $test;
+    checkMaintenance();
 
 ?>
 <header>

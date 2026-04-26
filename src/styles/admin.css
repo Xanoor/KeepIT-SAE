@@ -1,9 +1,9 @@
-/* Sys admin - panel admin */
 .panel-main {
     padding: 0 2.5% 2rem;
     box-sizing: border-box;
 }
 
+/* Sys admin - panel admin */
 .sys-logs {
     background-color: #000;
     color: #d4d4d4;
@@ -103,4 +103,25 @@
 }
 
 /* Web admin - admin settings */
-/* TODO: create admin settings style */
+.web-variables,
+.web-administration {
+    padding: 15px;
+    margin: 5px;
+    background: var(--alternative-color);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+}
+
+.web-variables > h2,
+.web-administration > h2 {
+    margin: 0 0 15px 0;
+}
+
+.createVariableModal {
+    display: none;
+}
+
+.createVariableModal .show-modal {
+    display: flex;
+}
+/* TODO: create admin settings style - WIP */
