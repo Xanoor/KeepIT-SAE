@@ -32,6 +32,7 @@
         <p class="maintenance-message">
             Le site est actuellement en maintenance. Seuls les administrateurs peuvent se connecter.
         </p>
+        <a href="../actions/logout_action.php" class="logout-btn">Se déconnecter</a>
     </main>
 </body>
 </html>

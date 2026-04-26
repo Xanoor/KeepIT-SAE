@@ -12,11 +12,8 @@
     } 
 
     if (isset($_SESSION['login'])) {
-        // If maintenance is active, users are allowed to stay on the login page to switch to an admin account.
-        if (isMaintenanceActive() && canBypassMaintenance()) {
-            header("Location: index.php");
-            exit();
-        }
+        header("Location: index.php");
+        exit();
     }
 ?>
 <!DOCTYPE html>

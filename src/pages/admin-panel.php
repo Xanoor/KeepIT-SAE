@@ -21,6 +21,7 @@
         <title>Panel Admin</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="../styles/global.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/admin.css" />
         <link rel="stylesheet" type="text/css" href="../styles/notification.css" />
     </head>
     <body>
