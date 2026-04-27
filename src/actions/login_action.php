@@ -23,7 +23,7 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
     if (mysqli_num_rows($res) === 1) {
         $user = mysqli_fetch_assoc($res);
 
-        
+
         if (password_verify($password, $user["password_hash"])) {
 
             // Setup login session
@@ -32,11 +32,17 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             $_SESSION["role"] = $user["role"];
             $_SESSION['last_activity'] = time();
 
-            // Store last activity
+            // Store last activity and logs connection
             $request_set_last_activity = "UPDATE users SET last_login_at = NOW() WHERE login = ?";
             $stmt_set_last_activity = mysqli_prepare($GLOBALS['connect'], $request_set_last_activity);
             mysqli_stmt_bind_param($stmt_set_last_activity, "s", $login);
             mysqli_stmt_execute($stmt_set_last_activity);
+
+            $vars = 1;
+            $query_wrong_password = "CALL logs_password(?,?)";
+            $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
+            mysqli_stmt_execute($stmt_wrong_password);
 
             // we get the login in the connect sql var
             $login_safe = mysqli_real_escape_string($GLOBALS['connect'], $login);
@@ -51,9 +57,10 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             exit();
         }
         else{
-            $query_wrong_password = "CALL logs_password(?)";
+            $vars = 0;
+            $query_wrong_password = "CALL logs_password(?,?)";
             $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
-            mysqli_stmt_bind_param($stmt_wrong_password, "s", $login);
+            mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
             mysqli_stmt_execute($stmt_wrong_password);
         }
     }
