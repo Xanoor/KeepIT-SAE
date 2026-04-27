@@ -124,4 +124,60 @@
 .createVariableModal .show-modal {
     display: flex;
 }
+
+.edit-variable-form label {
+    margin: 0px 0px 10px 10px;
+    font-size: 1.2em;
+}
+
+.edit-var-input-container *,
+.create-web-variables input {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 1rem;
+    padding: 0.35rem 1rem;
+    cursor: pointer;
+    height: 2rem;
+    box-sizing: border-box;
+}
+
+.edit-var-input-container select {
+    width: 50%;
+    border: 0.125rem solid var(--border-color);
+    background: var(--secondary-color);
+}
+
+.edit-var-input-container input[type="submit"] {
+    border: 0.125rem solid #b53f3f;
+    background: #382525;
+    transition: all 0.4s ease;
+}
+
+.edit-var-input-container input[type="submit"]:hover {
+    background: #4e3434;
+}
+
+.web-variables-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.create-web-variables {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.create-web-variables input {
+    width: 50%;
+    border: 0.125rem solid #264d2a;
+    background: #253827;
+    transition: all 0.2s ease;
+}
+
+.create-web-variables input:hover {
+    background: #2e4631;
+}
+
 /* TODO: create admin settings style - WIP */

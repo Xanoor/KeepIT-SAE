@@ -33,12 +33,17 @@
             </div>
             <section class="web-variables">
                 <h2>Gestion des variables</h2>
-                <?php
-                    createVariableConfig("locations", "location");
-                    createVariableConfig("manufacturer", "name");
-                    createVariableConfig("operating_system", "name");
-                    createVariableConfig("connector", "name");
-                ?>
+                <div class="web-variables-form">
+                    <?php
+                        createVariableConfig("locations", "location");
+                        createVariableConfig("manufacturer", "name");
+                        createVariableConfig("operating_system", "name");
+                        createVariableConfig("connector", "name");
+                    ?>
+                </div>
+                <div class="create-web-variables">
+                    <input type="button" name="NEW_VAR_FORM" value="Créer une nouvelle variable">
+                </div>
             </section>
             <section class="web-administration">
                 <h2>Administration</h2>
