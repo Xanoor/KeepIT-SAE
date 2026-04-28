@@ -42,7 +42,7 @@
                     ?>
                 </div>
                 <div class="create-web-variables">
-                    <input type="button" name="NEW_VAR_FORM" value="Créer une nouvelle variable">
+                    <input type="button" id="CREATE_VAR_BTN" name="NEW_VAR_FORM" value="Créer une nouvelle variable">
                 </div>
             </section>
             <section class="web-administration">
@@ -58,8 +58,10 @@
                     </div>
                 </form>
             </section>
-            <div class="createVariableModal">
+            <div class="createVariableModal" id="createVariableModal">
                 <form action="../actions/admin-settings_action.php" method="POST">
+                    <button type="button" id="close-modal">X</button>
+
                     <h3>Ajouter une variable</h3>
                     <label for="TABLE_SELECT">Variable:</label>
                     <select id="TABLE_SELECT" name="table-select">
@@ -70,7 +72,7 @@
                     </select>
 
                     <label for="VARIABLE_VALUE_INPUT">Valeur:</label>
-                    <input type="text" name="var-value" id="VARIABLE_VALUE_INPUT">
+                    <input type="text" name="var-value" id="VARIABLE_VALUE_INPUT" placeholder="Valeur de la variable">
 
                     <input type="submit" name="CREATE_VAR" value="Ajouter">
                 </form>

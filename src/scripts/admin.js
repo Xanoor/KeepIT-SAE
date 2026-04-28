@@ -1,13 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    var CREATE_VAR_BTN = document.getElementsByClassName("CREATE_VAR_BTN");
+    var create_var_btn = document.getElementById("CREATE_VAR_BTN");
+    var modal = document.getElementById("createVariableModal");
 
-    if (CREATE_VAR_BTN) {
-        Array.from(CREATE_VAR_BTN).forEach((button) => {
-            button.addEventListener("click", createVarBtn_handler);
+    if (CREATE_VAR_BTN && modal) {
+        create_var_btn.addEventListener("click", () => {
+            console.log("clicked");
+            modal.classList.add("show-modal");
+        });
+    }
+
+    var close_modal = document.getElementById("close-modal");
+    if (close_modal) {
+        close_modal.addEventListener("click", () => {
+            modal.classList.remove("show-modal");
         });
     }
 });
-
-function createVarBtn_handler() {
-    // TODO: open the modal
-}

@@ -12,6 +12,7 @@ function create_connection() {
 
         // Check connection
         if (!$GLOBALS['connect']) {
+            // TODO: IF mysql is back, close maintenance mode
             require_once __DIR__ . '/maintenance-fnc.php';
             if (!isMaintenanceActive()) {
                 file_put_contents(getMaintenanceFile(), "Maintenance auto activée (BDD hors ligne)");
