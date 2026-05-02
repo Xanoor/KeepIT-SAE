@@ -22,7 +22,7 @@ COMMENT = 'List of device_types <=> tables who refer a device';
 
 CREATE TABLE IF NOT EXISTS `device_states` (
     state VARCHAR(36) PRIMARY KEY,
-    css_class VARCHAR(50) NOT NULL
+    css_class VARCHAR(50) NOT NULL DEFAULT "table-item-DEFAULT"
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 COMMENT = 'Table of states that a device can be associated with css style';
 

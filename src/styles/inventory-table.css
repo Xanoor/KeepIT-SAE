@@ -75,7 +75,8 @@
 
 .table-item-DEPLOYED,
 .table-item-END_OF_LIFE,
-.table-item-IN_INVENTORY {
+.table-item-IN_INVENTORY,
+.table-item-DEFAULT {
     display: grid;
     place-items: center;
     font-size: 0.75em;

@@ -12,9 +12,9 @@
 
     // Delete var button
     if (isset($_POST["DELETE_VAR"], $_POST["var-items"], $_POST["var-column"], $_POST["var-name"])) {
-        $tableName = $_POST["var-name"];
-        $columnName = $_POST["var-column"];
-        $varValue = $_POST["var-items"];
+        $tableName = trim($_POST["var-name"]);
+        $columnName = trim($_POST["var-column"]);
+        $varValue = trim($_POST["var-items"]);
 
         // Verify that the table, column, and value exist
         if (!tableExists($connect, $tableName) || !columnsExists($connect, $tableName, [$columnName]) || !checkDatabaseExistence($connect, $tableName, $columnName, $varValue)) {
@@ -46,16 +46,24 @@
         try {
             $delete_var = "DELETE FROM `$tableName` WHERE `$columnName` = ?";
             $stmt_del_var = mysqli_prepare($connect, $delete_var);
-            mysqli_stmt_bind_param($stmt_del_var, "s", $varValue);
-            
-            if (!mysqli_stmt_execute($stmt_del_var)) {
-                throw new Exception("Erreur SQL : " . mysqli_stmt_error($stmt_del_var));
+
+            if ($stmt_del_var) {
+                mysqli_stmt_bind_param($stmt_del_var, "s", $varValue);
+                
+                if (!mysqli_stmt_execute($stmt_del_var)) {
+                    throw new Exception(mysqli_stmt_error($stmt_del_var));
+                }
+                
+                mysqli_stmt_close($stmt_del_var);
+                
+                $_SESSION['notification'] = "Variable supprimée avec succès.";
+                $_SESSION['notification_color'] = "#5CE65C";
+            } else {
+                throw new Exception("Échec de la préparation SQL : " . mysqli_error($connect));
             }
 
-            $_SESSION['notification'] = "Variable supprimée avec succès.";
-            $_SESSION['notification_color'] = "#5CE65C";
         } catch (Exception $e) {
-            $_SESSION['notification'] = "Erreur lors de la suppression : " . $e->getMessage();
+            $_SESSION['notification'] = "Erreur : " . $e->getMessage();
             $_SESSION['notification_color'] = "red";
         }
 
@@ -85,6 +93,10 @@
 
             case 'locations':
                 $columnName = "location";
+                break;
+            
+            case 'device_states':
+                $columnName = "state";
                 break;
 
             default:

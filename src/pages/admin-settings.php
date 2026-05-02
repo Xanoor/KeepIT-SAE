@@ -39,6 +39,7 @@
                         createVariableConfig("manufacturer", "name");
                         createVariableConfig("operating_system", "name");
                         createVariableConfig("connector", "name");
+                        createVariableConfig("device_states", "state");
                     ?>
                 </div>
                 <div class="create-web-variables">
@@ -69,6 +70,7 @@
                         <option value="locations">Localisations</option>
                         <option value="operating_system">Systèmes d'exploitations</option>
                         <option value="manufacturer">Fabricants</option>
+                        <option value="device_states">Statut</option>
                     </select>
 
                     <label for="VARIABLE_VALUE_INPUT">Valeur:</label>
