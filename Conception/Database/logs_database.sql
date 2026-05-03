@@ -312,6 +312,7 @@ CREATE TABLE IF NOT EXISTS users_logs (
     log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     login VARCHAR(36) NOT NULL,
     action_did VARCHAR(25) NOT NULL,
+    ip_address VARBINARY(16),
     old_val VARCHAR(50),
     new_val VARCHAR(50),
     INDEX idx_users_logs_logs_date (log_date),
@@ -324,21 +325,22 @@ COMMENT = 'LOGS TABLE ABOUT ACTION OF USERS'//
 -- Procédure de tentative de connection pour un login valide
 -- success >= 1 -> connection réussite
 -- success <= 0 -> connection échouée
-CREATE PROCEDURE logs_password(IN user_login VARCHAR(36), IN success INTEGER)
+CREATE PROCEDURE logs_password(IN user_login VARCHAR(36), IN ip VARCHAR(39), IN success INTEGER)
 BEGIN
-    DECLARE exite_login VARCHAR(36);
+    DECLARE exist_login VARCHAR(36);
 
     -- Vérifier qu'il s'agit bien d'un login valide
-    SELECT login INTO exite_login FROM users WHERE login = user_login;
+    SELECT login INTO exist_login FROM users WHERE login = user_login;
 
-    IF exite_login IS NOT NULL THEN
+    IF exist_login IS NOT NULL THEN
 
         IF success >= 1 THEN
-            INSERT INTO users_logs(log_date, login, action_did)
-            VALUES (NOW(),user_login, 'SUCCESS CONNECTION');
+            INSERT INTO users_logs(log_date, login, action_did, ip_address)
+            VALUES (NOW(),user_login, 'SUCCESS CONNECTION', INET6_ATON(ip));
+            UPDATE users SET last_ip_address=ip WHERE login = user_login;
         ELSE
-            INSERT INTO users_logs(log_date, login, action_did)
-            VALUES (NOW(),user_login, 'TRY CONNECTION');
+            INSERT INTO users_logs(log_date, login, action_did, ip_address)
+            VALUES (NOW(),user_login, 'TRY CONNECTION', INET6_ATON(ip));
         END IF;
 
     END IF;

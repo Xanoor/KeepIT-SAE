@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     role ENUM('System Administrator', 'Web Administrator', 'Technician') NOT NULL DEFAULT 'Technician',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at DATETIME NULL,
+    last_ip_address VARBINARY(16),
     INDEX idx_users_last_login_at (last_login_at)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 COMMENT = 'Table of user"s account';
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `device_states` (
     css_class VARCHAR(50) NOT NULL DEFAULT "table-item-DEFAULT"
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 COMMENT = 'Table of states that a device can be associated with css style';
+-- ALTER TABLE `device_states` CHANGE `css_class` `css_class` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'table-item-DEFAULT';
 
 CREATE TABLE IF NOT EXISTS `locations` (
     location VARCHAR(50) PRIMARY KEY

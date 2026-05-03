@@ -41,6 +41,7 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             $vars = 1;
             $query_wrong_password = "CALL logs_password(?,?)";
             $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            // TODO CALL logs_password(?,?,?) et mysqli_prepare($GLOBALS['connect'],$ip, $query_wrong_password)
             mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
             mysqli_stmt_execute($stmt_wrong_password);
 
@@ -60,6 +61,7 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             $vars = 0;
             $query_wrong_password = "CALL logs_password(?,?)";
             $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            // TODO CALL logs_password(?,?,?) et mysqli_prepare($GLOBALS['connect'],$ip, $query_wrong_password)
             mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
             mysqli_stmt_execute($stmt_wrong_password);
         }
