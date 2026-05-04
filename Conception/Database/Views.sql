@@ -186,3 +186,26 @@ LEFT JOIN computer c
 LEFT JOIN monitor m
     ON dv.serial_number = m.serial_number;
 
+
+CREATE OR REPLACE VIEW vw_users_logs AS
+    SELECT
+        ul.log_date AS log_date,
+        ul.login AS login,
+        ul.action_did AS action_did,
+        INET6_NTOA(ul.ip_address) AS ip_address,
+        ul.old_val AS old_val,
+        ul.new_val AS new_val
+    FROM
+        users_logs ul
+    ORDER BY
+        log_date DESC;
+
+CREATE OR REPLACE VIEW vw_ban_ip AS
+    SELECT
+        ipb.ban_date AS ban_date,
+        INET6_NTOA(ipb.ip_address) AS ip_address,
+        ipb.reason AS reason
+    FROM
+        ip_ban ipb
+    ORDER BY
+        ban_date DESC;
