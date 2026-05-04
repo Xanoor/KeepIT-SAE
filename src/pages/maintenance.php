@@ -32,7 +32,10 @@
         <p class="maintenance-message">
             Le site est actuellement en maintenance. Seuls les administrateurs peuvent se connecter.
         </p>
-        <a href="../actions/logout_action.php" class="logout-btn">Se déconnecter</a>
+        <div class="maintenance-actions">
+            <a href="../actions/logout_action.php" class="logout-btn">Se déconnecter</a>
+            <a href="login.php" class="retry-link">Encore en maintenance ? Vérifier l'état</a>
+        </div>
     </main>
 </body>
 </html>

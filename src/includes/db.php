@@ -11,15 +11,21 @@ function create_connection() {
         $GLOBALS['connect'] = @mysqli_connect("localhost", "root", "", "keepit");
 
         // Check connection
+        require_once __DIR__ . '/maintenance-fnc.php';
         if (!$GLOBALS['connect']) {
-            // TODO: IF mysql is back, close maintenance mode
-            require_once __DIR__ . '/maintenance-fnc.php';
             if (!isMaintenanceActive()) {
                 file_put_contents(getMaintenanceFile(), "Maintenance auto activée (BDD hors ligne)");
             }
             checkMaintenance();
             // If the user is a sysadmin (bypassing maintenance), we still stop to prevent MySQL errors
             die("Erreur critique : Service MySQL hors ligne.");
+        } else {
+            if (isMaintenanceActive()) {
+                $maintenanceContent = file_get_contents(getMaintenanceFile());
+                if (trim($maintenanceContent) === "Maintenance auto activée (BDD hors ligne)") {
+                    unlink(getMaintenanceFile());
+                }
+            }
         }
 
         mysqli_set_charset($GLOBALS['connect'], "utf8");

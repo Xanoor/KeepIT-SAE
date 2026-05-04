@@ -73,3 +73,32 @@ h2 {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+
+.maintenance-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.maintenance-actions .logout-btn {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.retry-link {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+    padding-bottom: 2px;
+}
+
+.retry-link:hover {
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom-color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
