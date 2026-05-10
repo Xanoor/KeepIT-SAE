@@ -41,10 +41,10 @@
 
 .log-section {
     width: 100%;
+    height: 30em;
 }
 
 .section-header {
-    cursor: pointer;
     background: var(--third-color);
     width: 100%;
     border-radius: 15px 15px 0px 0px;
@@ -56,12 +56,7 @@
     box-sizing: border-box;
 }
 
-.section-header:hover {
-    background: #3b5be0;
-}
-
 .subsections {
-    display: none;
     padding: 10px 15px;
     height: 100%;
 }
@@ -164,8 +159,8 @@
 }
 
 .create-web-variables input {
-    width: 50%;
-    border: 0.125rem solid #264d2a;
+    width: 25%;
+    border: 0.125rem solid #35693a;
     background: #253827;
     transition: all 0.2s ease;
 }

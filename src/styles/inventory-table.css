@@ -73,6 +73,12 @@
     border: 2px solid var(--alternative-color);
 }
 
+.table-item-DEFAULT {
+    background: #00000027;
+    color: #ffffff;
+    border: 2px solid #494949;
+}
+
 .table-item-DEPLOYED,
 .table-item-END_OF_LIFE,
 .table-item-IN_INVENTORY,

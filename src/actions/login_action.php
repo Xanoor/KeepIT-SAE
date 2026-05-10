@@ -19,6 +19,8 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
 
     $res = mysqli_stmt_get_result($request_prepare);
 
+    // get public IP of user
+    $ip = $_SERVER['REMOTE_ADDR'];
 
     if (mysqli_num_rows($res) === 1) {
         $user = mysqli_fetch_assoc($res);
@@ -39,10 +41,10 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             mysqli_stmt_execute($stmt_set_last_activity);
 
             $vars = 1;
-            $query_wrong_password = "CALL logs_password(?,?)";
+            $query_wrong_password = "CALL logs_password(?,?, ?)";
             $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
-            // TODO CALL logs_password(?,?,?) et mysqli_prepare($GLOBALS['connect'],$ip, $query_wrong_password)
-            mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
+
+            mysqli_stmt_bind_param($stmt_wrong_password, "ssi", $login, $ip, $vars);
             mysqli_stmt_execute($stmt_wrong_password);
 
             // we get the login in the connect sql var
@@ -59,10 +61,9 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
         }
         else{
             $vars = 0;
-            $query_wrong_password = "CALL logs_password(?,?)";
+            $query_wrong_password = "CALL logs_password(?, ?, ?)";
             $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
-            // TODO CALL logs_password(?,?,?) et mysqli_prepare($GLOBALS['connect'],$ip, $query_wrong_password)
-            mysqli_stmt_bind_param($stmt_wrong_password, "si", $login, $vars);
+            mysqli_stmt_bind_param($stmt_wrong_password, "ssi", $login, $ip, $vars);
             mysqli_stmt_execute($stmt_wrong_password);
         }
     }
