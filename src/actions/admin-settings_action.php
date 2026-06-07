@@ -69,6 +69,8 @@
 
         header("Location: ../pages/admin-settings.php");
         exit();
+
+    // Create var button
     } else if (isset($_POST["table-select"], $_POST["var-value"], $_POST["CREATE_VAR"])) {
         $tableName = $_POST["table-select"];
         $varValue = $_POST["var-value"];
@@ -138,5 +140,9 @@
         $_SESSION['notification_color'] = "#5CE65C";
         header("Location: ../pages/admin-settings.php");
         exit();
+        
+    // Unban IP addr
+    } else if (isset($_POST['DELETE_IP_ADDR'], $_POST['ban_date'], $_POST['ip_addr'])) {
+        // TODO: DELETE IP ADDR FROM SQL
     }
 ?>

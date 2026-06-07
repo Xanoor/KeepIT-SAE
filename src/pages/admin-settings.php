@@ -48,16 +48,11 @@
             </section>
             <section class="web-administration">
                 <h2>Administration</h2>
-                <form action="../actions/admin-settings_action.php" method="POST">
-                    <div class="ban-ip-class">
-                        <label for="IP_ADDR">Bannir une adresse IPv4</label>
-                        <input type="text" name="IP_ADDR" placeholder="Adresse IPv4" id="IP_ADDR">
-                        <input type="submit" name="BAN_IP_SUBMIT" value="Bannir">
-                    </div>
-                    <div class="banned-ip-class">
-                        <!-- TODO: create the functions that display banned ip with unban btn, waiting for DB part -->
-                    </div>
-                </form>
+                <div class="banned-ip-class">
+                    <?php
+                        echo displayIpForm();
+                    ?>
+                </div>
             </section>
             <div class="createVariableModal" id="createVariableModal">
                 <form action="../actions/admin-settings_action.php" method="POST">

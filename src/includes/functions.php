@@ -1119,6 +1119,43 @@ function loadConstantLogs() {
 }
 
 /**
+ * Fetches banned IP addresses and generates HTML forms to manage (unban) them.
+ * 
+ * Queries the banned IP view sorted by ban date and generates an HTML form for each
+ * IP, allowing an administrator to delete the ban. If no IPs are banned, a message is returned.
+ * 
+ * @return string The rendered HTML containing IP management forms or a message.
+ */
+function displayIpForm() {
+    global $connect;
+    $html = "";
+
+    $query = "SELECT ban_date, ip_address 
+              FROM vw_ban_ip 
+              ORDER BY ban_date DESC";
+    $result = mysqli_query($connect, $query);
+    if (!$result) {
+        return "Aucune IP n'est banni.";
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $ban_date = $row["ban_date"];
+        $ip_addr = $row["ip_address"];
+
+        $html .= "
+        <form action='../actions/admin-settings_action.php' method='POST' class='ip-log-form'>
+            <input type='hidden' name='ip_addr' value='$ip_addr'>
+            <input type='hidden' name='ban_date' value='$ban_date'>
+            <p>$ban_date</p><p>$ip_addr</p>
+            <input type='submit' name='DELETE_IP_ADDR' value='Supprimer'>
+        </form>
+        ";
+    }
+
+    return $html;
+}
+
+/**
  * Generates the HTML fragment for the export menu with columns grouped by table.
  * 
  * @param array $tables List of tables to include in the export menu.

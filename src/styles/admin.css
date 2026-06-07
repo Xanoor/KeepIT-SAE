@@ -249,4 +249,22 @@
     display: flex;
 }
 
-/* TODO: create admin settings style - WIP */
+.ip-log-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    background: #313149;
+    padding: 0 10px 0 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.ip-log-form input[type="submit"] {
+    background: red;
+    border: 1px solid black;
+    font-weight: bolder;
+    border-radius: 10px;
+    padding: 7px;
+    cursor: pointer;
+}
