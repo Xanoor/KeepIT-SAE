@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/db.php';
+require_once '../includes/functions.php';
 
 session_start();
 
@@ -40,12 +41,14 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
             mysqli_stmt_bind_param($stmt_set_last_activity, "s", $login);
             mysqli_stmt_execute($stmt_set_last_activity);
 
-            $vars = 1;
-            $query_wrong_password = "CALL logs_password(?,?, ?)";
-            $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            $connection_success = 1;
+            $query_wrong_password = "CALL logs_password(?,?,?)";
+            $stmt_log_connection = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
 
-            mysqli_stmt_bind_param($stmt_wrong_password, "ssi", $login, $ip, $vars);
-            mysqli_stmt_execute($stmt_wrong_password);
+            mysqli_stmt_bind_param($stmt_log_connection, "ssi", $login, $ip, $connection_success);
+            mysqli_stmt_execute($stmt_log_connection);
+
+            createConnectionLogs($login, $ip, 1);
 
             // we get the login in the connect sql var
             $login_safe = mysqli_real_escape_string($GLOBALS['connect'], $login);
@@ -58,14 +61,16 @@ if (isset($_POST["submit"], $_POST["login"], $_POST["password"])) {
 
             header("location: ../pages/inventory.php");
             exit();
+        } else{ // wrong password
+            $connection_success = 0;
+            $query_wrong_password = "CALL logs_password(?,?,?)";
+            $stmt_log_connection = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
+            mysqli_stmt_bind_param($stmt_log_connection, "ssi", $login, $ip, $connection_success);
+            mysqli_stmt_execute($stmt_log_connection);
+            createConnectionLogs($login, $ip, 0);
         }
-        else{
-            $vars = 0;
-            $query_wrong_password = "CALL logs_password(?, ?, ?)";
-            $stmt_wrong_password = mysqli_prepare($GLOBALS['connect'], $query_wrong_password);
-            mysqli_stmt_bind_param($stmt_wrong_password, "ssi", $login, $ip, $vars);
-            mysqli_stmt_execute($stmt_wrong_password);
-        }
+    } else { // wrong login
+        createConnectionLogs($login, $ip, 0);
     }
 
     header("location: ../pages/login.php?error=2"); // Wrong credentials

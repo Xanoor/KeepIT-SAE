@@ -990,22 +990,14 @@ function loadInventoryLogs($serialNumber) {
         $newVal = htmlspecialchars($row['new_val'] ?? '');
 
         $text = "";
-        switch ($action) {
-            case 'INSERT':
-                $text = "$login a ajouté l'appareil ($field - $serialNumber)";
-                break;
-
-            case 'UPDATE':
-                $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
-                break;
-
-            case 'DELETE':
-                $text = "$login a supprimé l'appareil";
-                break;
-
-            case 'AT_DELETED':
-                $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
-                break;
+        if ($action === 'INSERT') {
+            $text = "$login a ajouté l'appareil ($field - $serialNumber)";
+        } elseif ($action === 'UPDATE') {
+            $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
+        } elseif ($action === 'DELETE') {
+            $text = "$login a supprimé l'appareil";
+        } elseif ($action === 'AT_DELETED') {
+            $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
         }
 
         $html .= "
@@ -1016,6 +1008,51 @@ function loadInventoryLogs($serialNumber) {
     }
 
     return $html;
+}
+
+/**
+ * Logs connection attempts to a JSON file.
+ *
+ * @param string $login The user's login.
+ * @param string $ip The connection IP address.
+ * @param int $connState The connection status (1 = success, 0 = failed).
+ */
+function createConnectionLogs($login, $ip, $connState) {
+    $filePath = __DIR__ . '/../../data/connections.json';
+    
+    // Ensure the data directory exists, if not, create it
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    // Verify if the file exists and retrieve its content
+    if (file_exists($filePath)) {
+        $currentContent = file_get_contents($filePath);
+
+        $data = json_decode($currentContent, true);
+        if (!is_array($data)) {
+            $data = [];
+        }
+    } else {
+        // If the file does not exist yet, start with an empty array
+        $data = [];
+    }
+
+    $status = $connState == 1 ? "Connexion reussie" : "Connexion echouee";
+
+    $newEntry = [
+        "login" => $login,
+        "ip" => $ip,
+        "status" => $status,
+        "date" => date('Y-m-d H:i:s')
+    ];
+
+    // Push the new entry to the end of the array
+    $data[] = $newEntry;
+
+    $finalJson = json_encode($data);
+    file_put_contents($filePath, $finalJson);
 }
 
 function loadUsersLogs() {
