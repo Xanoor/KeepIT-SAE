@@ -143,6 +143,32 @@
         
     // Unban IP addr
     } else if (isset($_POST['DELETE_IP_ADDR'], $_POST['ban_date'], $_POST['ip_addr'])) {
-        // TODO: DELETE IP ADDR FROM SQL
+        $ip_addr = trim($_POST['ip_addr']);
+        
+        try {
+            // @result is a MySQL user variable required to receive the OUT parameter of the delete_ban_ip procedure
+            $query_unban = "CALL delete_ban_ip(?, @result)";
+            $stmt_unban = mysqli_prepare($connect, $query_unban);
+            mysqli_stmt_bind_param($stmt_unban, "s", $ip_addr);
+            
+            if (!mysqli_stmt_execute($stmt_unban)) {
+                $_SESSION['notification'] = "Une erreur est arrivée lors du débannissement de l'IP.";
+                $_SESSION['notification_color'] = "red";
+                mysqli_stmt_close($stmt_unban);
+                header("Location: ../pages/admin-settings.php");
+                exit();
+            }
+            
+            mysqli_stmt_close($stmt_unban);
+            
+            $_SESSION['notification'] = "Adresse IP débannée avec succès.";
+            $_SESSION['notification_color'] = "#5CE65C";
+        } catch (Exception $e) {
+            $_SESSION['notification'] = "Erreur lors du débannissement : " . $e->getMessage();
+            $_SESSION['notification_color'] = "red";
+        }
+        
+        header("Location: ../pages/admin-settings.php");
+        exit();
     }
 ?>

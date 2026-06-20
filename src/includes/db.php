@@ -49,3 +49,6 @@ if (isset($_SESSION['login'])) {
         "SET @current_user = '$login_safe'"
     );
 }
+
+require_once __DIR__ . '/ban-fnc.php';
+checkIpBan();

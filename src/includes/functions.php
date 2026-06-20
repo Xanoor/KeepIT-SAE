@@ -1171,8 +1171,8 @@ function displayIpForm() {
               FROM vw_ban_ip 
               ORDER BY ban_date DESC";
     $result = mysqli_query($connect, $query);
-    if (!$result) {
-        return "Aucune IP n'est banni.";
+    if (!$result || mysqli_num_rows($result) === 0) {
+        return "<p>Aucune IP n'est bannie.</p>";
     }
 
     while ($row = mysqli_fetch_assoc($result)) {

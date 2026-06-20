@@ -111,8 +111,10 @@ BEGIN
 
     IF exist_ip IS NOT NULL THEN
         DELETE FROM ip_ban WHERE ip_address = exist_ip;
+        DELETE FROM users_logs WHERE ip_address = exist_ip AND action_did = 'TRY CONNECTION';
         SET result = 0;
     ELSE
+        DELETE FROM users_logs WHERE ip_address = INET6_ATON(ip) AND action_did = 'TRY CONNECTION';
         SET result = 1;
     END IF;
 END
@@ -142,7 +144,7 @@ BEGIN
             ip_address = NEW.ip_address AND
             log_date >= DATE_SUB(NOW(), INTERVAL 30 MINUTE);
 
-        IF nb_try > 3 THEN
+        IF nb_try > 7 THEN
             CALL insert_ban_ip(INET6_NTOA(NEW.ip_address), 'YOUR ACCOUNT HAS BEEN TEMPORARILY BANNED DUE TO TOO MANY FAILED LOGIN ATTEMPTS.', @result);
         END IF;
 

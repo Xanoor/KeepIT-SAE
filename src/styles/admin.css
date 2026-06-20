@@ -281,7 +281,6 @@
     cursor: pointer;
 }
 
-/* Bouton de sauvegarde JSON pour les logs */
 .save-json-btn {
     background: var(--secondary-color);
     color: white;
