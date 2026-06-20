@@ -53,6 +53,32 @@
                         <?php echo loadConstantLogs() ?>
                     </div>
                 </section>
+
+                <section class="log-section">
+                    <div class="section-header">
+                        <span>Connexions réussies</span>
+                        <form action="../actions/download_connection_logs.php" method="POST" style="margin: 0;">
+                            <input type="hidden" name="type" value="success">
+                            <button type="submit" name="download_submit" class="save-json-btn">Enregistrer JSON</button>
+                        </form>
+                    </div>
+                    <div class="sys-logs subsections">
+                        <?php echo loadConnectionLogs(1) ?>
+                    </div>
+                </section>
+
+                <section class="log-section">
+                    <div class="section-header">
+                        <span>Connexions échouées</span>
+                        <form action="../actions/download_connection_logs.php" method="POST" style="margin: 0;">
+                            <input type="hidden" name="type" value="failed">
+                            <button type="submit" name="download_submit" class="save-json-btn">Enregistrer JSON</button>
+                        </form>
+                    </div>
+                    <div class="sys-logs subsections">
+                        <?php echo loadConnectionLogs(0) ?>
+                    </div>
+                </section>
             </div>
         
             <!-- Notification container -->
@@ -60,6 +86,9 @@
         </main>
     </body>
     <!-- Scripts -->
-    <script>const notif = <?= json_encode($notification) ?>;const notif_color = <?= json_encode($notification_color) ?>;</script>
+    <script>
+        const notif = <?= json_encode($notification) ?>;
+        const notif_color = <?= json_encode($notification_color) ?>;
+    </script>
     <script src="../scripts/notification.js"></script>
 </html>

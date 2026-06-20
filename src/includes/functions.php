@@ -1273,4 +1273,78 @@ function createVariableConfig($tableName, $columnName) {
     $html = include '../fragments/variable-settings.php';
     return $html; 
 }
+
+/**
+ * Reads all connection logs from data/connections.json and returns them sorted by date DESC.
+ * 
+ * @return array
+ */
+function getConnectionLogsData() {
+    $filePath = __DIR__ . '/../../data/connections.json';
+    if (!file_exists($filePath)) {
+        return [];
+    }
+    $content = file_get_contents($filePath);
+    $data = json_decode($content, true);
+    if (!is_array($data)) {
+        return [];
+    }
+    return array_reverse($data);
+}
+
+/**
+ * Returns connection logs filtered by success.
+ * 
+ * @return array
+ */
+function getSuccessConnectionLogsData() {
+    $logs = getConnectionLogsData();
+    return array_values(array_filter($logs, function($log) {
+        $status = $log['status'] ?? null;
+        return $status === 1 || $status === 'Connexion reussie';
+    }));
+}
+
+/**
+ * Returns connection logs filtered by failure.
+ * 
+ * @return array
+ */
+function getFailedConnectionLogsData() {
+    $logs = getConnectionLogsData();
+    return array_values(array_filter($logs, function($log) {
+        $status = $log['status'] ?? null;
+        return $status === 0 || $status === 'Connexion echouee';
+    }));
+}
+
+/**
+ * Generates HTML paragraphs for connection logs based on state.
+ * 
+ * @param int $state Connection state (1 = success, 0 = failed).
+ * @return string HTML chunk.
+ */
+function loadConnectionLogs($state) {
+    if ($state === 1) {
+        $logs = getSuccessConnectionLogsData();
+        $emptyMsg = "Aucun log de connexion réussie.";
+        $formatMsg = "%s - Connexion réussie pour l'utilisateur \"%s\" (IP: %s).";
+    } else {
+        $logs = getFailedConnectionLogsData();
+        $emptyMsg = "Aucun log de connexion échouée.";
+        $formatMsg = "%s - Échec de connexion pour l'utilisateur \"%s\" (IP: %s).";
+    }
+
+    $html = "";
+    if (empty($logs)) {
+        return "<p>{$emptyMsg}</p>";
+    }
+    foreach ($logs as $log) {
+        $date = htmlspecialchars($log['date'] ?? '');
+        $login = htmlspecialchars($log['login'] ?? '');
+        $ip = htmlspecialchars($log['ip'] ?? '');
+        $html .= "<p>" . sprintf($formatMsg, $date, $login, $ip) . "</p>";
+    }
+    return $html;
+}
 ?>

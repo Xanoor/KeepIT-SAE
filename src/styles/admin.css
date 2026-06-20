@@ -33,15 +33,23 @@
 }
 
 .logs-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 20px;
 }
 
 .log-section {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     height: 30em;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .logs-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
 }
 
 .section-header {
@@ -54,11 +62,15 @@
     user-select: none;
     padding: 15px;
     box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .subsections {
     padding: 10px 15px;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .subsections p {
@@ -267,4 +279,28 @@
     border-radius: 10px;
     padding: 7px;
     cursor: pointer;
+}
+
+/* Bouton de sauvegarde JSON pour les logs */
+.save-json-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.25rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    height: 1.8rem;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.save-json-btn:hover {
+    background: var(--alternative-color);
+    border-color: white;
 }
