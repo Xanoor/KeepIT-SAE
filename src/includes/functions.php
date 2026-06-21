@@ -1455,15 +1455,27 @@ function getSshLogsData($limit = 200) {
         return [];
     }
 
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    if ($lines === false) {
-        return [];
+    $file = new SplFileObject($path, 'r');
+    $file->setFlags(SplFileObject::DROP_NEW_LINE);
+
+    // Keep only the last $limit raw lines to avoid loading huge log files into memory.
+    $tail = [];
+    foreach ($file as $line) {
+        if (!is_string($line)) {
+            continue;
+        }
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $tail[] = $line;
+        if (count($tail) > $limit) {
+            array_shift($tail);
+        }
     }
 
-    $lines = array_slice($lines, -$limit);
-
     $entries = [];
-    foreach ($lines as $line) {
+    foreach ($tail as $line) {
         $entry = parseSshLogLine($line);
         if ($entry !== null) {
             $entries[] = $entry;
