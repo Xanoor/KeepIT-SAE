@@ -1360,8 +1360,12 @@ function getSshLogPath() {
     $candidates = [
         '/var/log/auth.log',
         '/var/log/secure',
-        __DIR__ . '/../../data/auth.log',
     ];
+
+    // Fallback sample file for Windows dev environments.
+    if (PHP_OS_FAMILY === 'Windows') {
+        $candidates[] = __DIR__ . '/../../data/auth.log';
+    }
 
     foreach ($candidates as $path) {
         if (is_readable($path)) {
