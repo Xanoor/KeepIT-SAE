@@ -79,6 +79,19 @@
                         <?php echo loadConnectionLogs(0) ?>
                     </div>
                 </section>
+
+                <section class="log-section" style="grid-column: 1 / -1;">
+                    <div class="section-header">
+                        <span>Connexions SSH</span>
+                        <form action="../actions/download_connection_logs.php" method="POST" style="margin: 0;">
+                            <input type="hidden" name="type" value="ssh">
+                            <button type="submit" name="download_submit" class="save-json-btn">Enregistrer JSON</button>
+                        </form>
+                    </div>
+                    <div class="sys-logs subsections">
+                        <?php echo loadSshLogs() ?>
+                    </div>
+                </section>
             </div>
         
             <!-- Notification container -->

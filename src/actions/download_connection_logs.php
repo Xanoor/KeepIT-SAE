@@ -17,6 +17,9 @@ if (isset($_POST['download_submit'], $_POST['type'])) {
     } elseif ($type === 'failed') {
         $data = getFailedConnectionLogsData();
         $filename = 'connexions_echouees.json';
+    } elseif ($type === 'ssh') {
+        $data = getSshLogsData();
+        $filename = 'connexions_ssh.json';
     } else {
         header("Location: ../pages/admin-panel.php");
         exit();
