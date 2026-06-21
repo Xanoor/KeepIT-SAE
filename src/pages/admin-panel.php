@@ -80,7 +80,7 @@
                     </div>
                 </section>
 
-                <section class="log-section" style="grid-column: 1 / -1;">
+                <section class="log-section logs-full-width">
                     <div class="section-header">
                         <span>Connexions SSH</span>
                         <form action="../actions/download_connection_logs.php" method="POST" style="margin: 0;">
