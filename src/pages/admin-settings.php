@@ -47,7 +47,7 @@
                 </div>
             </section>
             <section class="web-administration">
-                <h2>Administration</h2>
+                <h2>Administration - IP bannies</h2>
                 <div class="banned-ip-class">
                     <?php
                         echo displayIpForm();

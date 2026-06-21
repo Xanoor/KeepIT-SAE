@@ -41,6 +41,11 @@ if (isset($_POST["export_submit"], $_POST["columns"]) && is_array($_POST["column
     $result = mysqli_query($connect, $sql);
 
     if ($result) {
+        // Sometimes the buffer is not empty and creates blank rows: we clean it to avoid blank rows in the CSV
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
         // Output headers to trigger CSV download
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="inventaire_export.csv"');

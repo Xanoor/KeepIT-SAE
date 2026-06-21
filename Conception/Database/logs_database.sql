@@ -214,6 +214,23 @@ CREATE TABLE IF NOT EXISTS constant_logs (
 COMMENT = 'LOGS TABLE ABOUT FEATURES OF DEVICES'
 //
 
+-- ==============================
+-- Trigger pour la table device states
+CREATE OR REPLACE TRIGGER device_states_after_insert
+    AFTER INSERT ON device_states
+    FOR EACH ROW
+BEGIN
+    INSERT INTO constant_logs (log_date, table_name, action_did, val) 
+    VALUES (NOW(), 'device_states', 'INSERT', CAST(NEW.state AS CHAR));
+end //
+
+CREATE OR REPLACE TRIGGER device_states_after_delete
+    AFTER DELETE ON device_states
+    FOR EACH ROW
+BEGIN
+    INSERT INTO constant_logs (log_date, table_name, action_did, val) 
+    VALUES (NOW(), 'device_states', 'DELETE', CAST(OLD.state AS CHAR));
+end //
 
 -- ==============================
 -- Trigger pour la table locations

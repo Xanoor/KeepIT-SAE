@@ -161,7 +161,7 @@
             
             mysqli_stmt_close($stmt_unban);
             
-            $_SESSION['notification'] = "Adresse IP débannée avec succès.";
+            $_SESSION['notification'] = "Adresse IP débannie avec succès.";
             $_SESSION['notification_color'] = "#5CE65C";
         } catch (Exception $e) {
             $_SESSION['notification'] = "Erreur lors du débannissement : " . $e->getMessage();
