@@ -83,13 +83,12 @@
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Dernière connexion</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($techniciens)): ?>
                             <tr class="placeholder-row">
-                                <td colspan="4">Aucun technicien trouvé</td>
+                                <td colspan="3">Aucun technicien trouvé</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($techniciens as $tech): ?>
@@ -102,11 +101,6 @@
                                             $class = ($label === 'Maintenant') ? ' class="last-login-now"' : '';
                                             echo "<span{$class}>" . htmlspecialchars($label) . "</span>";
                                         ?>
-                                    </td>
-                                    <td class="col-action">
-                                        <a href="#" title="Voir le profil">
-                                            <img src="../assets/open.png" alt="Ouvrir" />
-                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

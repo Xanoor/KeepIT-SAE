@@ -45,6 +45,10 @@
     box-sizing: border-box;
 }
 
+.logs-full-width {
+    grid-column: span 2;
+}
+
 @media (max-width: 1024px) {
     .logs-container {
         grid-template-columns: 1fr;
