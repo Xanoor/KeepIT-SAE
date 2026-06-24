@@ -20,6 +20,11 @@ function convertDataToFrench($data) {
         "SERIAL NUMBER" => "Numéro de série",
         "MODEL" => "Modèle",
         "DEVICE TYPE" => "Type d'appareil",
+        "LOCATIONS" => "Emplacements",
+        "MANUFACTURER" => "Fabricants",
+        "CONNECTOR" => "Connecteur",
+        "OPERATING_SYSTEM" => "Système d'exploitation",
+        "DEVICE_STATES" => "États d'appareils",
         "CREATED AT" => "Créé le",
         "UPDATED AT" => "Modifié le",
         "STATE" => "État",
@@ -63,6 +68,46 @@ function tableExists($conn, $table) {
 
     $res = mysqli_query($conn, $query);
     return mysqli_num_rows($res) > 0;
+}
+
+/**
+ * Finds all foreign keys that link to a specific table and column.
+ *
+ * @param mysqli $conn The database connection.
+ * @param string $table The name of the target table.
+ * @param string $column The name of the target column.
+ * @return array A list of tables and columns that point to the target.
+ */
+function getForeignKeysReferencing($conn, $table, $column)
+{
+    $table = mysqli_real_escape_string($conn, $table);
+    $column = mysqli_real_escape_string($conn, $column);
+
+    $query = "
+        SELECT 
+            TABLE_NAME,
+            COLUMN_NAME,
+            CONSTRAINT_NAME
+        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+        WHERE 
+            REFERENCED_TABLE_SCHEMA = DATABASE()
+            AND REFERENCED_TABLE_NAME = '$table'
+            AND REFERENCED_COLUMN_NAME = '$column'
+    ";
+
+    $res = mysqli_query($conn, $query);
+    $result = [];
+
+    if (!$res) {
+        return $result;
+    }
+
+
+    while ($row = mysqli_fetch_assoc($res)) {
+        $result[] = $row;
+    }
+
+    return $result;
 }
 
 /**
@@ -945,22 +990,14 @@ function loadInventoryLogs($serialNumber) {
         $newVal = htmlspecialchars($row['new_val'] ?? '');
 
         $text = "";
-        switch ($action) {
-            case 'INSERT':
-                $text = "$login a ajouté l'appareil ($field - $serialNumber)";
-                break;
-
-            case 'UPDATE':
-                $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
-                break;
-
-            case 'DELETE':
-                $text = "$login a supprimé l'appareil";
-                break;
-
-            case 'AT_DELETED':
-                $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
-                break;
+        if ($action === 'INSERT') {
+            $text = "$login a ajouté l'appareil ($field - $serialNumber)";
+        } elseif ($action === 'UPDATE') {
+            $text = "$login a changé $field de \"$oldVal\" à \"$newVal\"";
+        } elseif ($action === 'DELETE') {
+            $text = "$login a supprimé l'appareil";
+        } elseif ($action === 'AT_DELETED') {
+            $text = "$login a supprimé l'ordinateur \"$oldVal\", qui était relié à cet écran.";
         }
 
         $html .= "
@@ -971,6 +1008,51 @@ function loadInventoryLogs($serialNumber) {
     }
 
     return $html;
+}
+
+/**
+ * Logs connection attempts to a JSON file.
+ *
+ * @param string $login The user's login.
+ * @param string $ip The connection IP address.
+ * @param int $connState The connection status (1 = success, 0 = failed).
+ */
+function createConnectionLogs($login, $ip, $connState) {
+    $filePath = __DIR__ . '/../../data/connections.json';
+    
+    // Ensure the data directory exists, if not, create it
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    // Verify if the file exists and retrieve its content
+    if (file_exists($filePath)) {
+        $currentContent = file_get_contents($filePath);
+
+        $data = json_decode($currentContent, true);
+        if (!is_array($data)) {
+            $data = [];
+        }
+    } else {
+        // If the file does not exist yet, start with an empty array
+        $data = [];
+    }
+
+    $status = $connState == 1 ? "Connexion reussie" : "Connexion echouee";
+
+    $newEntry = [
+        "login" => $login,
+        "ip" => $ip,
+        "status" => $status,
+        "date" => date('Y-m-d H:i:s')
+    ];
+
+    // Push the new entry to the end of the array
+    $data[] = $newEntry;
+
+    $finalJson = json_encode($data);
+    file_put_contents($filePath, $finalJson);
 }
 
 function loadUsersLogs() {
@@ -987,45 +1069,55 @@ function loadUsersLogs() {
     }
 
     while ($row = mysqli_fetch_assoc($result)) {
-        switch ($row["action_did"]) {
+        $action_did = $row["action_did"];
+        $log_date = $row["log_date"];
+        $login = htmlspecialchars($row["login"]);
+        $old_val = htmlspecialchars($row["old_val"]);
+        $new_val = htmlspecialchars($row["new_val"]);
+
+        switch ($action_did) {
 
             case 'TRY CONNECTION': //connexion failure
-                $html .= "{$row['log_date']} - Échec de connexion pour l'utilisateur \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Échec de connexion pour l'utilisateur \"{$login}\".</p>";
                 break;
 
             case 'CREATED': //account created
-                $html .= "{$row['log_date']} - Création du compte \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Création du compte \"{$login}\".</p>";
                 break;
 
             case 'UPDATE FIRST NAME': //first name updated
-                $html .= "{$row['log_date']} - Modification du prénom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du prénom de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'UPDATE LAST NAME': //last name updated
-                $html .= "{$row['log_date']} - Modification du nom de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du nom de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'UPDATE PASSWORD': //password updated
-                $html .= "{$row['log_date']} - Mot de passe modifié pour l'utilisateur \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Mot de passe modifié pour l'utilisateur \"{$login}\".</p>";
                 break;
 
             case 'UPDATE ROLE': //role updated
-                $html .= "{$row['log_date']} - Modification du rôle de \"{$row['login']}\" : \"{$row['old_val']}\" → \"{$row['new_val']}\".";
+                $html .= "<p>{$log_date} - Modification du rôle de \"{$login}\" : \"{$old_val}\" → \"{$new_val}\".</p>";
                 break;
 
             case 'DELETED': //account deleted
-                $html .= "{$row['log_date']} - Suppression du compte \"{$row['login']}\".";
+                $html .= "<p>{$log_date} - Suppression du compte \"{$login}\".</p>";
                 break;
 
             default: //else
                 break;
         }
-        $html .= "<br>";
     }
 
     return $html;
 }
 
+/**
+ * Loads constant activity logs from the database and returns them formatted as HTML paragraphs.
+ * 
+ * @return string The generated HTML logs.
+ */
 function loadConstantLogs() {
     global $connect;
 
@@ -1040,20 +1132,61 @@ function loadConstantLogs() {
     }
 
     while ($row = mysqli_fetch_assoc($result)) {
-        switch ($row["action_did"]) {
+        $action_did = $row["action_did"];
+        $log_date = $row["log_date"];
+        $table_name = htmlspecialchars($row["table_name"]);
+        $val = htmlspecialchars($row["val"]);
+
+        switch ($action_did) {
 
             case 'INSERT': //constant created
-                $html .= "{$row['log_date']} - Nouvelle constante dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                $html .= "<p>{$log_date} - Nouvelle constante dans \"{$table_name}\": \"{$val}\".</p>";
                 break;
 
             case 'DELETE': //constant removed
-                $html .= "{$row['log_date']} - Constante supprimée dans \"{$row['table_name']}\": \"{$row['val']}\".";
+                $html .= "<p>{$log_date} - Constante supprimée dans \"{$table_name}\": \"{$val}\".</p>";
                 break;
 
             default: //else
                 break;
         }
-        $html .= "<br>";
+    }
+
+    return $html;
+}
+
+/**
+ * Fetches banned IP addresses and generates HTML forms to manage (unban) them.
+ * 
+ * Queries the banned IP view sorted by ban date and generates an HTML form for each
+ * IP, allowing an administrator to delete the ban. If no IPs are banned, a message is returned.
+ * 
+ * @return string The rendered HTML containing IP management forms or a message.
+ */
+function displayIpForm() {
+    global $connect;
+    $html = "";
+
+    $query = "SELECT ban_date, ip_address 
+              FROM vw_ban_ip 
+              ORDER BY ban_date DESC";
+    $result = mysqli_query($connect, $query);
+    if (!$result || mysqli_num_rows($result) === 0) {
+        return "<p>Aucune IP n'est bannie.</p>";
+    }
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $ban_date = $row["ban_date"];
+        $ip_addr = $row["ip_address"];
+
+        $html .= "
+        <form action='../actions/admin-settings_action.php' method='POST' class='ip-log-form'>
+            <input type='hidden' name='ip_addr' value='$ip_addr'>
+            <input type='hidden' name='ban_date' value='$ban_date'>
+            <p>$ban_date</p><p>$ip_addr</p>
+            <input type='submit' name='DELETE_IP_ADDR' value='Supprimer'>
+        </form>
+        ";
     }
 
     return $html;
@@ -1132,5 +1265,253 @@ function getPasswordFromLogin($login) {
     $result = mysqli_stmt_get_result($stmt);
 
     return $result;
+}
+
+function createVariableConfig($tableName, $columnName) {    
+    $varItems = getTableValues($tableName, $columnName);
+
+    $html = include '../fragments/variable-settings.php';
+    return $html; 
+}
+
+/**
+ * Reads all connection logs from data/connections.json and returns them sorted by date DESC.
+ * 
+ * @return array
+ */
+function getConnectionLogsData() {
+    $filePath = __DIR__ . '/../../data/connections.json';
+    if (!file_exists($filePath)) {
+        return [];
+    }
+    $content = file_get_contents($filePath);
+    $data = json_decode($content, true);
+    if (!is_array($data)) {
+        return [];
+    }
+    return array_reverse($data);
+}
+
+/**
+ * Returns connection logs filtered by success.
+ * 
+ * @return array
+ */
+function getSuccessConnectionLogsData() {
+    $logs = getConnectionLogsData();
+    return array_values(array_filter($logs, function($log) {
+        $status = $log['status'] ?? null;
+        return $status === 1 || $status === 'Connexion reussie';
+    }));
+}
+
+/**
+ * Returns connection logs filtered by failure.
+ * 
+ * @return array
+ */
+function getFailedConnectionLogsData() {
+    $logs = getConnectionLogsData();
+    return array_values(array_filter($logs, function($log) {
+        $status = $log['status'] ?? null;
+        return $status === 0 || $status === 'Connexion echouee';
+    }));
+}
+
+/**
+ * Generates HTML paragraphs for connection logs based on state.
+ * 
+ * @param int $state Connection state (1 = success, 0 = failed).
+ * @return string HTML chunk.
+ */
+function loadConnectionLogs($state) {
+    if ($state === 1) {
+        $logs = getSuccessConnectionLogsData();
+        $emptyMsg = "Aucun log de connexion réussie.";
+        $formatMsg = "%s - Connexion réussie pour l'utilisateur \"%s\" (IP: %s).";
+    } else {
+        $logs = getFailedConnectionLogsData();
+        $emptyMsg = "Aucun log de connexion échouée.";
+        $formatMsg = "%s - Échec de connexion pour l'utilisateur \"%s\" (IP: %s).";
+    }
+
+    $html = "";
+    if (empty($logs)) {
+        return "<p>{$emptyMsg}</p>";
+    }
+    foreach ($logs as $log) {
+        $date = htmlspecialchars($log['date'] ?? '');
+        $login = htmlspecialchars($log['login'] ?? '');
+        $ip = htmlspecialchars($log['ip'] ?? '');
+        $html .= "<p>" . sprintf($formatMsg, $date, $login, $ip) . "</p>";
+    }
+    return $html;
+}
+
+/**
+ * Resolves the path of the system SSH authentication log.
+ *
+ * Tries the standard Linux locations first, then falls back to a local sample
+ * file (data/auth.log) so the feature also works in a Windows dev environment.
+ *
+ * @return string|null The first readable path found, or null if none.
+ */
+function getSshLogPath() {
+    $candidates = [
+        '/var/log/auth.log',
+        '/var/log/secure',
+    ];
+
+    // Fallback sample file for Windows dev environments.
+    if (PHP_OS_FAMILY === 'Windows') {
+        $candidates[] = __DIR__ . '/../../data/auth.log';
+    }
+
+    foreach ($candidates as $path) {
+        if (is_readable($path)) {
+            return $path;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Parses a single sshd syslog line into a structured & easy to read human line.
+ *
+ * @param string $line A raw line from auth.log / secure.
+ * @return array|null The parsed entry (date, host, pid, type, user, ip, message, raw), or null if not an sshd line.
+ */
+function parseSshLogLine($line) {
+    $line = trim($line);
+    if ($line === '') {
+        return null;
+    }
+
+    // "Mon DD HH:MM:SS host sshd[pid]: message"
+    if (!preg_match('/^(\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+sshd(?:\[(\d+)\])?:\s+(.*)$/', $line, $m)) {
+        return null;
+    }
+
+    $entry = [
+        'date'    => $m[1],
+        'host'    => $m[2],
+        'pid'     => $m[3] ?? '',
+        'type'    => 'info',
+        'user'    => '',
+        'ip'      => '',
+        'message' => $m[4],
+        'raw'     => $line,
+    ];
+
+    $msg = $m[4];
+
+    if (preg_match('/^Accepted (\w+) for (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $method = $mm[1] === 'publickey' ? 'clé publique' : ($mm[1] === 'password' ? 'mot de passe' : $mm[1]);
+        $entry['type'] = 'success';
+        $entry['user'] = $mm[2];
+        $entry['ip'] = $mm[3];
+        $entry['message'] = "Connexion réussie - utilisateur \"{$mm[2]}\" depuis {$mm[3]} ({$method})";
+    } elseif (preg_match('/^Failed password for invalid user (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[1];
+        $entry['ip'] = $mm[2];
+        $entry['message'] = "Échec de connexion - utilisateur invalide \"{$mm[1]}\" depuis {$mm[2]}";
+    } elseif (preg_match('/^Failed (\w+) for (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[2];
+        $entry['ip'] = $mm[3];
+        $entry['message'] = "Échec de connexion - utilisateur \"{$mm[2]}\" depuis {$mm[3]}";
+    } elseif (preg_match('/^Invalid user (\S+) from (\S+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[1];
+        $entry['ip'] = $mm[2];
+        $entry['message'] = "Utilisateur invalide \"{$mm[1]}\" depuis {$mm[2]}";
+    } elseif (preg_match('/session opened for user (\S+?)(?: by|\()/', $msg, $mm)) {
+        $entry['type'] = 'session';
+        $entry['user'] = $mm[1];
+        $entry['message'] = "Session ouverte pour \"{$mm[1]}\"";
+    } elseif (preg_match('/session closed for user (\S+)/', $msg, $mm)) {
+        $entry['type'] = 'session';
+        $entry['user'] = $mm[1];
+        $entry['message'] = "Session fermée pour \"{$mm[1]}\"";
+    } elseif (preg_match('/^Connection closed by (?:invalid user \S+ |authenticating user \S+ )?(\S+) port (\d+)(.*)$/', $msg, $mm)) {
+        $preauth = strpos($mm[3], 'preauth') !== false ? ' (preauth)' : '';
+        $entry['ip'] = $mm[1];
+        $entry['message'] = "Connexion fermée depuis {$mm[1]}{$preauth}";
+    } elseif (preg_match('/^Disconnected from (?:invalid user \S+ |authenticating user \S+ )?(\S+) port (\d+)/', $msg, $mm)) {
+        $entry['ip'] = $mm[1];
+        $entry['message'] = "Déconnecté de {$mm[1]}";
+    }
+
+    return $entry;
+}
+
+/**
+ * Reads and parses the last entries of the SSH authentication log.
+ *
+ * @param int $limit Maximum number of trailing lines to read.
+ * @return array Parsed entries sorted newest first.
+ */
+function getSshLogsData($limit = 200) {
+    $path = getSshLogPath();
+    if ($path === null) {
+        return [];
+    }
+
+    $file = new SplFileObject($path, 'r');
+    $file->setFlags(SplFileObject::DROP_NEW_LINE);
+
+    // Keep only the last $limit raw lines to avoid loading huge log files into memory.
+    $tail = [];
+    foreach ($file as $line) {
+        if (!is_string($line)) {
+            continue;
+        }
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $tail[] = $line;
+        if (count($tail) > $limit) {
+            array_shift($tail);
+        }
+    }
+
+    $entries = [];
+    foreach ($tail as $line) {
+        $entry = parseSshLogLine($line);
+        if ($entry !== null) {
+            $entries[] = $entry;
+        }
+    }
+
+    return array_reverse($entries);
+}
+
+/**
+ * Generates HTML paragraphs for the simplified SSH connection log view.
+ *
+ * @param int $limit Maximum number of trailing lines to read.
+ * @return string HTML chunk.
+ */
+function loadSshLogs($limit = 200) {
+    if (getSshLogPath() === null) {
+        return "<p>Aucun fichier de log SSH accessible (/var/log/auth.log ou /var/log/secure).</p>";
+    }
+
+    $entries = getSshLogsData($limit);
+    if (empty($entries)) {
+        return "<p>Aucune connexion SSH enregistrée.</p>";
+    }
+
+    $html = "";
+    foreach ($entries as $entry) {
+        $date = htmlspecialchars($entry['date']);
+        $message = htmlspecialchars($entry['message']);
+        $html .= "<p>{$date} - {$message}</p>";
+    }
+
+    return $html;
 }
 ?>

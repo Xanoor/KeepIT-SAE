@@ -6,13 +6,29 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function create_connection() {
     if (!isset($GLOBALS['connect'])) {
-        $GLOBALS['connect'] = mysqli_connect("localhost", "root", "", "keepit");
-        mysqli_set_charset($GLOBALS['connect'], "utf8");
+        // Disables MySQL exceptions/fatal errors on connection failure so we can handle it manually
+        mysqli_report(MYSQLI_REPORT_OFF);
+        $GLOBALS['connect'] = @mysqli_connect("localhost", "root", "", "keepit");
 
         // Check connection
+        require_once __DIR__ . '/maintenance-fnc.php';
         if (!$GLOBALS['connect']) {
-            die("Database connection failed.");
+            if (!isMaintenanceActive()) {
+                file_put_contents(getMaintenanceFile(), "Maintenance auto activée (BDD hors ligne)");
+            }
+            checkMaintenance();
+            // If the user is a sysadmin (bypassing maintenance), we still stop to prevent MySQL errors
+            die("Erreur critique : Service MySQL hors ligne.");
+        } else {
+            if (isMaintenanceActive()) {
+                $maintenanceContent = file_get_contents(getMaintenanceFile());
+                if (trim($maintenanceContent) === "Maintenance auto activée (BDD hors ligne)") {
+                    unlink(getMaintenanceFile());
+                }
+            }
         }
+
+        mysqli_set_charset($GLOBALS['connect'], "utf8");
     }
 }
 
@@ -33,3 +49,6 @@ if (isset($_SESSION['login'])) {
         "SET @current_user = '$login_safe'"
     );
 }
+
+require_once __DIR__ . '/ban-fnc.php';
+checkIpBan();

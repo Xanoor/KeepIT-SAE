@@ -1,0 +1,309 @@
+.panel-main {
+    padding: 0 2.5% 2rem;
+    box-sizing: border-box;
+}
+
+/* Sys admin - panel admin */
+.sys-logs {
+    background-color: #000;
+    color: #d4d4d4;
+    font-family: monospace;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 600px;
+    overflow-y: auto;
+    white-space: pre-line;
+}
+
+.maintenance-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 2.5em;
+    font-weight: bold;
+    width: 100%;
+    padding: 25px;
+    color: black;
+    box-sizing: border-box;
+}
+
+.logs-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 20px;
+}
+
+.log-section {
+    display: flex;
+    flex-direction: column;
+    height: 30em;
+    box-sizing: border-box;
+}
+
+.logs-full-width {
+    grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+    .logs-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+.section-header {
+    background: var(--third-color);
+    width: 100%;
+    border-radius: 15px 15px 0px 0px;
+    margin-top: 10px;
+    color: white;
+    font-weight: bold;
+    user-select: none;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subsections {
+    padding: 10px 15px;
+    flex: 1;
+    min-height: 0;
+}
+
+.subsections p {
+    margin: 5px 0;
+}
+
+.log-section.active .subsections {
+    display: block;
+}
+
+.maintenance_button {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.35rem 1.5rem;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    height: 2.2rem;
+    box-sizing: border-box;
+}
+
+.maintenance_button:hover {
+    background: var(--alternative-color);
+}
+
+.maintenance_button_on {
+    background: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.maintenance_button_on:hover {
+    background: #3b5be0;
+    border-color: #3b5be0;
+}
+
+/* Web admin - admin settings */
+.web-variables,
+.web-administration {
+    padding: 15px;
+    margin: 5px;
+    background: var(--alternative-color);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+}
+
+.web-variables > h2,
+.web-administration > h2 {
+    margin: 0 0 15px 0;
+}
+
+.edit-variable-form label {
+    margin: 0px 0px 10px 10px;
+    font-size: 1.2em;
+}
+
+.edit-var-input-container *,
+.create-web-variables input,
+.createVariableModal form select,
+.createVariableModal form input {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 1rem;
+    padding: 0.35rem 1rem;
+    cursor: pointer;
+    height: 2rem;
+    box-sizing: border-box;
+}
+
+.edit-var-input-container select {
+    width: 50%;
+    border: 0.125rem solid var(--border-color);
+    background: var(--secondary-color);
+}
+
+.edit-var-input-container input[type="submit"] {
+    border: 0.125rem solid #b53f3f;
+    background: #382525;
+    transition: all 0.4s ease;
+}
+
+.edit-var-input-container input[type="submit"]:hover {
+    background: #4e3434;
+}
+
+.web-variables-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.create-web-variables {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.create-web-variables input {
+    width: 25%;
+    border: 0.125rem solid #35693a;
+    background: #253827;
+    transition: all 0.2s ease;
+}
+
+.create-web-variables input:hover {
+    background: #2e4631;
+}
+
+/* create variable modal */
+
+.createVariableModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.createVariableModal.show-modal {
+    display: flex;
+}
+
+/* Le contenu du modal */
+.createVariableModal form {
+    position: relative;
+    background: var(--alternative-color);
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: 15px;
+    width: 400px;
+    max-width: 90%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.createVariableModal form select,
+.createVariableModal form input {
+    border: 0.125rem solid var(--border-color);
+    background: var(--secondary-color);
+    transition: all 0.2s ease;
+}
+
+.createVariableModal form input[type="text"] {
+    cursor: text;
+}
+
+.createVariableModal form input[type="submit"]:hover {
+    transform: scale(1.03);
+}
+
+#close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+#close-modal:hover {
+    transform: scale(1.05);
+}
+
+.createVariableModal form h3 {
+    margin-top: 0;
+}
+
+.createVariableModal .show-modal {
+    display: flex;
+}
+
+.ip-log-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    background: #313149;
+    padding: 0 10px 0 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.ip-log-form input[type="submit"] {
+    background: red;
+    border: 1px solid black;
+    font-weight: bolder;
+    border-radius: 10px;
+    padding: 7px;
+    cursor: pointer;
+}
+
+.save-json-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.25rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    height: 1.8rem;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.save-json-btn:hover {
+    background: var(--alternative-color);
+    border-color: white;
+}

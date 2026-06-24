@@ -3,10 +3,11 @@
 
     include '../includes/functions.php';
     include '../components/icon.php';
+    require_once '../includes/maintenance-fnc.php';
 
     $error_code = $_GET['error'] ?? null;
 
-    if(!isset($_SESSION)) { 
+    if (session_status() === PHP_SESSION_NONE) { 
         session_start(); 
     } 
 
