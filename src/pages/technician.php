@@ -6,6 +6,7 @@
         header("Location: login.php");
         exit();
     }
+    
     $notification = $_SESSION['notification'] ?? null;
     $notification_color = $_SESSION['notification_color'] ?? null;
     unset($_SESSION['notification']);

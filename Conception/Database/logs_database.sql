@@ -214,6 +214,23 @@ CREATE TABLE IF NOT EXISTS constant_logs (
 COMMENT = 'LOGS TABLE ABOUT FEATURES OF DEVICES'
 //
 
+-- ==============================
+-- Trigger pour la table device states
+CREATE OR REPLACE TRIGGER device_states_after_insert
+    AFTER INSERT ON device_states
+    FOR EACH ROW
+BEGIN
+    INSERT INTO constant_logs (log_date, table_name, action_did, val) 
+    VALUES (NOW(), 'device_states', 'INSERT', CAST(NEW.state AS CHAR));
+end //
+
+CREATE OR REPLACE TRIGGER device_states_after_delete
+    AFTER DELETE ON device_states
+    FOR EACH ROW
+BEGIN
+    INSERT INTO constant_logs (log_date, table_name, action_did, val) 
+    VALUES (NOW(), 'device_states', 'DELETE', CAST(OLD.state AS CHAR));
+end //
 
 -- ==============================
 -- Trigger pour la table locations
@@ -312,6 +329,7 @@ CREATE TABLE IF NOT EXISTS users_logs (
     log_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     login VARCHAR(36) NOT NULL,
     action_did VARCHAR(25) NOT NULL,
+    ip_address VARBINARY(16),
     old_val VARCHAR(50),
     new_val VARCHAR(50),
     INDEX idx_users_logs_logs_date (log_date),
@@ -322,16 +340,26 @@ COMMENT = 'LOGS TABLE ABOUT ACTION OF USERS'//
 
 -- ==============================
 -- Procédure de tentative de connection pour un login valide
-CREATE PROCEDURE logs_password(IN user_login VARCHAR(36))
+-- success >= 1 -> connection réussite
+-- success <= 0 -> connection échouée
+CREATE PROCEDURE logs_password(IN user_login VARCHAR(36), IN ip VARCHAR(39), IN success INTEGER)
 BEGIN
-    DECLARE exite_login VARCHAR(36);
+    DECLARE exist_login VARCHAR(36);
 
     -- Vérifier qu'il s'agit bien d'un login valide
-    SELECT login INTO exite_login FROM users WHERE login = user_login;
+    SELECT login INTO exist_login FROM users WHERE login = user_login;
 
-    IF exite_login IS NOT NULL THEN
-        INSERT INTO users_logs(log_date, login, action_did)
-            VALUES (NOW(),user_login, 'TRY CONNECTION');
+    IF exist_login IS NOT NULL THEN
+
+        IF success >= 1 THEN
+            INSERT INTO users_logs(log_date, login, action_did, ip_address)
+            VALUES (NOW(),user_login, 'SUCCESS CONNECTION', INET6_ATON(ip));
+            UPDATE users SET last_ip_address=ip WHERE login = user_login;
+        ELSE
+            INSERT INTO users_logs(log_date, login, action_did, ip_address)
+            VALUES (NOW(),user_login, 'TRY CONNECTION', INET6_ATON(ip));
+        END IF;
+
     END IF;
 END
 //
@@ -340,49 +368,49 @@ END
 -- ==============================
 -- Trigger pour la table users
 CREATE OR REPLACE TRIGGER users_after_insert
-AFTER INSERT ON users
-FOR EACH ROW
+    AFTER INSERT ON users
+    FOR EACH ROW
 BEGIN
-   INSERT INTO users_logs(log_date, login, action_did)
-       VALUES (NOW(), NEW.login, 'CREATED');
+    INSERT INTO users_logs(log_date, login, action_did)
+    VALUES (NOW(), NEW.login, 'CREATED');
 END
 //
 
 CREATE OR REPLACE TRIGGER users_after_update
-AFTER UPDATE ON users
-FOR EACH ROW
+    AFTER UPDATE ON users
+    FOR EACH ROW
 BEGIN
 
     IF NOT (OLD.first_name <=> NEW.first_name) THEN
         INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
-            VALUES (NOW(), NEW.login, 'UPDATE FIRST NAME', OLD.first_name, NEW.first_name);
+        VALUES (NOW(), NEW.login, 'UPDATE FIRST NAME', OLD.first_name, NEW.first_name);
     END IF;
 
     IF NOT (OLD.last_name <=> NEW.last_name) THEN
         INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
-            VALUES (NOW(), NEW.login, 'UPDATE LAST NAME', OLD.last_name, NEW.last_name);
+        VALUES (NOW(), NEW.login, 'UPDATE LAST NAME', OLD.last_name, NEW.last_name);
     END IF;
 
     IF NOT (OLD.password_hash <=> NEW.password_hash) THEN
         INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
-            VALUES (NOW(), NEW.login, 'UPDATE PASSWORD', null, null);
+        VALUES (NOW(), NEW.login, 'UPDATE PASSWORD', null, null);
         -- DON'T KEEP PASSWORD'S HISTORY
     END IF;
 
     IF NOT (OLD.role <=> NEW.role) THEN
         INSERT INTO users_logs(log_date, login, action_did, old_val, new_val)
-            VALUES (NOW(), NEW.login, 'UPDATE ROLE', OLD.role, NEW.role);
+        VALUES (NOW(), NEW.login, 'UPDATE ROLE', OLD.role, NEW.role);
     END IF;
 
 END
 //
 
 CREATE OR REPLACE TRIGGER users_after_delete
-AFTER DELETE ON users
-FOR EACH ROW
+    AFTER DELETE ON users
+    FOR EACH ROW
 BEGIN
-   INSERT INTO users_logs(log_date, login, action_did)
-       VALUES (NOW(), OLD.login, 'DELETED');
+    INSERT INTO users_logs(log_date, login, action_did)
+    VALUES (NOW(), OLD.login, 'DELETED');
 END
 //
 

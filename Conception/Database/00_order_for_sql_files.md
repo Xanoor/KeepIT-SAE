@@ -11,6 +11,9 @@
 Appliquer `mig_manufacturer_name.sql` si la base a été initialisé avec le `init_old.sql`
 Exécuter de nouveau les triggers des logs (pas le fichier entier sinon les tables des logs seront recréées) et le fichier des vues.
 
+Appliquer `mig_ip_addr.sql` si la base de donnée à été initialisé sans la prise en compte des addresses ip.
+Exécuter de nouveau le fichier des actions et celui des vues.
+
 ---
 ## INIT.SQL
 

@@ -6,6 +6,14 @@
     if (!empty($_SESSION['first_name']) || !empty($_SESSION['last_name'])) {
         $displayName = htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? '')));
     }
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    require_once __DIR__ . '/../includes/maintenance-fnc.php';
+    checkMaintenance();
+
 ?>
 <header>
     <div class="nav-left-container">
@@ -26,6 +34,7 @@
             <!-- Admin web only -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'Web Administrator'): ?>
                 <a href="technician.php" class="<?= (in_array($currentPageName, ['technician.php', 'create-technician.php'])) ? 'nav-buttons-current' : '' ?>">Techniciens</a>
+                <a href="admin-settings.php" class="<?= (in_array($currentPageName, ['admin-settings.php'])) ? 'nav-buttons-current' : '' ?>">Réglages</a>
             <?php endif; ?>
 
             <!-- Sys admin only -->

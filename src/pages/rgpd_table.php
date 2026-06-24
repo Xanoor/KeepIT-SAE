@@ -39,14 +39,14 @@
                     <tr>
                         <th colspan="4">Identification du traitement</th>
                         <th rowspan="2">Finalité du traitement</th>
-                        <th colspan="1">Données sensibles ?</th>
+                        <th colspan="1" rowspan="2">Données sensibles ?</th>
                     </tr>
                     <tr>
                         <th>Nom du traitement</th>
                         <th>N° / RÉF</th>
                         <th>Date de création de la fiche</th>
                         <th>Dernière mise à jour de la fiche</th>
-                        <th>Oui/non</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
