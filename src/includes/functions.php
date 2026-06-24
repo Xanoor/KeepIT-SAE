@@ -1347,4 +1347,171 @@ function loadConnectionLogs($state) {
     }
     return $html;
 }
+
+/**
+ * Resolves the path of the system SSH authentication log.
+ *
+ * Tries the standard Linux locations first, then falls back to a local sample
+ * file (data/auth.log) so the feature also works in a Windows dev environment.
+ *
+ * @return string|null The first readable path found, or null if none.
+ */
+function getSshLogPath() {
+    $candidates = [
+        '/var/log/auth.log',
+        '/var/log/secure',
+    ];
+
+    // Fallback sample file for Windows dev environments.
+    if (PHP_OS_FAMILY === 'Windows') {
+        $candidates[] = __DIR__ . '/../../data/auth.log';
+    }
+
+    foreach ($candidates as $path) {
+        if (is_readable($path)) {
+            return $path;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Parses a single sshd syslog line into a structured & easy to read human line.
+ *
+ * @param string $line A raw line from auth.log / secure.
+ * @return array|null The parsed entry (date, host, pid, type, user, ip, message, raw), or null if not an sshd line.
+ */
+function parseSshLogLine($line) {
+    $line = trim($line);
+    if ($line === '') {
+        return null;
+    }
+
+    // "Mon DD HH:MM:SS host sshd[pid]: message"
+    if (!preg_match('/^(\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+sshd(?:\[(\d+)\])?:\s+(.*)$/', $line, $m)) {
+        return null;
+    }
+
+    $entry = [
+        'date'    => $m[1],
+        'host'    => $m[2],
+        'pid'     => $m[3] ?? '',
+        'type'    => 'info',
+        'user'    => '',
+        'ip'      => '',
+        'message' => $m[4],
+        'raw'     => $line,
+    ];
+
+    $msg = $m[4];
+
+    if (preg_match('/^Accepted (\w+) for (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $method = $mm[1] === 'publickey' ? 'clé publique' : ($mm[1] === 'password' ? 'mot de passe' : $mm[1]);
+        $entry['type'] = 'success';
+        $entry['user'] = $mm[2];
+        $entry['ip'] = $mm[3];
+        $entry['message'] = "Connexion réussie - utilisateur \"{$mm[2]}\" depuis {$mm[3]} ({$method})";
+    } elseif (preg_match('/^Failed password for invalid user (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[1];
+        $entry['ip'] = $mm[2];
+        $entry['message'] = "Échec de connexion - utilisateur invalide \"{$mm[1]}\" depuis {$mm[2]}";
+    } elseif (preg_match('/^Failed (\w+) for (\S+) from (\S+) port (\d+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[2];
+        $entry['ip'] = $mm[3];
+        $entry['message'] = "Échec de connexion - utilisateur \"{$mm[2]}\" depuis {$mm[3]}";
+    } elseif (preg_match('/^Invalid user (\S+) from (\S+)/', $msg, $mm)) {
+        $entry['type'] = 'fail';
+        $entry['user'] = $mm[1];
+        $entry['ip'] = $mm[2];
+        $entry['message'] = "Utilisateur invalide \"{$mm[1]}\" depuis {$mm[2]}";
+    } elseif (preg_match('/session opened for user (\S+?)(?: by|\()/', $msg, $mm)) {
+        $entry['type'] = 'session';
+        $entry['user'] = $mm[1];
+        $entry['message'] = "Session ouverte pour \"{$mm[1]}\"";
+    } elseif (preg_match('/session closed for user (\S+)/', $msg, $mm)) {
+        $entry['type'] = 'session';
+        $entry['user'] = $mm[1];
+        $entry['message'] = "Session fermée pour \"{$mm[1]}\"";
+    } elseif (preg_match('/^Connection closed by (?:invalid user \S+ |authenticating user \S+ )?(\S+) port (\d+)(.*)$/', $msg, $mm)) {
+        $preauth = strpos($mm[3], 'preauth') !== false ? ' (preauth)' : '';
+        $entry['ip'] = $mm[1];
+        $entry['message'] = "Connexion fermée depuis {$mm[1]}{$preauth}";
+    } elseif (preg_match('/^Disconnected from (?:invalid user \S+ |authenticating user \S+ )?(\S+) port (\d+)/', $msg, $mm)) {
+        $entry['ip'] = $mm[1];
+        $entry['message'] = "Déconnecté de {$mm[1]}";
+    }
+
+    return $entry;
+}
+
+/**
+ * Reads and parses the last entries of the SSH authentication log.
+ *
+ * @param int $limit Maximum number of trailing lines to read.
+ * @return array Parsed entries sorted newest first.
+ */
+function getSshLogsData($limit = 200) {
+    $path = getSshLogPath();
+    if ($path === null) {
+        return [];
+    }
+
+    $file = new SplFileObject($path, 'r');
+    $file->setFlags(SplFileObject::DROP_NEW_LINE);
+
+    // Keep only the last $limit raw lines to avoid loading huge log files into memory.
+    $tail = [];
+    foreach ($file as $line) {
+        if (!is_string($line)) {
+            continue;
+        }
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $tail[] = $line;
+        if (count($tail) > $limit) {
+            array_shift($tail);
+        }
+    }
+
+    $entries = [];
+    foreach ($tail as $line) {
+        $entry = parseSshLogLine($line);
+        if ($entry !== null) {
+            $entries[] = $entry;
+        }
+    }
+
+    return array_reverse($entries);
+}
+
+/**
+ * Generates HTML paragraphs for the simplified SSH connection log view.
+ *
+ * @param int $limit Maximum number of trailing lines to read.
+ * @return string HTML chunk.
+ */
+function loadSshLogs($limit = 200) {
+    if (getSshLogPath() === null) {
+        return "<p>Aucun fichier de log SSH accessible (/var/log/auth.log ou /var/log/secure).</p>";
+    }
+
+    $entries = getSshLogsData($limit);
+    if (empty($entries)) {
+        return "<p>Aucune connexion SSH enregistrée.</p>";
+    }
+
+    $html = "";
+    foreach ($entries as $entry) {
+        $date = htmlspecialchars($entry['date']);
+        $message = htmlspecialchars($entry['message']);
+        $html .= "<p>{$date} - {$message}</p>";
+    }
+
+    return $html;
+}
 ?>
